@@ -57,7 +57,8 @@ http://localhost:3000 접속.
 
 | 증상 | 해결 |
 | --- | --- |
-| Node 버전 오류 | `nvm use` |
+| Node 버전 오류 (`EBADENGINE`) | `nvm use` 후 재설치 |
+| 설치/빌드가 이상함 | `rm -rf node_modules .next && npm ci` |
 | `localhost:3000` 포트 충돌 | 기존 프로세스 종료 후 재실행 |
 | e2e에서 브라우저 없음 | `npx playwright install chromium` |
 | `LayoutProps` 타입 없음 | `npm run typecheck` (typegen 포함) |
