@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Jost, Karla, Noto_Sans_KR } from "next/font/google";
+import { Noto_Sans_KR } from "next/font/google";
 
 import "./mockup.css";
 
-const jost = Jost({ variable: "--font-jost", subsets: ["latin"], weight: "700" });
-const karla = Karla({ variable: "--font-karla", subsets: ["latin"], weight: ["400", "600"] });
 const notoKr = Noto_Sans_KR({
   variable: "--font-noto-kr",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "700"],
   preload: false,
 });
 
@@ -20,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function MockupLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`wk ${jost.variable} ${karla.variable} ${notoKr.variable}`}>
+    <div className={`wk ${notoKr.variable}`}>
       <header className="wk-nav">
         <div className="wk-container">
           <Link href="/mockup" className="wk-wordmark">

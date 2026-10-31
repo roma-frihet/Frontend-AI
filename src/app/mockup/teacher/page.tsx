@@ -5,9 +5,9 @@ const questions = [
 ];
 
 const open = [
-  { cls: "1반", tone: "wk-c1", period: "3차시", state: "열림", count: 10 },
-  { cls: "2반", tone: "wk-c2", period: "2차시", state: "열림", count: 10 },
-  { cls: "3반", tone: "wk-c3", period: "3차시", state: "닫힘", count: 10 },
+  { cls: "1반", period: "3차시", state: "열림", count: 10 },
+  { cls: "2반", period: "2차시", state: "열림", count: 10 },
+  { cls: "3반", period: "3차시", state: "닫힘", count: 10 },
 ];
 
 export default function TeacherPage() {
@@ -20,7 +20,7 @@ export default function TeacherPage() {
 
       <div className="wk-stack">
         <div className="wk-split">
-          <section className="wk-panel" aria-labelledby="new-title">
+          <section className="wk-card wk-panel" aria-labelledby="new-title">
             <header>
               <h3 id="new-title">새 문제</h3>
               <p className="label">객관식</p>
@@ -55,7 +55,7 @@ export default function TeacherPage() {
           </section>
 
           <div style={{ display: "grid", gap: "var(--wk-gap)" }}>
-            <section className="wk-panel" aria-labelledby="open-title">
+            <section className="wk-card wk-panel" aria-labelledby="open-title">
               <header>
                 <h3 id="open-title">문제 열기</h3>
                 <p className="label">수업이 끝난 반에 엽니다</p>
@@ -64,15 +64,10 @@ export default function TeacherPage() {
                 <fieldset className="wk-choices">
                   <legend>반</legend>
                   <div className="wk-pick">
-                    {[
-                      { v: "1", tone: "wk-c1" },
-                      { v: "2", tone: "wk-c2" },
-                      { v: "3", tone: "wk-c3" },
-                    ].map((c, i) => (
-                      <label key={c.v} className={c.tone}>
-                        <input type="radio" name="cls" defaultChecked={i === 1} aria-label={`${c.v}반`} />
-                        <span className="num">{c.v}반</span>
-                        <span className="wk-note" style={{ color: "inherit" }}>현재 {[3, 2, 4][i]}차시</span>
+                    {[1, 2, 3].map((c) => (
+                      <label key={c}>
+                        <input type="radio" name="cls" defaultChecked={c === 2} aria-label={`${c}반`} />
+                        {c}반 <span className="wk-note">현재 {[3, 2, 4][c - 1]}차시</span>
                       </label>
                     ))}
                   </div>
@@ -89,7 +84,7 @@ export default function TeacherPage() {
               </form>
             </section>
 
-            <section className="wk-panel" aria-labelledby="status-title">
+            <section className="wk-card wk-panel" aria-labelledby="status-title">
               <header>
                 <h3 id="status-title">열림 현황</h3>
               </header>
@@ -106,7 +101,7 @@ export default function TeacherPage() {
                   <tbody>
                     {open.map((o) => (
                       <tr key={o.cls}>
-                        <td><span className={`wk-tag ${o.tone}`}>{o.cls}</span></td>
+                        <td><span className="wk-tag">{o.cls}</span></td>
                         <td>{o.period}</td>
                         <td className={o.state === "열림" ? "wk-state-open" : ""}>{o.state}</td>
                         <td className="end">
@@ -121,7 +116,7 @@ export default function TeacherPage() {
           </div>
         </div>
 
-        <section className="wk-panel" aria-labelledby="list-title">
+        <section className="wk-card wk-panel" aria-labelledby="list-title">
           <header>
             <h3 id="list-title">3차시 문제</h3>
             <p className="label">총 {questions.length}개</p>

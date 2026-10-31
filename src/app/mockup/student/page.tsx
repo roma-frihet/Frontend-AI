@@ -15,27 +15,27 @@ export default function StudentPage() {
       <div className="wk-page-head">
         <h1>내 점수 기록</h1>
         <p className="label">
-          예시 학생 <span className="wk-tag wk-c2">2반</span>
+          <span className="wk-tag wk-tag--accent">2반</span> 예시 학생
         </p>
       </div>
 
       <div className="wk-stack">
         <div className="wk-kpis">
-          <div>
+          <div className="wk-card">
             <p className="label">누적 점수</p>
             <p className="num">49</p>
           </div>
-          <div>
+          <div className="wk-card">
             <p className="label">지난 차시</p>
-            <p className="num num--m">+9</p>
+            <p className="num">+9</p>
           </div>
-          <div className="wk-open">
+          <div className="wk-card wk-open">
             <h3>7차시 문제가 열렸습니다</h3>
             <a href="#" className="wk-btn wk-btn--primary">문제 풀기</a>
           </div>
         </div>
 
-        <section className="wk-panel" aria-labelledby="hist-title">
+        <section className="wk-card wk-panel" aria-labelledby="hist-title">
           <header>
             <h3 id="hist-title">차시별 누적 점수</h3>
             <p className="label">점수는 차시마다 쌓입니다</p>
