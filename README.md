@@ -1,6 +1,6 @@
 # Frontend-AI 런북
 
-프론트엔드 전용 레포. 작업 규칙은 [CLAUDE.md](CLAUDE.md), 디자인 기준은 [DESIGN.md](DESIGN.md).
+프론트엔드 전용 레포. 작업 규칙은 [CLAUDE.md](CLAUDE.md), 디자인 기준은 [DESIGN.md](DESIGN.md), 브랜치/커밋 규칙은 [docs/CONVENTION.md](docs/CONVENTION.md).
 
 ## 1. 사전 준비
 
@@ -30,7 +30,7 @@ http://localhost:3000 접속.
 
 ## 4. 작업 흐름
 
-1. `main`에서 브랜치 생성 (`feat/...`, `fix/...`, `chore/...`)
+1. `main`에서 브랜치 생성 ([컨벤션](docs/CONVENTION.md))
 2. 작업 (AI 작업 규칙은 CLAUDE.md)
 3. `npm run check` 통과 확인
 4. 화면을 바꿨다면 `npm run e2e` 실행

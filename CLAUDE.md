@@ -60,6 +60,10 @@ api-spec.version        # 연동할 백엔드 스펙 버전 (none이면 미연�
 - 화면을 변경했다면 Playwright MCP로 직접 띄워서(`npm run dev`) 확인한다.
 - 주요 동작을 추가했다면 `e2e/`에 테스트를 추가하고 `npm run e2e`로 확인한다.
 
+## 브랜치/커밋
+
+`docs/CONVENTION.md`를 따른다. (`<type>/<설명>`, `<type>: <한글 설명>`)
+
 ## 자주 쓰는 명령어
 
 | 명령어 | 설명 |
