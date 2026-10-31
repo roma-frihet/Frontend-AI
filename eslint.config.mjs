@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 외부/생성 코드
+    ".claude/**",
+    "src/api/generated/**",
   ]),
 ]);
 

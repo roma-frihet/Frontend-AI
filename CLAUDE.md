@@ -17,7 +17,7 @@
 src/app/                # Next.js App Router (페이지, layout, providers.tsx)
 src/components/ui/      # shadcn/ui 컴포넌트 (CLI로 생성, 직접 크게 수정 금지)
 src/components/         # 도메인 컴포넌트 (ui 컴포넌트를 조합/래핑)
-src/api/generated/      # orval 생성물 (수정 금지, 커밋 대상 아님)
+src/api/generated/      # orval 생성물 (수정 금지, api:gen으로만 갱신)
 src/lib/                # 유틸, query client 등
 e2e/                    # Playwright 테스트
 api/                    # 받아온 openapi.json 위치 (api:pull 결과)
