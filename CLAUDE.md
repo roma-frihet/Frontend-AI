@@ -64,7 +64,7 @@ api-spec.version        # 연동할 백엔드 스펙 버전 (none이면 미연�
 
 | 명령어 | 설명 |
 | --- | --- |
-| `npm run dev` | 개발 서버 |
+| `npm run dev` | 로컬 개발 환경 실행 (localhost:3000) |
 | `npm run build` | 프로덕션 빌드 |
 | `npm run typecheck` | 타입 체크 |
 | `npm run lint` | ESLint |
