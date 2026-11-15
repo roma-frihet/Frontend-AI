@@ -10,7 +10,7 @@ fix/table-pagination
 chore/bootstrap
 ```
 
-- `main`에서 따고, PR로만 머지한다.
+- `develop`에서 따고, PR로만 머지한다. (백엔드 레포와 같은 흐름)
 
 ## 커밋
 
