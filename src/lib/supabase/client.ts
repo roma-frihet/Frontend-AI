@@ -6,11 +6,12 @@
 // (쿠키는 httpOnly가 아니다 — 브라우저가 토큰을 읽어 헤더에 붙여야 하기 때문이다.)
 
 import { createBrowserClient } from "@supabase/ssr";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-let client: ReturnType<typeof createBrowserClient> | undefined;
+let client: SupabaseClient | undefined;
 
 export const getSupabaseClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -32,6 +33,5 @@ export const getAccessToken = async (): Promise<string | null> => {
 };
 
 /** 토큰의 app_metadata.role이 teacher면 교사다. 서버도 같은 값으로 권한을 가른다. */
-export const isTeacherSession = (
-  session: { user?: { app_metadata?: Record<string, unknown> } } | null,
-): boolean => session?.user?.app_metadata?.role === "teacher";
+export const isTeacherSession = (session: Session | null): boolean =>
+  session?.user.app_metadata?.role === "teacher";

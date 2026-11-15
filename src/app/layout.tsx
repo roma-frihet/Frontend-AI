@@ -12,7 +12,7 @@ const notoSansKr = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "복습 문제",
+  title: "다시봄",
   description: "수업이 끝나면 선생님이 문제를 엽니다. 풀고, 기록이 쌓입니다.",
 };
 

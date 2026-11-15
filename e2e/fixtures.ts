@@ -30,8 +30,11 @@ const json = (route: Route, body: unknown, status = 200) =>
     body: JSON.stringify(body),
   });
 
-/** Supabase Auth의 로그인·가입 응답을 가짜 세션으로 돌려준다. */
-export const mockSupabaseAuth = async (page: Page) => {
+/**
+ * Supabase Auth의 로그인·가입 응답을 가짜 세션으로 돌려준다.
+ * 교사와 학생을 가르는 것은 user.app_metadata.role이다. 서버도 같은 값을 본다.
+ */
+export const mockSupabaseAuth = async (page: Page, role?: "teacher") => {
   const requests: { url: string; body: unknown }[] = [];
 
   await page.route("**/auth/v1/**", async (route) => {
@@ -40,7 +43,7 @@ export const mockSupabaseAuth = async (page: Page) => {
     if (/\/auth\/v1\/(token|signup)/.test(url)) {
       requests.push({ url, body: route.request().postDataJSON() });
 
-      const token = fakeAccessToken();
+      const token = fakeAccessToken(role);
       return json(route, {
         access_token: token,
         refresh_token: "test-refresh-token",
@@ -51,7 +54,7 @@ export const mockSupabaseAuth = async (page: Page) => {
           id: "00000000-0000-0000-0000-000000000001",
           aud: "authenticated",
           email: (route.request().postDataJSON() as { email?: string })?.email,
-          app_metadata: {},
+          app_metadata: role ? { role } : {},
           user_metadata: {},
         },
       });
@@ -66,13 +69,19 @@ export const mockSupabaseAuth = async (page: Page) => {
 type ApiStubs = Record<string, unknown>;
 
 /**
- * 백엔드 응답을 경로별로 흉내 낸다. 키는 `/api/v1/...`로 시작하는 경로 조각이고,
- * 먼저 맞는 것이 이긴다. 맞는 것이 없으면 404로 떨어뜨려 테스트가 조용히 통과하지 않게 한다.
+ * 백엔드 응답을 경로별로 흉내 낸다. 키는 `/api/v1/...`로 시작하는 경로 조각이다.
+ *
+ * 가장 긴 키가 이긴다. `/classrooms`와 `/classrooms/2/students`가 함께 있을 때
+ * 짧은 쪽이 먼저 잡히면 엉뚱한 응답이 나간다.
+ *
+ * 맞는 것이 없으면 404로 떨어뜨려 테스트가 조용히 통과하지 않게 한다.
  */
 export const mockApi = async (page: Page, stubs: ApiStubs) => {
   await page.route("**/api/v1/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
-    const match = Object.keys(stubs).find((key) => path.startsWith(key));
+    const match = Object.keys(stubs)
+      .filter((key) => path.startsWith(key))
+      .sort((a, b) => b.length - a.length)[0];
 
     if (!match) {
       return json(
@@ -135,3 +144,64 @@ export const REPORT = {
   totalQuestionCount: 2,
   recentWrongQuestions: [],
 };
+
+// --- 교사 쪽 기본 응답 ---
+
+export const TEACHER_MYPAGE = {
+  profile: { name: "예시 선생님", schoolId: 1, schoolName: "다원중학교" },
+  courses: [
+    {
+      id: 2,
+      grade: 3,
+      subjectId: 251,
+      subjectName: "과학",
+      lessonCount: 2,
+      classrooms: [{ id: 2, classNo: 5 }],
+    },
+  ],
+};
+
+export const TEACHER_CLASSROOMS = [
+  {
+    id: 2,
+    courseId: 2,
+    grade: 3,
+    subjectName: "과학",
+    classNo: 5,
+    joinCode: null,
+    joinCodeExpiresAt: null,
+    studentCount: 1,
+  },
+];
+
+/** 이미 연 차시(1)와 아직 안 연 차시(2) */
+export const TEACHER_LESSONS = [
+  {
+    lessonNumber: 1,
+    title: "광합성",
+    questionCount: 1,
+    classrooms: [{ classroomId: 2, classNo: 5, status: "FINISHED" }],
+  },
+  {
+    lessonNumber: 2,
+    title: "호흡",
+    questionCount: 0,
+    classrooms: [{ classroomId: 2, classNo: 5, status: "PLANNED" }],
+  },
+];
+
+export const TEACHER_QUESTIONS = [
+  {
+    id: 102,
+    lessonNumber: 1,
+    type: "MULTIPLE_CHOICE",
+    content: "광합성이 일어나는 곳은?",
+    timeLimitSec: 30,
+    explanation: "엽록체에서 일어납니다.",
+    displayOrder: 0,
+    options: [
+      { id: 102, displayOrder: 0, content: "엽록체", isCorrect: true },
+      { id: 103, displayOrder: 1, content: "핵", isCorrect: false },
+    ],
+  },
+];

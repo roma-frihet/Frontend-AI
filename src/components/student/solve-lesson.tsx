@@ -268,7 +268,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="flex flex-1 flex-col">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-(--container-page) items-center justify-between gap-4 px-4 py-4">
-          <Brand badge="학생" />
+          <Brand badge="학생" href="/" />
           <AppButton variant="outline" onClick={() => router.replace("/")}>
             <ArrowLeft className="size-4" aria-hidden />
             나가기
