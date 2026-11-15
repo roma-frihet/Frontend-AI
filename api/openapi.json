@@ -1,0 +1,3440 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "roma-frihet server API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/teacher/questions/{questionId}": {
+      "get": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "문제 상세",
+        "operationId": "findQuestion",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionResponseResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "문제 수정",
+        "operationId": "updateQuestion",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionRequestSave"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "문제 삭제",
+        "operationId": "deleteQuestion",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/profile": {
+      "put": {
+        "tags": [
+          "교사 - 마이페이지"
+        ],
+        "summary": "내 정보 저장",
+        "description": "처음 저장과 수정에 함께 씁니다. 학교를 옮겨도 기존 수업은 그대로입니다.",
+        "operationId": "saveTeacherProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherRequestSaveProfile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/attempt-answers/{attemptAnswerId}/result": {
+      "put": {
+        "tags": [
+          "교사 - 결과 수정"
+        ],
+        "summary": "문제 결과 덮어쓰기",
+        "description": "접속이 끊기는 등 사정이 있을 때 씁니다. 확정된 문제만 바꿀 수 있고 원래 결과는 이력으로 남습니다.",
+        "operationId": "overrideAttemptResult",
+        "parameters": [
+          {
+            "name": "attemptAnswerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptOverrideRequestUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/student-profiles/me/password": {
+      "put": {
+        "tags": [
+          "학생 - 가입 정보"
+        ],
+        "summary": "내 비밀번호 변경",
+        "description": "교사가 초기화한 임시 비밀번호 상태를 풉니다.",
+        "operationId": "changeMyPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentPasswordRequestChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/lessons/{lessonNumber}/attempt/questions/{questionIndex}/draft": {
+      "put": {
+        "tags": [
+          "학생 - 문제 풀이"
+        ],
+        "summary": "답 임시 저장",
+        "description": "제한 시간 안에서 마지막 값으로 덮어씁니다.",
+        "operationId": "saveAttemptDraft",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "questionIndex",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptRequestAnswer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/question-images": {
+      "post": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "문제 이미지 업로드",
+        "description": "PNG, JPEG, WebP, 5MB 이하. 응답의 id를 문제나 보기의 imageId에 넣어 저장하면 연결됩니다.",
+        "operationId": "uploadQuestionImage",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionResponseImageResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses": {
+      "get": {
+        "tags": [
+          "교사 - 수업"
+        ],
+        "summary": "내 수업 목록",
+        "operationId": "findCourses",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CourseResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "교사 - 수업"
+        ],
+        "summary": "수업 생성",
+        "description": "같은 과목이라도 학년이 다르면 다른 수업입니다.",
+        "operationId": "createCourse",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}/lessons": {
+      "get": {
+        "tags": [
+          "교사 - 차시"
+        ],
+        "summary": "차시 목록",
+        "description": "차시별 문제 수와 반별 상태를 함께 내립니다.",
+        "operationId": "findLessons",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LessonResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "교사 - 차시"
+        ],
+        "summary": "차시 추가",
+        "description": "차시 번호는 마지막 번호 다음으로 정해집니다.",
+        "operationId": "createLesson",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonRequestSave"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}/lessons/{lessonNumber}/questions": {
+      "get": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "차시의 문제 목록",
+        "operationId": "findQuestions",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "문제 추가",
+        "operationId": "createQuestion",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionRequestSave"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionResponseIdResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms": {
+      "get": {
+        "tags": [
+          "교사 - 반"
+        ],
+        "summary": "내 반 목록",
+        "operationId": "findClassrooms",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassroomResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "교사 - 반"
+        ],
+        "summary": "반 생성",
+        "description": "반은 수업에 속합니다. 합류 코드는 수업 + 반마다 발급합니다.",
+        "operationId": "createClassroom",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassroomRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassroomResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/students/{membershipId}/password-reset": {
+      "post": {
+        "tags": [
+          "교사 - 마이페이지"
+        ],
+        "summary": "학생 비밀번호 초기화",
+        "description": "임시 비밀번호를 만들어 한 번만 내립니다. 학생의 기존 세션은 무효가 됩니다.",
+        "operationId": "resetStudentPassword",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "membershipId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherResponseTemporaryPassword"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/lessons/{lessonNumber}/open": {
+      "post": {
+        "tags": [
+          "교사 - 차시 열기"
+        ],
+        "summary": "차시 열기",
+        "description": "닫았던 차시도 같은 API로 다시 엽니다.",
+        "operationId": "openLesson",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/lessons/{lessonNumber}/finish": {
+      "post": {
+        "tags": [
+          "교사 - 차시 열기"
+        ],
+        "summary": "차시 마감",
+        "description": "마감하면 다시 열 수 없고, 학생은 내 답과 정답을 볼 수 있습니다.",
+        "operationId": "finishLesson",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/lessons/{lessonNumber}/close": {
+      "post": {
+        "tags": [
+          "교사 - 차시 열기"
+        ],
+        "summary": "차시 닫기",
+        "description": "학생에게 숨깁니다. 다시 열 수 있습니다.",
+        "operationId": "closeLesson",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/join-code": {
+      "post": {
+        "tags": [
+          "교사 - 반"
+        ],
+        "summary": "합류 코드 발급",
+        "description": "코드는 5분간 유효하고, 다시 발급하면 이전 코드는 바로 무효가 됩니다.",
+        "operationId": "issueJoinCode",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassroomResponseResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "교사 - 반"
+        ],
+        "summary": "합류 코드 끄기",
+        "description": "이미 합류한 학생은 그대로 유지됩니다.",
+        "operationId": "closeJoinCode",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/student-profiles": {
+      "post": {
+        "tags": [
+          "학생 - 가입 정보"
+        ],
+        "summary": "학생 가입 정보 저장",
+        "description": "Supabase 가입 직후 학교, 학번, 이름을 저장합니다. 가입에 쓴 계정이 학번 규칙과 맞아야 합니다.",
+        "operationId": "createStudentProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentProfileRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentProfileResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/lessons/{lessonNumber}/attempt/questions/{questionIndex}/submit": {
+      "post": {
+        "tags": [
+          "학생 - 문제 풀이"
+        ],
+        "summary": "답 제출",
+        "description": "결과와 정답, 해설을 함께 내립니다. 이미 확정된 문제는 확정 결과를 그대로 돌려줍니다.",
+        "operationId": "submitAttemptAnswer",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "questionIndex",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptRequestAnswer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/lessons/{lessonNumber}/attempt/questions/{questionIndex}/start": {
+      "post": {
+        "tags": [
+          "학생 - 문제 풀이"
+        ],
+        "summary": "문제 시작",
+        "description": "앞 문제부터 순서대로만 시작합니다. 같은 문제로 다시 불러도 제한 시간이 늘어나지 않습니다.",
+        "operationId": "startAttemptQuestion",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "questionIndex",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classroom-memberships": {
+      "get": {
+        "tags": [
+          "학생 - 반 합류"
+        ],
+        "summary": "내 합류 요청과 소속 반 목록",
+        "operationId": "findMyClassrooms",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassroomMembershipResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "학생 - 반 합류"
+        ],
+        "summary": "합류 코드로 반 합류 요청",
+        "description": "가입 때 저장한 이름과 학번으로 요청합니다.",
+        "operationId": "joinClassroom",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassroomMembershipRequestJoin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassroomMembershipResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}/lessons/{lessonNumber}": {
+      "patch": {
+        "tags": [
+          "교사 - 차시"
+        ],
+        "summary": "차시 이름 수정",
+        "operationId": "renameLesson",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonRequestSave"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/subjects": {
+      "get": {
+        "tags": [
+          "교사 - 과목"
+        ],
+        "summary": "과목 목록",
+        "description": "수업을 만들 때 고를 수 있는 과목입니다. 학교급으로 거릅니다.",
+        "operationId": "findSubjects",
+        "parameters": [
+          {
+            "name": "schoolLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "MIDDLE",
+              "enum": [
+                "MIDDLE",
+                "HIGH"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubjectResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/mypage": {
+      "get": {
+        "tags": [
+          "교사 - 마이페이지"
+        ],
+        "summary": "마이페이지",
+        "description": "이메일과 비밀번호는 Supabase Auth에서 다룹니다.",
+        "operationId": "findMyPage",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherResponseMyPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/lesson-openings": {
+      "get": {
+        "tags": [
+          "교사 - 차시 열기"
+        ],
+        "summary": "반별 현재 차시와 열림 현황",
+        "operationId": "findLessonOpenings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LessonOpeningResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}/scores": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "학생 점수 조회",
+        "description": "반과 차시로 거를 수 있습니다. 열었던 차시마다 한 행이고, 미제출 학생은 correctCount가 null입니다.",
+        "operationId": "findScores",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "classroomId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "maximum": 100,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseScoreResultPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}/dashboard": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "수업 대시보드",
+        "description": "시작 체크리스트, 열린 문제, 반별 진도와 평균, 살펴볼 학생을 내립니다.",
+        "operationId": "findDashboard",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseDashboard"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/students": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "반 학생 관리",
+        "description": "연결된 학생의 점수와 상태를 내립니다. 검색어는 학생 목록에만 적용합니다.",
+        "operationId": "findClassroomStudents",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "minLength": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseClassroom"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/students/{membershipId}": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "학생 상세",
+        "description": "차시별 점수와 반 평균, 최근 차시의 문제별 결과를 내립니다. 결과를 고칠 때 attemptAnswerId를 씁니다.",
+        "operationId": "findClassroomStudentDetail",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "membershipId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseStudentDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/memberships": {
+      "get": {
+        "tags": [
+          "교사 - 반"
+        ],
+        "summary": "반 학생 목록",
+        "description": "코드로 연결된 학생입니다. 승인 절차는 없습니다.",
+        "operationId": "findClassroomMemberships",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassroomMembershipResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/student-profiles/me": {
+      "get": {
+        "tags": [
+          "학생 - 가입 정보"
+        ],
+        "summary": "내 가입 정보",
+        "operationId": "findMyStudentProfile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentProfileResponseMine"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/schools": {
+      "get": {
+        "tags": [
+          "학교"
+        ],
+        "summary": "학교 검색",
+        "description": "가입 전에 쓰므로 인증 없이 호출합니다. 최대 20개를 반환합니다.",
+        "operationId": "findSchools",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SchoolResponseResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/report": {
+      "get": {
+        "tags": [
+          "학생 - 리포트"
+        ],
+        "summary": "내 학습 리포트",
+        "description": "지금 열린 차시, 차시별 내 점수와 반 평균, 최근 틀린 문제를 내립니다. 다른 학생의 점수는 담지 않습니다.",
+        "operationId": "findMyReport",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentReportResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/report/wrong-questions": {
+      "get": {
+        "tags": [
+          "학생 - 리포트"
+        ],
+        "summary": "틀린 문제 모음",
+        "description": "마감한 차시에서 맞히지 못한 문제를 최근 차시부터 내립니다.",
+        "operationId": "findMyWrongQuestions",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StudentReportResponseWrongQuestion"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/lessons": {
+      "get": {
+        "tags": [
+          "학생 - 차시 문제"
+        ],
+        "summary": "내 반의 열린 차시와 마감 차시 목록",
+        "operationId": "findMyLessons",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LessonOpeningResponseOpenedResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/lessons/{lessonNumber}/result": {
+      "get": {
+        "tags": [
+          "학생 - 차시 문제"
+        ],
+        "summary": "마감 차시의 문제, 내 답, 정답과 해설",
+        "operationId": "findMyLessonResult",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonResultResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/classrooms/{classroomId}/lessons/{lessonNumber}/attempt": {
+      "get": {
+        "tags": [
+          "학생 - 문제 풀이"
+        ],
+        "summary": "응시 상태",
+        "description": "제한 시간이 지난 문제를 먼저 확정한 뒤 상태를 내립니다. 시작하지 않은 문제는 개수와 제한 시간만 알려줍니다.",
+        "operationId": "findMyAttempt",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponseResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}": {
+      "delete": {
+        "tags": [
+          "교사 - 마이페이지"
+        ],
+        "summary": "수업 삭제",
+        "description": "반이나 문제가 있으면 삭제할 수 없습니다.",
+        "operationId": "deleteCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}": {
+      "delete": {
+        "tags": [
+          "교사 - 마이페이지"
+        ],
+        "summary": "반 삭제",
+        "description": "학생이나 차시 기록이 있으면 삭제할 수 없습니다.",
+        "operationId": "deleteClassroom",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/memberships/{membershipId}": {
+      "delete": {
+        "tags": [
+          "교사 - 반"
+        ],
+        "summary": "학생 내보내기",
+        "description": "코드를 잘못 넣어 들어온 학생을 반에서 뺍니다. 그 반에서 푼 기록도 함께 지워집니다.",
+        "operationId": "removeClassroomStudent",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "membershipId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "QuestionRequestOption": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "isCorrect": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionRequestSave": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "MULTIPLE_CHOICE",
+              "SHORT_ANSWER"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "timeLimitSec": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "maximum": 300,
+            "minimum": 1
+          },
+          "explanation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "options": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/QuestionRequestOption"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "options",
+          "type"
+        ]
+      },
+      "TeacherRequestSaveProfile": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "name",
+          "schoolId"
+        ]
+      },
+      "AttemptOverrideRequestUpdate": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE"
+            ]
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "StudentPasswordRequestChange": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 72,
+            "minLength": 8
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "AttemptRequestAnswer": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "text": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AttemptResponseCurrent": {
+        "type": "object",
+        "properties": {
+          "questionIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "question": {
+            "$ref": "#/components/schemas/QuestionResponseStudentResult"
+          },
+          "remainingMillis": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "draftOptionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "draftText": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AttemptResponseLast": {
+        "type": "object",
+        "properties": {
+          "questionIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE"
+            ]
+          },
+          "byTimeout": {
+            "type": "boolean"
+          },
+          "selectedOptionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "answerText": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "correctOptionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "correctAnswer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "explanation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AttemptResponseResult": {
+        "type": "object",
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "IN_QUESTION",
+              "DONE"
+            ]
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextTimeLimitSec": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "correctCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "current": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttemptResponseCurrent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttemptResponseLast"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "QuestionResponseStudentOption": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionResponseStudentResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "MULTIPLE_CHOICE",
+              "SHORT_ANSWER"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeLimitSec": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionResponseStudentOption"
+            }
+          }
+        }
+      },
+      "QuestionResponseImageResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "CourseRequestCreate": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "grade": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "maximum": 3,
+            "minimum": 1
+          },
+          "subjectId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        },
+        "required": [
+          "grade",
+          "schoolId",
+          "subjectId"
+        ]
+      },
+      "CourseResponseResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "schoolId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "schoolName": {
+            "type": "string"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subjectId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "subjectName": {
+            "type": "string"
+          }
+        }
+      },
+      "LessonRequestSave": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "LessonResponseClassroomStatus": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "OPEN",
+              "CLOSED",
+              "FINISHED"
+            ]
+          }
+        }
+      },
+      "LessonResponseResult": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classrooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonResponseClassroomStatus"
+            }
+          }
+        }
+      },
+      "QuestionResponseIdResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ClassroomRequestCreate": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "classNo": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "maximum": 20,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "classNo",
+          "courseId"
+        ]
+      },
+      "ClassroomResponseResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "courseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "joinCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "joinCodeExpiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "studentCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TeacherResponseTemporaryPassword": {
+        "type": "object",
+        "properties": {
+          "temporaryPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "StudentProfileRequestCreate": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "grade": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "maximum": 3,
+            "minimum": 1
+          },
+          "classNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "maximum": 99,
+            "minimum": 1
+          },
+          "seatNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "maximum": 99,
+            "minimum": 1
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "classNumber",
+          "grade",
+          "name",
+          "schoolId",
+          "seatNumber"
+        ]
+      },
+      "StudentProfileResponseResult": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "schoolName": {
+            "type": "string"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "seatNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ClassroomMembershipRequestJoin": {
+        "type": "object",
+        "properties": {
+          "joinCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 6,
+            "minLength": 6
+          }
+        },
+        "required": [
+          "joinCode"
+        ]
+      },
+      "ClassroomMembershipResponseResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "studentName": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SubjectResponseResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "schoolLevel": {
+            "type": "string",
+            "enum": [
+              "MIDDLE",
+              "HIGH"
+            ]
+          },
+          "subjectGroup": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "QuestionResponseOption": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isCorrect": {
+            "type": "boolean"
+          }
+        }
+      },
+      "QuestionResponseResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "MULTIPLE_CHOICE",
+              "SHORT_ANSWER"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeLimitSec": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "explanation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionResponseOption"
+            }
+          }
+        }
+      },
+      "TeacherResponseClassroom": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TeacherResponseCourse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subjectId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "lessonCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classrooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherResponseClassroom"
+            }
+          }
+        }
+      },
+      "TeacherResponseMyPage": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TeacherResponseProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherResponseCourse"
+            }
+          }
+        }
+      },
+      "TeacherResponseProfile": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "schoolId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "schoolName": {
+            "type": "string"
+          }
+        }
+      },
+      "LessonOpeningResponseResult": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "courseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "latestLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "isOpen": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageInfo": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "description": "현재 페이지(0부터)"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "description": "페이지 크기"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64",
+            "description": "전체 요소 수"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "description": "전체 페이지 수"
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "다음 페이지 존재 여부"
+          }
+        }
+      },
+      "ReportResponseScoreResultPage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseStudentScore"
+            }
+          },
+          "pageInfo": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        }
+      },
+      "ReportResponseStudentScore": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "membershipId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "studentName": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "correctCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "questionCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "ReportResponseDashboard": {
+        "type": "object",
+        "properties": {
+          "classroomCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "openLessonCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "averageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "averageQuestionCount": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "setup": {
+            "$ref": "#/components/schemas/ReportResponseSetup"
+          },
+          "liveLessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseLiveLesson"
+            }
+          },
+          "lessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseLesson"
+            }
+          },
+          "classrooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseDashboardClassroom"
+            }
+          },
+          "droppedStudents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseWatchStudent"
+            }
+          },
+          "notRespondedStudents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseWatchStudent"
+            }
+          }
+        }
+      },
+      "ReportResponseDashboardClassroom": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestAverageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "latestQuestionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lessonStatuses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseLessonStatus"
+            }
+          }
+        }
+      },
+      "ReportResponseLesson": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ReportResponseLessonStatus": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "OPEN",
+              "CLOSED",
+              "FINISHED"
+            ]
+          }
+        }
+      },
+      "ReportResponseLiveLesson": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lessonTitle": {
+            "type": "string"
+          },
+          "responseCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "averageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ReportResponseSetup": {
+        "type": "object",
+        "properties": {
+          "hasClassroom": {
+            "type": "boolean"
+          },
+          "hasLesson": {
+            "type": "boolean"
+          },
+          "hasQuestion": {
+            "type": "boolean"
+          },
+          "hasOpenedLesson": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportResponseWatchStudent": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "membershipId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "studentName": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "previousCorrectCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "latestCorrectCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "ReportResponseClassroom": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "latestQuestionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestAverageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "latestResponseCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "watchStudentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseStudent"
+            }
+          }
+        }
+      },
+      "ReportResponseScore": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "correctCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classAverageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "ReportResponseStudent": {
+        "type": "object",
+        "properties": {
+          "membershipId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "studentName": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "recentScores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseScore"
+            }
+          },
+          "latestCorrectCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "previousCorrectCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "totalCorrectCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalQuestionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "SCORE_DROPPED",
+              "NOT_RESPONDED"
+            ]
+          }
+        }
+      },
+      "ReportResponseStudentAnswer": {
+        "type": "object",
+        "properties": {
+          "attemptAnswerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "questionIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE"
+            ]
+          },
+          "byTimeout": {
+            "type": "boolean"
+          },
+          "isOverridden": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportResponseStudentDetail": {
+        "type": "object",
+        "properties": {
+          "membershipId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studentName": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "scores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseScore"
+            }
+          },
+          "totalCorrectCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalQuestionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "latestAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportResponseStudentAnswer"
+            }
+          }
+        }
+      },
+      "StudentProfileResponseMine": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StudentProfileResponseResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "SchoolResponseResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "StudentReportResponseOpenLesson": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalTimeLimitSec": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "IN_QUESTION",
+              "DONE"
+            ]
+          },
+          "nextIndex": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "StudentReportResponseResult": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "openLesson": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StudentReportResponseOpenLesson"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latestScore": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StudentReportResponseScore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentReportResponseScore"
+            }
+          },
+          "totalCorrectCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalQuestionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "recentWrongQuestions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentReportResponseWrongQuestion"
+            }
+          }
+        }
+      },
+      "StudentReportResponseScore": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "correctCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classAverageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "StudentReportResponseWrongQuestion": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lessonTitle": {
+            "type": "string"
+          },
+          "questionIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE"
+            ]
+          },
+          "correctAnswer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "explanation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "LessonOpeningResponseOpenedResult": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "OPEN",
+              "CLOSED",
+              "FINISHED"
+            ]
+          }
+        }
+      },
+      "LessonResultResponseQuestion": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "explanation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE"
+            ]
+          },
+          "selectedOptionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "answerText": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "correctOptionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "correctAnswer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionResponseStudentOption"
+            }
+          }
+        }
+      },
+      "LessonResultResponseResult": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "correctCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonResultResponseQuestion"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

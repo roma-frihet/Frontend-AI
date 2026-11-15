@@ -7,9 +7,10 @@
 ## 프로젝트 개요
 
 - **프론트엔드 전용 레포**다. 백엔드(Kotlin + Spring, DDD)는 별도 레포이다.
-- 백엔드는 CI에서 springdoc으로 `openapi.json`을 생성해 버전별로 스펙 저장소에 올린다.
-- 프론트는 `api-spec.version`에 적힌 버전의 스펙을 받아 orval로 타입/React Query 훅을 생성해 사용한다. (스펙 기반 연동)
-- 스택: Next.js(App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · @tanstack/react-query · orval · Playwright
+- 백엔드는 springdoc으로 `/v3/api-docs`에 `openapi.json`을 바로 내보낸다. (별도 스펙 저장소 없음)
+- 프론트는 `npm run api:sync`로 그 스펙을 받아 orval로 타입/React Query 훅을 생성해 사용한다. (스펙 기반 연동)
+- 로그인·회원가입·토큰 발급은 백엔드가 아니라 **Supabase Auth**가 한다. 백엔드에는 토큰만 `Authorization: Bearer`로 보낸다.
+- 스택: Next.js(App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · @tanstack/react-query · orval · Supabase Auth · Playwright
 
 ## 폴더 구조
 
@@ -20,11 +21,10 @@ src/components/         # 도메인 컴포넌트 (ui 컴포넌트를 조합/래�
 src/api/generated/      # orval 생성물 (수정 금지, api:gen으로만 갱신)
 src/lib/                # 유틸, query client 등
 e2e/                    # Playwright 테스트
-api/                    # 받아온 openapi.json 위치 (api:pull 결과)
-scripts/                # 보조 스크립트 (pull-spec.mjs 등)
+api/                    # 받아온 openapi.json 위치 (api:sync 결과)
+scripts/                # 보조 스크립트 (sync-spec.mjs 등)
 .claude/skills/         # AI 스킬 (hallmark)
 DESIGN.md               # 디자인 판단 기준
-api-spec.version        # 연동할 백엔드 스펙 버전 (none이면 미연결)
 ```
 
 ## 스타일 규칙
@@ -45,8 +45,9 @@ api-spec.version        # 연동할 백엔드 스펙 버전 (none이면 미연�
 - 서버 호출은 **반드시 `src/api/generated`의 훅으로만** 한다.
 - 생성물은 손으로 수정하지 않는다.
 - API의 형태(경로, 필드, 응답)를 추측해서 `fetch`를 직접 작성하지 않는다.
-- 스펙이 바뀌었다면 먼저 `npm run api:update`를 실행한다.
-- 스펙이 아직 연결되지 않았으면(`api-spec.version`이 `none`) API 연동 코드를 만들지 말고 사용자에게 알린다.
+- 스펙이 바뀌었다면 먼저 `npm run api:update`를 실행한다. 백엔드가 떠 있어야 한다.
+- 브라우저는 백엔드를 직접 부르지 않는다. `next.config.ts`의 rewrites가 `/api/v1/*`을 넘긴다 (백엔드에 CORS 설정이 없다).
+- 토큰은 `src/lib/api-fetcher.ts`가 Supabase 세션에서 꺼내 자동으로 붙인다. 화면에서 직접 다루지 않는다.
 
 ## 디자인 규칙
 
@@ -74,7 +75,7 @@ api-spec.version        # 연동할 백엔드 스펙 버전 (none이면 미연�
 | `npm run lint` | ESLint |
 | `npm run check` | typecheck → lint → build |
 | `npm run e2e` | Playwright 테스트 |
-| `npm run api:pull` | 지정 버전의 openapi.json 받기 |
+| `npm run api:sync` | 백엔드에서 openapi.json 받기 |
 | `npm run api:gen` | orval로 타입/훅 생성 |
-| `npm run api:update` | api:pull → api:gen → typecheck |
+| `npm run api:update` | api:sync → api:gen → typecheck |
 | `npx shadcn@latest add <name>` | shadcn 컴포넌트 추가 |
