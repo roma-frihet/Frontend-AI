@@ -14,7 +14,7 @@ import { Plus, X } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
-import type { QuestionRequestSave } from "@/api/generated/model";
+import type { QuestionRequestSave, QuestionResponseResult } from "@/api/generated/model";
 import { cn } from "cn";
 
 const MIN_OPTIONS = 2;
@@ -32,22 +32,44 @@ const emptyOptions = () => ["", ""];
 
 export function QuestionForm({
   busy,
-  disabled,
+  disabled = false,
   disabledReason,
+  initial,
+  submitLabel = "문제 추가",
   onSubmit,
+  onCancel,
 }: {
   busy: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   disabledReason?: string;
+  /** 수정할 때 채워 넣을 값. 없으면 새 문제다 */
+  initial?: QuestionResponseResult;
+  submitLabel?: string;
   onSubmit: (question: QuestionRequestSave) => void;
+  onCancel?: () => void;
 }) {
-  const [type, setType] = useState("MULTIPLE_CHOICE");
-  const [content, setContent] = useState("");
-  const [options, setOptions] = useState<string[]>(emptyOptions);
-  const [correctIndex, setCorrectIndex] = useState(0);
-  const [shortAnswers, setShortAnswers] = useState("");
-  const [timeLimitSec, setTimeLimitSec] = useState(String(DEFAULT_TIME_LIMIT_SEC));
-  const [explanation, setExplanation] = useState("");
+  const editing = initial != null;
+  const initialChoice = initial?.type !== "SHORT_ANSWER";
+
+  const [type, setType] = useState<string>(initial?.type ?? "MULTIPLE_CHOICE");
+  const [content, setContent] = useState(initial?.content ?? "");
+  const [options, setOptions] = useState<string[]>(() =>
+    initialChoice && initial?.options?.length
+      ? initial.options.map((option) => option.content ?? "")
+      : emptyOptions(),
+  );
+  const [correctIndex, setCorrectIndex] = useState(() =>
+    Math.max(initial?.options?.findIndex((option) => option.isCorrect) ?? 0, 0),
+  );
+  const [shortAnswers, setShortAnswers] = useState(() =>
+    initialChoice
+      ? ""
+      : (initial?.options ?? []).map((option) => option.content ?? "").join(", "),
+  );
+  const [timeLimitSec, setTimeLimitSec] = useState(
+    String(initial?.timeLimitSec ?? DEFAULT_TIME_LIMIT_SEC),
+  );
+  const [explanation, setExplanation] = useState(initial?.explanation ?? "");
 
   const isChoice = type === "MULTIPLE_CHOICE";
   const filledOptions = options.filter((option) => option.trim());
@@ -86,7 +108,7 @@ export function QuestionForm({
         : answers.map((answer) => ({ content: answer, isCorrect: true })),
     });
 
-    reset();
+    if (!editing) reset();
   };
 
   if (disabled) {
@@ -233,9 +255,14 @@ export function QuestionForm({
         />
       </AppField>
 
-      <div className={cn("flex justify-end")}>
+      <div className={cn("flex flex-wrap justify-end gap-2")}>
+        {onCancel ? (
+          <AppButton type="button" variant="outline" onClick={onCancel}>
+            취소
+          </AppButton>
+        ) : null}
         <AppButton type="submit" disabled={!ready || busy}>
-          {busy ? "추가하는 중…" : "문제 추가"}
+          {busy ? "저장하는 중…" : submitLabel}
         </AppButton>
       </div>
     </form>

@@ -9,7 +9,7 @@
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
@@ -22,6 +22,7 @@ import {
   createLesson,
   createQuestion,
   deleteQuestion,
+  updateQuestion,
   getFindLessonsQueryKey,
   getFindQuestionsQueryKey,
   useFindLessons,
@@ -40,6 +41,7 @@ export default function TeacherQuestionsPage() {
 
   const [selected, setSelected] = useState<number | null>(null);
   const [newTitle, setNewTitle] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -187,7 +189,7 @@ export default function TeacherQuestionsPage() {
                 <h2 className="text-lg font-bold">문제 {questionList.length}개</h2>
                 {everOpened ? (
                   <span className="text-sm text-muted-foreground">
-                    연 적 있는 차시라 문제를 더하거나 지울 수 없습니다
+                    연 적 있는 차시라 더하거나 지울 수 없습니다 (수정은 가능)
                   </span>
                 ) : null}
               </div>
@@ -203,42 +205,68 @@ export default function TeacherQuestionsPage() {
                       key={question.id}
                       className="grid gap-2 rounded-md border border-border px-4 py-3"
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <p className="font-bold whitespace-pre-wrap">
-                          {index + 1}. {question.content}
-                        </p>
-                        <span className="flex shrink-0 items-center gap-2">
-                          <span className="text-sm text-muted-foreground">
-                            {question.timeLimitSec}초
-                          </span>
-                          <button
-                            type="button"
-                            aria-label={`${index + 1}번 문제 삭제`}
-                            disabled={busy || everOpened}
-                            onClick={() =>
-                              run(() => deleteQuestion(question.id ?? 0))
-                            }
-                            className="inline-grid size-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-40"
-                          >
-                            <Trash2 className="size-4" aria-hidden />
-                          </button>
-                        </span>
-                      </div>
-                      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-                        {question.options?.map((option) => (
-                          <li
-                            key={option.id}
-                            className={cn(
-                              "rounded-full px-2.5 py-0.5 text-sm",
-                              option.isCorrect
-                                ? "bg-success-soft font-bold text-success"
-                                : "bg-secondary text-muted-foreground",
-                            )}
-                          >
-                            {option.content}
-                          </li>
-                        ))}
-                      </ul>
+                      {editingId === question.id ? (
+                        <QuestionForm
+                          busy={busy}
+                          initial={question}
+                          submitLabel="수정 저장"
+                          onCancel={() => setEditingId(null)}
+                          onSubmit={(payload: QuestionRequestSave) =>
+                            run(async () => {
+                              await updateQuestion(question.id ?? 0, payload);
+                              setEditingId(null);
+                            })
+                          }
+                        />
+                      ) : (
+                        <>
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <p className="font-bold whitespace-pre-wrap">
+                              {index + 1}. {question.content}
+                            </p>
+                            <span className="flex shrink-0 items-center gap-2">
+                              <span className="text-sm text-muted-foreground">
+                                {question.timeLimitSec}초
+                              </span>
+                              <button
+                                type="button"
+                                aria-label={`${index + 1}번 문제 수정`}
+                                disabled={busy}
+                                onClick={() => setEditingId(question.id ?? null)}
+                                className="inline-grid size-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-primary-soft hover:text-primary-deep disabled:opacity-40"
+                              >
+                                <Pencil className="size-4" aria-hidden />
+                              </button>
+                              <button
+                                type="button"
+                                aria-label={`${index + 1}번 문제 삭제`}
+                                disabled={busy || everOpened}
+                                onClick={() =>
+                                  run(() => deleteQuestion(question.id ?? 0))
+                                }
+                                className="inline-grid size-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-40"
+                              >
+                                <Trash2 className="size-4" aria-hidden />
+                              </button>
+                            </span>
+                          </div>
+                          <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+                            {question.options?.map((option) => (
+                              <li
+                                key={option.id}
+                                className={cn(
+                                  "rounded-full px-2.5 py-0.5 text-sm",
+                                  option.isCorrect
+                                    ? "bg-success-soft font-bold text-success"
+                                    : "bg-secondary text-muted-foreground",
+                                )}
+                              >
+                                {option.content}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
