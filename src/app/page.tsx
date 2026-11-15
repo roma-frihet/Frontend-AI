@@ -75,7 +75,7 @@ export default function StudentHomePage() {
     <div className="flex flex-1 flex-col">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-(--container-page) items-center justify-between gap-4 px-4 py-4">
-          <Brand badge="학생" />
+          <Brand badge="학생" href="/" />
           <AppButton variant="outline" onClick={() => setJoining((open) => !open)}>
             <KeyRound className="size-4" aria-hidden />
             코드로 수업 추가

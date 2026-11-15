@@ -43,9 +43,7 @@ export function TeacherShell({
         aria-label="교사 메뉴"
         className="sticky top-0 flex h-screen flex-col gap-6 self-start border-r border-border bg-card p-4 pt-5"
       >
-        <Link href="/teacher" className="px-2">
-          <Brand badge="교사" />
-        </Link>
+        <Brand badge="교사" href="/teacher" className="px-2" />
 
         {courses.length > 0 ? (
           <label className="grid gap-1.5 px-1">
