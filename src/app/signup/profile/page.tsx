@@ -89,7 +89,7 @@ export default function StudentProfilePage() {
     <AuthShell
       badge="학생"
       title="이름만 알려 주세요"
-      description="가입이 아직 끝나지 않았어요. 이름을 저장하면 바로 시작할 수 있어요."
+      description="이름만 저장하면 바로 시작할 수 있어요."
     >
       {loading ? (
         <p className="text-muted-foreground">불러오는 중…</p>

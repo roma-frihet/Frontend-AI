@@ -173,18 +173,17 @@ export default function StudentLoginPage() {
           {submitting ? "로그인하는 중…" : "로그인"}
         </AppButton>
 
-        <div className="flex justify-between gap-2">
-          <Link
-            href="/signup"
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
-            회원가입
-          </Link>
-          <p className="text-sm text-muted-foreground">
-            비밀번호는 선생님이 초기화해 줄 수 있어요.
-          </p>
-        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          비밀번호를 잊었다면 선생님께 말씀해 주세요.
+        </p>
       </form>
+
+      <p className="text-center text-sm text-muted-foreground">
+        처음 왔나요?{" "}
+        <Link href="/signup" className="font-medium text-primary-deep hover:underline">
+          회원가입
+        </Link>
+      </p>
     </AuthShell>
   );
 }

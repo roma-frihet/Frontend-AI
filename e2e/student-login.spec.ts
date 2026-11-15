@@ -113,3 +113,28 @@ test("학번이나 비밀번호가 틀리면 안내가 뜬다", async ({ page })
   await expect(page.getByText("학번이나 비밀번호가 맞지 않아요.")).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
 });
+
+test("비밀번호가 6자 미만이면 가입할 수 없다", async ({ page }) => {
+  await mockSupabaseAuth(page);
+  await mockApi(page, { "/api/v1/schools": SCHOOLS });
+
+  await page.goto("/signup");
+
+  await page.getByRole("button", { name: "다원중학교" }).click();
+  await page.getByRole("button", { name: "다음" }).click();
+
+  await pickOption(page, "grade", "3학년");
+  await pickOption(page, "class", "5반");
+  await pickOption(page, "seat", "12번");
+  await page.getByLabel("이름").fill("김하늘");
+  await page.getByRole("button", { name: "다음" }).click();
+
+  const submit = page.getByRole("button", { name: "가입하기" });
+
+  // 서버와 Supabase가 모두 6자를 최소로 본다. 화면도 같아야 한다.
+  await page.getByLabel("비밀번호", { exact: true }).fill("12345");
+  await expect(submit).toBeDisabled();
+
+  await page.getByLabel("비밀번호", { exact: true }).fill("123456");
+  await expect(submit).toBeEnabled();
+});

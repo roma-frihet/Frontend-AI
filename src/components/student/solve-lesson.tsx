@@ -76,7 +76,7 @@ export function SolveLesson({
       setError(
         caught instanceof ApiError
           ? caught.message
-          : "문제가 생겼어요. 잠시 뒤 다시 해 주세요.",
+          : "지금은 보낼 수 없어요. 잠시 뒤 다시 해 주세요.",
       );
     } finally {
       setBusy(false);
@@ -111,7 +111,7 @@ export function SolveLesson({
     return (
       <Shell>
         <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-          <p>지금은 이 차시를 풀 수 없어요. 선생님이 닫았을 수 있어요.</p>
+          <p>지금은 풀 수 없는 차시예요. 선생님이 열어 주면 다시 들어와 주세요.</p>
           <AppButton onClick={() => router.replace("/")}>홈으로</AppButton>
         </Card>
       </Shell>

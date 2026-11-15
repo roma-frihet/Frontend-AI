@@ -121,5 +121,7 @@ test("마감된 차시가 없으면 지난 차시 탭이 비어 있다고 알려
   await signIn(page);
   await page.getByRole("tab", { name: "지난 차시" }).click();
 
-  await expect(page.getByText(/아직 마감된 차시가 없어요/)).toBeVisible();
+  await expect(
+    page.getByText(/선생님이 차시를 마감하면 정답과 해설을 여기에서 볼 수 있어요/),
+  ).toBeVisible();
 });

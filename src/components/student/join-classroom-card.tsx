@@ -88,7 +88,7 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
       ) : null}
 
       <p className="text-sm text-muted-foreground">
-        코드는 5분 뒤에 만료돼요. 시간이 지났으면 선생님께 다시 받아 주세요.
+        코드는 5분 동안만 쓸 수 있어요. 시간이 지났으면 선생님께 다시 받아 주세요.
       </p>
     </Card>
   );

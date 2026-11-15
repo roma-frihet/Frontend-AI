@@ -12,6 +12,7 @@ import { Search } from "lucide-react";
 import { AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
 import { JoinCodeCard } from "@/components/teacher/join-code-card";
+import { ScoreExport } from "@/components/teacher/score-export";
 import { StudentDetail } from "@/components/teacher/student-detail";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
@@ -35,7 +36,9 @@ const STATUS_TAG = {
 export default function TeacherStudentsPage() {
   const queryClient = useQueryClient();
   const mypage = useFindMyPage();
-  const { courseId } = useTeacherCourse(mypage.data?.data.courses ?? []);
+  const courses = mypage.data?.data.courses ?? [];
+  const { courseId } = useTeacherCourse(courses);
+  const course = courses.find((item) => String(item.id) === courseId);
 
   const classroomsQuery = useFindClassrooms();
   // 반은 수업에 속한다. 사이드바에서 고른 수업의 반만 보여 준다.
@@ -119,6 +122,11 @@ export default function TeacherStudentsPage() {
           }}
           placeholder="반 선택"
           className="w-60"
+        />
+
+        <ScoreExport
+          courseId={Number(courseId)}
+          label={`${course?.grade ?? ""}학년 ${course?.subjectName ?? ""}`}
         />
       </div>
 

@@ -16,7 +16,7 @@ export function AppTabsList({
     <TabsList
       variant="line"
       className={cn(
-        "h-auto w-full justify-start gap-2 overflow-x-auto rounded-none border-b border-border bg-transparent p-0",
+        "h-auto w-full max-w-full min-w-0 justify-start gap-2 overflow-x-auto rounded-none border-b border-border bg-transparent p-0",
         className,
       )}
       {...props}

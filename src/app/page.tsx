@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import {
   BarChart3,
   BookOpen,
+  CalendarDays,
   FileText,
   KeyRound,
   Target,
@@ -27,6 +28,7 @@ import {
 import { Brand } from "@/components/brand";
 import { JoinClassroomCard } from "@/components/student/join-classroom-card";
 import { PastLessonsTab } from "@/components/student/past-lessons-tab";
+import { ScoreChart } from "@/components/student/score-chart";
 import { ScoreTable } from "@/components/student/score-table";
 import { StatCard } from "@/components/student/stat-card";
 import { WrongQuestionsTab } from "@/components/student/wrong-questions-tab";
@@ -69,6 +71,9 @@ export default function StudentHomePage() {
   const openLesson = data?.openLesson;
   const questionCount = latest?.questionCount ?? 0;
 
+  // 최근 차시는 많이 보여 줄 필요가 없다. 전체는 "차시별 기록" 탭에 있다.
+  const recentScores = [...(data?.scores ?? [])].reverse().slice(0, 5);
+
   if (!ready) return null;
 
   return (
@@ -76,7 +81,10 @@ export default function StudentHomePage() {
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-(--container-page) items-center justify-between gap-4 px-4 py-4">
           <Brand badge="학생" href="/" />
-          <AppButton variant="outline" onClick={() => setJoining((open) => !open)}>
+          <AppButton
+            variant="outline"
+            onClick={() => setJoining((open) => !open)}
+          >
             <KeyRound className="size-4" aria-hidden />
             코드로 수업 추가
           </AppButton>
@@ -90,7 +98,9 @@ export default function StudentHomePage() {
           <JoinClassroomCard />
         ) : (
           <>
-            {joining ? <JoinClassroomCard onJoined={() => setJoining(false)} /> : null}
+            {joining ? (
+              <JoinClassroomCard onJoined={() => setJoining(false)} />
+            ) : null}
 
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="grid gap-0.5">
@@ -99,7 +109,9 @@ export default function StudentHomePage() {
                     ? `${data.grade}학년 ${data.subjectName} ${data.classNo}반`
                     : "학습 리포트"}
                 </h1>
-                <p className="text-muted-foreground">차시마다 내 기록이 쌓여요.</p>
+                <p className="text-muted-foreground">
+                  차시마다 내 기록이 쌓여요.
+                </p>
               </div>
 
               {memberships.length > 1 ? (
@@ -116,7 +128,7 @@ export default function StudentHomePage() {
               ) : null}
             </div>
 
-            <AppTabs defaultValue="report" className="gap-gap">
+            <AppTabs defaultValue="report" className="min-w-0 gap-gap">
               <AppTabsList>
                 <AppTabsTrigger value="report">
                   <Target className="size-4.5" aria-hidden />
@@ -145,10 +157,14 @@ export default function StudentHomePage() {
                       icon={<Target className="size-5.5" aria-hidden />}
                       title="최근 차시 정답"
                       value={
-                        latest?.correctCount == null ? "–" : String(latest.correctCount)
+                        latest?.correctCount == null
+                          ? "–"
+                          : String(latest.correctCount)
                       }
                       unit={
-                        questionCount ? `/ ${questionCount}문제` : "아직 기록이 없어요"
+                        questionCount
+                          ? `/ ${questionCount}문제`
+                          : "아직 기록이 없어요"
                       }
                       ratio={
                         latest?.correctCount != null && questionCount
@@ -165,7 +181,9 @@ export default function StudentHomePage() {
                           ? "–"
                           : latest.classAverageCorrect.toFixed(1)
                       }
-                      unit={questionCount ? `/ ${questionCount}문제` : undefined}
+                      unit={
+                        questionCount ? `/ ${questionCount}문제` : undefined
+                      }
                       ratio={
                         latest?.classAverageCorrect != null && questionCount
                           ? latest.classAverageCorrect / questionCount
@@ -175,7 +193,10 @@ export default function StudentHomePage() {
 
                     <Card className="grid content-between gap-3 rounded-lg border border-border p-5 shadow-card ring-0">
                       <div className="flex items-center gap-2.5 font-bold">
-                        <KeyRound className="size-5.5 text-primary" aria-hidden />
+                        <KeyRound
+                          className="size-5.5 text-primary"
+                          aria-hidden
+                        />
                         <span>지금 열린 문제</span>
                       </div>
                       {openLesson ? (
@@ -184,7 +205,9 @@ export default function StudentHomePage() {
                             <p className="font-bold text-primary-deep">
                               {openLesson.lessonNumber}차시
                             </p>
-                            <p className="text-muted-foreground">{openLesson.title}</p>
+                            <p className="text-muted-foreground">
+                              {openLesson.title}
+                            </p>
                           </div>
                           <AppButton
                             block
@@ -199,12 +222,96 @@ export default function StudentHomePage() {
                         </>
                       ) : (
                         <p className="text-muted-foreground">
-                          지금은 열린 문제가 없어요. 선생님이 열면 여기에 보여요.
+                          지금은 풀 문제가 없어요. 선생님이 열어 주면 여기에
+                          보여요.
                         </p>
                       )}
                     </Card>
                   </div>
                 )}
+
+                {/* 목업의 grid-main — 왼쪽은 추이, 오른쪽은 최근 기록 */}
+                <div className="grid gap-gap lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:items-start">
+                  <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                    <div className="grid gap-1">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <TrendingUp className="size-5 text-primary" aria-hidden />
+                        <h2 className="text-lg font-bold">나의 변화</h2>
+                      </div>
+                      <p className="text-muted-foreground">
+                        차시별 점수 추이와 반 평균을 함께 비교해요.
+                      </p>
+                    </div>
+                    {data?.scores?.length ? (
+                      <ScoreChart scores={data.scores} />
+                    ) : (
+                      <p className="text-muted-foreground">
+                        차시를 두 번쯤 풀면 변화가 그려져요.
+                      </p>
+                    )}
+                  </Card>
+
+                  <div className="grid gap-gap">
+                    <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <CalendarDays
+                          className="size-5 text-accent-deep"
+                          aria-hidden
+                        />
+                        <h2 className="text-lg font-bold">최근 차시</h2>
+                      </div>
+                      {recentScores.length ? (
+                        <ol className="m-0 grid list-none gap-2 p-0">
+                          {recentScores.map((score) => (
+                            <li
+                              key={score.lessonNumber}
+                              className="flex items-center justify-between gap-3"
+                            >
+                              <span className="font-medium">
+                                {score.lessonNumber}차시
+                              </span>
+                              <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-sm font-bold text-primary-deep tabular-nums">
+                                {score.correctCount == null
+                                  ? "미응시"
+                                  : `${score.correctCount} / ${score.questionCount}`}
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <p className="text-muted-foreground">
+                          푼 차시가 여기에 쌓여요.
+                        </p>
+                      )}
+                    </Card>
+
+                    <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <FileText className="size-5 text-destructive" aria-hidden />
+                        <h2 className="text-lg font-bold">최근 틀린 문제</h2>
+                      </div>
+                      {data?.recentWrongQuestions?.length ? (
+                        <ol className="m-0 grid list-none gap-2.5 p-0">
+                          {data.recentWrongQuestions.map((wrong) => (
+                            <li
+                              key={`${wrong.lessonNumber}-${wrong.questionIndex}`}
+                              className="grid gap-0.5"
+                            >
+                              <span className="text-sm text-muted-foreground">
+                                {wrong.lessonNumber}차시
+                              </span>
+                              <span className="font-medium">{wrong.content}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <p className="text-muted-foreground">
+                          마감된 차시에서 틀린 문제가 여기에 모여요.
+                        </p>
+                      )}
+                    </Card>
+                  </div>
+                </div>
               </AppTabsContent>
 
               <AppTabsContent value="scores">
@@ -213,13 +320,17 @@ export default function StudentHomePage() {
                   {data?.scores?.length ? (
                     <ScoreTable scores={data.scores} />
                   ) : (
-                    <p className="text-muted-foreground">아직 푼 차시가 없어요.</p>
+                    <p className="text-muted-foreground">
+                      문제를 풀면 차시마다 기록이 여기에 쌓여요.
+                    </p>
                   )}
                 </Card>
               </AppTabsContent>
 
               <AppTabsContent value="past">
-                {selectedId ? <PastLessonsTab classroomId={Number(selectedId)} /> : null}
+                {selectedId ? (
+                  <PastLessonsTab classroomId={Number(selectedId)} />
+                ) : null}
               </AppTabsContent>
 
               <AppTabsContent value="wrong">
