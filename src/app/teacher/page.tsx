@@ -66,7 +66,7 @@ export default function TeacherDashboardPage() {
       {courses.length === 0 ? (
         <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
           <p className="text-muted-foreground">
-            아직 담당 수업이 없습니다. 수업은 학년과 과목으로 만듭니다.
+            마이페이지에서 담당 수업을 만들면 여기에서 수업 현황을 볼 수 있습니다.
           </p>
         </Card>
       ) : dashboard.isPending ? (
@@ -83,7 +83,7 @@ export default function TeacherDashboardPage() {
                 </span>
               </div>
               <p className="text-muted-foreground">
-                아래 순서대로 준비하면 학생에게 문제를 열 수 있습니다.
+                네 가지만 준비하면 학생에게 문제를 열 수 있습니다.
               </p>
               <ol className="m-0 grid list-none gap-3 p-0 md:grid-cols-4">
                 {steps.map((step, index) => (
@@ -176,7 +176,9 @@ export default function TeacherDashboardPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-muted-foreground">열려 있는 차시가 없습니다.</p>
+                <p className="text-muted-foreground">
+                  지금 열어 둔 차시가 없습니다. 수업을 시작하며 열어 주세요.
+                </p>
               )}
             </Card>
 
@@ -209,7 +211,7 @@ function WatchList({
     <div className="grid gap-2">
       <span className="text-sm font-bold text-muted-foreground">{title}</span>
       {students.length === 0 ? (
-        <p className="text-sm text-muted-foreground">없습니다.</p>
+        <p className="text-sm text-muted-foreground">모두 잘 따라오고 있습니다.</p>
       ) : (
         <ul className="m-0 grid list-none gap-1.5 p-0">
           {students.map((student) => (

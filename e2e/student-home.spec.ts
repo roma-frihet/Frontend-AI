@@ -121,5 +121,27 @@ test("마감된 차시가 없으면 지난 차시 탭이 비어 있다고 알려
   await signIn(page);
   await page.getByRole("tab", { name: "지난 차시" }).click();
 
-  await expect(page.getByText(/아직 마감된 차시가 없어요/)).toBeVisible();
+  await expect(
+    page.getByText(/선생님이 차시를 마감하면 정답과 해설을 여기에서 볼 수 있어요/),
+  ).toBeVisible();
+});
+
+test("좁은 화면에서 가로로 넘치지 않는다", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockSupabaseAuth(page);
+  await mockApi(page, {
+    "/api/v1/schools": SCHOOLS,
+    "/api/v1/student-profiles/me": PROFILE,
+    "/api/v1/classroom-memberships": MEMBERSHIPS,
+    "/api/v1/classrooms/2/report": REPORT,
+  });
+
+  await signIn(page);
+  await expect(page.getByRole("tab", { name: "학습 리포트" })).toBeVisible();
+
+  // 탭이 길어도 페이지가 아니라 탭 줄 안에서만 넘쳐야 한다.
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });

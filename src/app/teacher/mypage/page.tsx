@@ -10,15 +10,17 @@
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Plus, Trash2, UserRound } from "lucide-react";
+import { BookOpen, Pencil, Plus, Trash2, UserRound } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
+import { AppField, AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { Card } from "@/components/ui/card";
 import {
   createClassroom,
   createCourse,
+  saveTeacherProfile,
   deleteClassroom,
   deleteCourse,
   getFindMyPageQueryKey,
@@ -43,6 +45,8 @@ export default function TeacherMyPage() {
 
   const subjects = useFindSubjects({ schoolLevel: "MIDDLE" });
 
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
   const [subjectId, setSubjectId] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -88,10 +92,61 @@ export default function TeacherMyPage() {
             <UserRound className="size-5 text-accent-deep" aria-hidden />
             <h2 className="text-lg font-bold">내 정보</h2>
           </div>
-          <dl className="grid gap-3">
-            <Row label="이름" value={profile?.name} />
-            <Row label="학교" value={profile?.schoolName} />
-          </dl>
+          {editingProfile ? (
+            <form
+              className="grid gap-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                run(async () => {
+                  await saveTeacherProfile({
+                    schoolId: profile?.schoolId ?? null,
+                    name: name.trim(),
+                  });
+                  setEditingProfile(false);
+                });
+              }}
+            >
+              <AppField label="이름" htmlFor="name">
+                <AppInput
+                  id="name"
+                  maxLength={50}
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </AppField>
+              <Row label="학교" value={profile?.schoolName} />
+              <div className="flex justify-end gap-2">
+                <AppButton
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingProfile(false)}
+                >
+                  취소
+                </AppButton>
+                <AppButton type="submit" disabled={!name.trim() || busy}>
+                  저장
+                </AppButton>
+              </div>
+            </form>
+          ) : (
+            <>
+              <dl className="grid gap-3">
+                <Row label="이름" value={profile?.name} />
+                <Row label="학교" value={profile?.schoolName} />
+              </dl>
+              <AppButton
+                variant="outline"
+                className="justify-self-start"
+                onClick={() => {
+                  setName(profile?.name ?? "");
+                  setEditingProfile(true);
+                }}
+              >
+                <Pencil className="size-4" aria-hidden />
+                이름 수정
+              </AppButton>
+            </>
+          )}
         </Card>
 
         <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">

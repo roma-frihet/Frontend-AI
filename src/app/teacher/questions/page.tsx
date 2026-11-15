@@ -20,6 +20,7 @@ import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
 import { Card } from "@/components/ui/card";
 import {
   createLesson,
+  renameLesson,
   createQuestion,
   deleteQuestion,
   updateQuestion,
@@ -42,6 +43,7 @@ export default function TeacherQuestionsPage() {
   const [selected, setSelected] = useState<number | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -105,7 +107,9 @@ export default function TeacherQuestionsPage() {
           {lessons.isPending ? (
             <p className="text-muted-foreground">불러오는 중…</p>
           ) : lessonList.length === 0 ? (
-            <p className="text-muted-foreground">아직 차시가 없습니다.</p>
+            <p className="text-muted-foreground">
+              아래에서 첫 차시를 만들어 주세요.
+            </p>
           ) : (
             <ul className="m-0 grid list-none gap-1.5 p-0">
               {lessonList.map((item) => (
@@ -163,16 +167,60 @@ export default function TeacherQuestionsPage() {
         {lessonNumber == null ? (
           <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
             <p className="text-muted-foreground">
-              차시를 먼저 추가해 주세요. 차시 번호는 자동으로 매겨집니다.
+              왼쪽에서 차시를 추가하면 여기에서 문제를 만들 수 있습니다.
             </p>
           </Card>
         ) : (
           <div className="grid gap-gap">
             <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
               <div className="grid gap-1">
-                <h2 className="text-lg font-bold">
-                  {lessonNumber}차시 · {lesson?.title}
-                </h2>
+                {renaming == null ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-lg font-bold">
+                      {lessonNumber}차시 · {lesson?.title}
+                    </h2>
+                    <button
+                      type="button"
+                      aria-label="차시 이름 수정"
+                      disabled={busy}
+                      onClick={() => setRenaming(lesson?.title ?? "")}
+                      className="inline-grid size-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-primary-soft hover:text-primary-deep disabled:opacity-40"
+                    >
+                      <Pencil className="size-4" aria-hidden />
+                    </button>
+                  </div>
+                ) : (
+                  <form
+                    className="flex flex-wrap gap-2"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      run(async () => {
+                        await renameLesson(course, lessonNumber, {
+                          title: renaming.trim(),
+                        });
+                        setRenaming(null);
+                      });
+                    }}
+                  >
+                    <AppInput
+                      aria-label="차시 이름"
+                      maxLength={100}
+                      value={renaming}
+                      onChange={(event) => setRenaming(event.target.value)}
+                      className="w-60"
+                    />
+                    <AppButton type="submit" disabled={!renaming.trim() || busy}>
+                      저장
+                    </AppButton>
+                    <AppButton
+                      type="button"
+                      variant="outline"
+                      onClick={() => setRenaming(null)}
+                    >
+                      취소
+                    </AppButton>
+                  </form>
+                )}
                 <p className="text-muted-foreground">반마다 따로 열고 닫습니다.</p>
               </div>
               <LessonOpenControls
@@ -189,7 +237,7 @@ export default function TeacherQuestionsPage() {
                 <h2 className="text-lg font-bold">문제 {questionList.length}개</h2>
                 {everOpened ? (
                   <span className="text-sm text-muted-foreground">
-                    연 적 있는 차시라 더하거나 지울 수 없습니다 (수정은 가능)
+                    열었던 차시라 내용만 고칠 수 있습니다
                   </span>
                 ) : null}
               </div>
@@ -197,7 +245,9 @@ export default function TeacherQuestionsPage() {
               {questions.isPending ? (
                 <p className="text-muted-foreground">불러오는 중…</p>
               ) : questionList.length === 0 ? (
-                <p className="text-muted-foreground">아직 문제가 없습니다.</p>
+                <p className="text-muted-foreground">
+                  아래에서 첫 문제를 만들어 주세요.
+                </p>
               ) : (
                 <ul className="m-0 grid list-none gap-2 p-0">
                   {questionList.map((question, index) => (
@@ -278,7 +328,7 @@ export default function TeacherQuestionsPage() {
               <QuestionForm
                 busy={busy}
                 disabled={everOpened}
-                disabledReason="이미 연 적 있는 차시에는 문제를 더할 수 없습니다. 점수의 분모가 달라지기 때문입니다."
+                disabledReason="학생에게 열었던 차시입니다. 새 문제는 다음 차시에 넣어 주세요."
                 onSubmit={(question: QuestionRequestSave) =>
                   run(() => createQuestion(course, lessonNumber, question))
                 }

@@ -59,7 +59,9 @@ export function LessonOpenControls({
   return (
     <div className="grid gap-2">
       {classrooms.length === 0 ? (
-        <p className="text-muted-foreground">반이 없습니다. 마이페이지에서 추가하세요.</p>
+        <p className="text-muted-foreground">
+          마이페이지에서 반을 먼저 만들어 주세요.
+        </p>
       ) : null}
 
       {classrooms.map((classroom) => {
@@ -84,7 +86,7 @@ export function LessonOpenControls({
             <span className="ml-auto flex flex-wrap gap-2">
               {status === "FINISHED" ? (
                 <span className="text-sm text-muted-foreground">
-                  되돌릴 수 없습니다
+                  학생이 정답과 해설을 볼 수 있습니다
                 </span>
               ) : (
                 <>
@@ -125,7 +127,7 @@ export function LessonOpenControls({
 
       {!hasQuestion && classrooms.length > 0 ? (
         <p className="text-sm text-muted-foreground">
-          문제가 없는 차시는 열 수 없습니다.
+          문제를 먼저 추가하면 반에 열어 줄 수 있습니다.
         </p>
       ) : null}
 
@@ -134,7 +136,7 @@ export function LessonOpenControls({
           <DialogHeader>
             <DialogTitle>{finishing?.classNo}반 {lessonNumber}차시를 마감할까요?</DialogTitle>
             <DialogDescription>
-              마감하면 되돌릴 수 없습니다. 학생이 내 답과 정답, 해설을 볼 수 있게 됩니다.
+              마감하면 학생이 정답과 해설을 볼 수 있습니다. 다시 열 수는 없습니다.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -90,9 +90,9 @@ test("연 적 있는 차시는 문제를 더하거나 지울 수 없다", async 
   await page.getByRole("button", { name: "문제 관리" }).click();
 
   // 1차시는 FINISHED다.
-  await expect(page.getByText(/연 적 있는 차시라 더하거나 지울 수 없습니다/)).toBeVisible();
+  await expect(page.getByText(/열었던 차시라 내용만 고칠 수 있습니다/)).toBeVisible();
   await expect(
-    page.getByText(/이미 연 적 있는 차시에는 문제를 더할 수 없습니다/),
+    page.getByText(/학생에게 열었던 차시입니다/),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "1번 문제 삭제" })).toBeDisabled();
 
@@ -109,7 +109,9 @@ test("문제가 없는 차시는 열 수 없다", async ({ page }) => {
   await page.getByRole("button", { name: /2차시/ }).click();
 
   await expect(page.getByRole("button", { name: "열기" })).toBeDisabled();
-  await expect(page.getByText("문제가 없는 차시는 열 수 없습니다.")).toBeVisible();
+  await expect(
+    page.getByText("문제를 먼저 추가하면 반에 열어 줄 수 있습니다."),
+  ).toBeVisible();
 });
 
 test("보기가 2개면 O/X로 채울 수 있다", async ({ page }) => {
@@ -243,7 +245,7 @@ test("임시 비밀번호는 다시 볼 수 없다고 알려 준다", async ({ p
   await expect(page.getByText(/다시 볼 수 없습니다/)).toBeVisible();
 });
 
-test("시작조차 하지 않은 문제는 교사도 고칠 수 없다고 알려 준다", async ({ page }) => {
+test("아직 푼 문제가 없으면 무엇을 기다리면 되는지 알려 준다", async ({ page }) => {
   await mockSupabaseAuth(page, "teacher");
   await mockApi(
     page,
@@ -283,6 +285,26 @@ test("시작조차 하지 않은 문제는 교사도 고칠 수 없다고 알려
   await page.getByRole("button", { name: /김하늘/ }).click();
 
   await expect(
-    page.getByText(/학생이 시작조차 하지 않은 문제는 교사도 손댈 수 없습니다/),
+    page.getByText(/학생이 문제를 풀면 여기에서 결과를 고칠 수 있습니다/),
   ).toBeVisible();
+});
+
+test("좁은 화면에서는 사이드바가 위쪽 띠로 접힌다", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockSupabaseAuth(page, "teacher");
+  await mockApi(page, teacherStubs());
+
+  await signInAsTeacher(page);
+
+  // 248px 사이드바를 그대로 두면 본문이 140px만 남는다.
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+
+  // 띠로 접혔다면 사이드바가 화면 폭을 거의 다 쓴다. 248px 칼럼으로 남아 있으면 안 된다.
+  const aside = await page
+    .getByRole("complementary", { name: "교사 메뉴" })
+    .boundingBox();
+  expect(aside!.width).toBeGreaterThan(300);
 });

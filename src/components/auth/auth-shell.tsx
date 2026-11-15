@@ -16,8 +16,8 @@ export function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <main className="grid flex-1 place-items-start justify-center px-4 pt-12 pb-16">
-      <Card className="grid w-[min(560px,100%)] gap-6 rounded-lg border border-border p-8 shadow-card ring-0">
+    <main className="flex flex-1 justify-center px-4 pt-12 pb-16">
+      <Card className="grid h-fit w-full max-w-xl gap-6 rounded-lg border border-border p-8 shadow-card ring-0">
         <Brand badge={badge} className="justify-self-start" />
         <div className="grid gap-1">
           <h1 className="text-2xl font-extrabold text-foreground">{title}</h1>

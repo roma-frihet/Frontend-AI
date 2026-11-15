@@ -38,15 +38,16 @@ export function TeacherShell({
   const { courseId, setCourseId } = useTeacherCourse(courses);
 
   return (
-    <div className="grid flex-1 grid-cols-[248px_minmax(0,1fr)]">
+    <div className="grid flex-1 grid-cols-[minmax(0,1fr)] lg:grid-cols-[248px_minmax(0,1fr)]">
+      {/* 좁은 화면에서는 사이드바를 위쪽 띠로 눕힌다. 248px를 고정으로 먹으면 본문이 남지 않는다. */}
       <aside
         aria-label="교사 메뉴"
-        className="sticky top-0 flex h-screen flex-col gap-6 self-start border-r border-border bg-card p-4 pt-5"
+        className="flex min-w-0 flex-col gap-4 border-b border-border bg-card p-4 lg:sticky lg:top-0 lg:h-screen lg:gap-6 lg:self-start lg:border-r lg:border-b-0 lg:pt-5"
       >
         <Brand badge="교사" href="/teacher" className="px-2" />
 
         {courses.length > 0 ? (
-          <label className="grid gap-1.5 px-1">
+          <label className="grid gap-1.5 px-1 lg:px-1">
             <span className="text-sm text-muted-foreground">담당 수업</span>
             <AppSelect
               items={courses.map((course) => ({
@@ -62,7 +63,7 @@ export function TeacherShell({
         ) : null}
 
         <nav>
-          <ul className="m-0 grid list-none gap-1 p-0">
+          <ul className="m-0 flex list-none gap-1 overflow-x-auto p-0 lg:grid">
             {NAV.map((item) => {
               const active =
                 item.href === "/teacher"
@@ -76,7 +77,7 @@ export function TeacherShell({
                     aria-current={active ? "page" : undefined}
                     onClick={() => router.push(item.href)}
                     className={cn(
-                      "flex min-h-11.5 w-full items-center gap-3 rounded-md px-3.5 text-left font-medium transition-colors",
+                      "flex min-h-11.5 w-full shrink-0 items-center gap-3 rounded-md px-3.5 text-left font-medium whitespace-nowrap transition-colors",
                       active
                         ? "bg-primary-soft font-bold text-primary-deep"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -91,7 +92,7 @@ export function TeacherShell({
           </ul>
         </nav>
 
-        <div className="mt-auto grid gap-0.5 rounded-lg bg-secondary p-4">
+        <div className="mt-auto hidden gap-0.5 rounded-lg bg-secondary p-4 lg:grid">
           <p className="text-sm text-muted-foreground">학교</p>
           <p className="font-bold">{profile?.schoolName ?? "–"}</p>
           <Link
@@ -104,9 +105,9 @@ export function TeacherShell({
         </div>
       </aside>
 
-      <div className="min-w-0 px-8">
-        <header className="mb-7 flex min-h-19 items-center justify-between gap-4 border-b border-border">
-          <h1 className="text-xl font-extrabold">{title}</h1>
+      <div className="min-w-0 px-4 lg:px-8">
+        <header className="mb-7 flex min-h-19 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border py-3 lg:py-0">
+          <h1 className="text-xl font-extrabold whitespace-nowrap">{title}</h1>
           <Link
             href="/teacher/mypage"
             className="flex items-center gap-2.5 font-medium"

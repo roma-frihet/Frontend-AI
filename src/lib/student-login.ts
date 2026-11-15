@@ -16,8 +16,10 @@ export const STUDENT_SEAT_NUMBER_MAX = 99;
 
 const DEFAULT_LOGIN_EMAIL_DOMAIN = "students.roma-frihet.app";
 
-// 서버 StudentPasswordRequest.Change의 @minLength와 같은 값이다. 바뀌면 같이 맞춘다.
-export const MIN_PASSWORD_LENGTH = 8;
+// 서버 StudentPasswordRequest.Change의 @minLength, 그리고 Supabase Auth의
+// minimum_password_length와 모두 같은 값이어야 한다. 셋 중 하나만 낮추면
+// 화면은 통과시키는데 뒤에서 거절당한다. 쓰는 사람이 중학생이라 6자다.
+export const MIN_PASSWORD_LENGTH = 6;
 
 export type StudentNumber = {
   schoolId: number;

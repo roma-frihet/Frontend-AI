@@ -7,6 +7,12 @@ import Link from "next/link";
 
 import { cn } from "cn";
 
+// 목업처럼 교사는 연보라, 학생은 파랑 배지를 쓴다. 역할이 한눈에 갈린다.
+const BADGE_TONE: Record<string, string> = {
+  교사: "bg-accent text-accent-deep",
+  학생: "bg-primary-soft text-primary-deep",
+};
+
 export const SERVICE_NAME = "다시봄";
 
 export function Brand({
@@ -32,7 +38,12 @@ export function Brand({
       />
       {SERVICE_NAME}
       {badge ? (
-        <span className="inline-flex items-center rounded-full bg-primary-soft px-2.5 py-0.5 text-sm font-bold whitespace-nowrap text-primary-deep">
+        <span
+          className={cn(
+            "inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-bold whitespace-nowrap",
+            BADGE_TONE[badge] ?? BADGE_TONE.학생,
+          )}
+        >
           {badge}
         </span>
       ) : null}

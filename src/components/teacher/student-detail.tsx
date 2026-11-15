@@ -95,8 +95,8 @@ export function StudentDetail({
             {temporaryPassword}
           </p>
           <p className="text-sm text-muted-foreground">
-            다시 볼 수 없습니다. 학생에게 전달한 뒤 창을 닫아 주세요. 학생은 다음
-            로그인에서 새 비밀번호를 정하게 됩니다.
+            이 화면을 벗어나면 다시 볼 수 없습니다. 학생에게 알려 주세요.
+            학생은 다음 로그인에서 새 비밀번호를 정합니다.
           </p>
         </Card>
       ) : null}
@@ -148,7 +148,9 @@ export function StudentDetail({
                 </tbody>
               </table>
             ) : (
-              <p className="text-muted-foreground">아직 기록이 없습니다.</p>
+              <p className="text-muted-foreground">
+                아직 푼 차시가 없습니다.
+              </p>
             )}
           </Card>
 
@@ -159,7 +161,8 @@ export function StudentDetail({
                 {data?.latestLessonNumber ? ` · ${data.latestLessonNumber}차시` : ""}
               </h2>
               <p className="text-muted-foreground">
-                사정이 있었다면 결과를 고칠 수 있습니다. 바꾼 항목은 표시됩니다.
+                접속이 끊기는 등 사정이 있었다면 결과를 고쳐 주세요. 고친 항목은 따로
+                표시됩니다.
               </p>
             </div>
 
@@ -200,8 +203,8 @@ export function StudentDetail({
               </ul>
             ) : (
               <p className="text-muted-foreground">
-                고칠 수 있는 답안이 없습니다. 학생이 시작조차 하지 않은 문제는 교사도
-                손댈 수 없습니다.
+                아직 푼 문제가 없습니다. 학생이 문제를 풀면 여기에서 결과를 고칠 수
+                있습니다.
               </p>
             )}
           </Card>
