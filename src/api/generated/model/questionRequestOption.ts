@@ -10,5 +10,6 @@ export interface QuestionRequestOption {
   content?: string | null;
   /** @nullable */
   imageId?: number | null;
-  correct?: boolean;
+  /** @nullable */
+  isCorrect?: boolean | null;
 }

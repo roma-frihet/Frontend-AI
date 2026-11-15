@@ -14,5 +14,5 @@ export interface QuestionResponseOption {
   imageId?: number | null;
   /** @nullable */
   imageUrl?: string | null;
-  correct?: boolean;
+  isCorrect?: boolean;
 }

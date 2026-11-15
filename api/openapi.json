@@ -1678,8 +1678,11 @@
             ],
             "format": "int64"
           },
-          "correct": {
-            "type": "boolean"
+          "isCorrect": {
+            "type": [
+              "boolean",
+              "null"
+            ]
           }
         }
       },
@@ -2423,7 +2426,7 @@
               "null"
             ]
           },
-          "correct": {
+          "isCorrect": {
             "type": "boolean"
           }
         }
@@ -2595,7 +2598,7 @@
             ],
             "format": "int32"
           },
-          "open": {
+          "isOpen": {
             "type": "boolean"
           }
         }
@@ -3056,7 +3059,7 @@
           "byTimeout": {
             "type": "boolean"
           },
-          "overridden": {
+          "isOverridden": {
             "type": "boolean"
           }
         }

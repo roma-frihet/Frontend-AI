@@ -13,5 +13,5 @@ export interface LessonOpeningResponseResult {
   currentLessonNumber?: number | null;
   /** @nullable */
   latestLessonNumber?: number | null;
-  open?: boolean;
+  isOpen?: boolean;
 }

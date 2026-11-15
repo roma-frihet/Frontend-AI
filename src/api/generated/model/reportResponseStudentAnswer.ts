@@ -14,5 +14,5 @@ export interface ReportResponseStudentAnswer {
   content?: string | null;
   result?: ReportResponseStudentAnswerResult;
   byTimeout?: boolean;
-  overridden?: boolean;
+  isOverridden?: boolean;
 }
