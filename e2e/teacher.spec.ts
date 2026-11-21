@@ -82,21 +82,22 @@ test("로그인하지 않으면 교사 화면에서 로그인으로 보낸다", 
   await expect(page).toHaveURL(/\/teacher\/login$/);
 });
 
-test("연 적 있는 차시는 문제를 더하거나 지울 수 없다", async ({ page }) => {
+test("연 적 있는 차시에는 문제를 더할 수 없다", async ({ page }) => {
   await mockSupabaseAuth(page, "teacher");
   await mockApi(page, teacherStubs());
 
   await signInAsTeacher(page);
   await page.getByRole("button", { name: "문제 관리" }).click();
 
-  // 1차시는 FINISHED다.
-  await expect(page.getByText(/열었던 차시라 내용만 고칠 수 있습니다/)).toBeVisible();
+  // 1차시는 FINISHED다. 더하는 것만 막는다.
   await expect(
-    page.getByText(/학생에게 열었던 차시입니다/),
+    page.getByText(/열었던 차시라 새 문제는 넣을 수 없습니다/),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "1번 문제 삭제" })).toBeDisabled();
+  await expect(page.getByText(/학생에게 열었던 차시입니다/)).toBeVisible();
 
-  // 수정은 막지 않는다. 막는 조건이 다르고, 판단은 서버가 한다.
+  // 지우기와 수정은 막지 않는다. 조건이 다르고 판단은 서버가 한다.
+  // (푼 학생이 있을 때만 서버가 거절한다)
+  await expect(page.getByRole("button", { name: "1번 문제 삭제" })).toBeEnabled();
   await expect(page.getByRole("button", { name: "1번 문제 수정" })).toBeEnabled();
 });
 

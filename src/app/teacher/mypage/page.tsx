@@ -5,8 +5,8 @@
 // 수업은 학년 + 과목이다. 같은 과목이라도 학년이 다르면 다른 수업이다.
 // 반은 번호만 받는다(1~20). 차시는 문제 관리에서 추가한다.
 //
-// 삭제는 비어 있을 때만 된다. 수업에 반이나 문제가 있으면, 반에 학생이나 기록이
-// 있으면 서버가 거절한다. 거절 문장을 그대로 보여 준다.
+// 삭제하면 안에 든 것이 함께 사라진다. 서버는 기록이 있어도 지우므로, 막아 주는 것은
+// 확인 모달뿐이다. 무엇이 몇 개 사라지는지 숫자로 보여 주고 받는다.
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,6 +15,11 @@ import { BookOpen, Pencil, Plus, Trash2, UserRound } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
+import {
+  ConfirmDelete,
+  losses,
+  withParticle,
+} from "@/components/teacher/confirm-delete";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { Card } from "@/components/ui/card";
 import {
@@ -23,7 +28,9 @@ import {
   saveTeacherProfile,
   deleteClassroom,
   deleteCourse,
+  getFindClassroomsQueryKey,
   getFindMyPageQueryKey,
+  useFindClassrooms,
   useFindMyPage,
   useFindSubjects,
 } from "@/api/generated";
@@ -44,6 +51,14 @@ export default function TeacherMyPage() {
   const courses = mypage.data?.data.courses ?? [];
 
   const subjects = useFindSubjects({ schoolLevel: "MIDDLE" });
+  // 삭제 확인에 쓸 학생 수는 마이페이지에 없고 반 목록에만 있다.
+  const classroomsQuery = useFindClassrooms();
+  const studentCounts = new Map(
+    (classroomsQuery.data?.data ?? []).map((classroom) => [
+      classroom.id,
+      classroom.studentCount ?? 0,
+    ]),
+  );
 
   const [editingProfile, setEditingProfile] = useState(false);
   const [name, setName] = useState("");
@@ -51,9 +66,19 @@ export default function TeacherMyPage() {
   const [subjectId, setSubjectId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [deletingCourse, setDeletingCourse] = useState<
+    (typeof courses)[number] | null
+  >(null);
+  const [deletingClassroom, setDeletingClassroom] = useState<{
+    id: number;
+    classNo: number;
+  } | null>(null);
 
-  const refresh = () =>
-    queryClient.invalidateQueries({ queryKey: getFindMyPageQueryKey() });
+  // 반을 지우면 학생 수도 달라지므로 두 질의를 함께 새로 고친다.
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: getFindMyPageQueryKey() });
+    await queryClient.invalidateQueries({ queryKey: getFindClassroomsQueryKey() });
+  };
 
   const run = async (task: () => Promise<unknown>) => {
     setError(null);
@@ -183,7 +208,7 @@ export default function TeacherMyPage() {
                     <IconButton
                       label="수업 삭제"
                       disabled={busy}
-                      onClick={() => run(() => deleteCourse(course.id ?? 0))}
+                      onClick={() => setDeletingCourse(course)}
                     />
                   </div>
 
@@ -195,8 +220,8 @@ export default function TeacherMyPage() {
                         createClassroom({ courseId: course.id ?? null, classNo }),
                       )
                     }
-                    onRemove={(classroomId) =>
-                      run(() => deleteClassroom(classroomId))
+                    onRemove={(classroomId, classNo) =>
+                      setDeletingClassroom({ id: classroomId, classNo })
                     }
                   />
                 </li>
@@ -238,6 +263,47 @@ export default function TeacherMyPage() {
           ) : null}
         </Card>
       </div>
+
+      <ConfirmDelete
+        open={deletingCourse != null}
+        onOpenChange={() => setDeletingCourse(null)}
+        title={`${deletingCourse?.grade}학년 ${withParticle(deletingCourse?.subjectName ?? "")} 지울까요?`}
+        losses={losses(
+          { count: deletingCourse?.classrooms?.length ?? 0, label: "반", unit: "개" },
+          {
+            count: (deletingCourse?.classrooms ?? []).reduce(
+              (sum, classroom) => sum + (studentCounts.get(classroom.id) ?? 0),
+              0,
+            ),
+            label: "학생",
+            unit: "명",
+          },
+          { count: deletingCourse?.lessonCount ?? 0, label: "차시", unit: "개" },
+        )}
+        busy={busy}
+        onConfirm={() => {
+          const id = deletingCourse?.id ?? 0;
+          setDeletingCourse(null);
+          run(() => deleteCourse(id));
+        }}
+      />
+
+      <ConfirmDelete
+        open={deletingClassroom != null}
+        onOpenChange={() => setDeletingClassroom(null)}
+        title={`${deletingClassroom?.classNo}반을 지울까요?`}
+        losses={losses({
+          count: studentCounts.get(deletingClassroom?.id) ?? 0,
+          label: "학생",
+          unit: "명",
+        })}
+        busy={busy}
+        onConfirm={() => {
+          const id = deletingClassroom?.id ?? 0;
+          setDeletingClassroom(null);
+          run(() => deleteClassroom(id));
+        }}
+      />
     </TeacherShell>
   );
 }
@@ -260,7 +326,7 @@ function ClassroomRow({
   classrooms: { id?: number; classNo?: number }[];
   busy: boolean;
   onAdd: (classNo: number) => void;
-  onRemove: (classroomId: number) => void;
+  onRemove: (classroomId: number, classNo: number) => void;
 }) {
   const [classNo, setClassNo] = useState("");
 
@@ -282,7 +348,7 @@ function ClassroomRow({
             label={`${classroom.classNo}반 삭제`}
             small
             disabled={busy}
-            onClick={() => onRemove(classroom.id ?? 0)}
+            onClick={() => onRemove(classroom.id ?? 0, classroom.classNo ?? 0)}
           />
         </span>
       ))}

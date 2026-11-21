@@ -264,6 +264,94 @@ export const useCreateLesson = <TError = unknown,
       > => {
       return useMutation(getCreateLessonMutationOptions(options), queryClient);
     }
+    export type deleteLessonResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deleteLessonResponseSuccess = (deleteLessonResponse204) & {
+  headers: Headers;
+};
+;
+
+export type deleteLessonResponse = (deleteLessonResponseSuccess)
+
+export const getDeleteLessonUrl = (courseId: number,
+    lessonNumber: number,) => {
+
+
+
+
+  return `/api/v1/teacher/courses/${courseId}/lessons/${lessonNumber}`
+}
+
+/**
+ * 그 차시의 문제와 연 기록도 함께 지웁니다. 학생이 푼 적이 있으면 지울 수 없습니다.
+ * @summary 차시 삭제
+ */
+export const deleteLesson = async (courseId: number,
+    lessonNumber: number, options?: Parameters<typeof apiFetcher>[1]): Promise<deleteLessonResponse> => {
+
+  return apiFetcher<deleteLessonResponse>(getDeleteLessonUrl(courseId,lessonNumber),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteLessonMutationKey = () => ['deleteLesson'] as const;
+
+export const getDeleteLessonMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLesson>>, TError,DeleteLessonMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteLesson>>, TError,DeleteLessonMutationVariables, TContext> => {
+
+const mutationKey = getDeleteLessonMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteLesson>>, DeleteLessonMutationVariables> = (props) => {
+          const {courseId,lessonNumber} = props ?? {};
+
+          return  deleteLesson(courseId,lessonNumber,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteLessonMutationResult = NonNullable<Awaited<ReturnType<typeof deleteLesson>>>
+
+    export type DeleteLessonMutationError = unknown
+    export type DeleteLessonMutationVariables = {courseId: number;lessonNumber: number}
+
+    /**
+ * @summary 차시 삭제
+ */
+export const useDeleteLesson = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLesson>>, TError,DeleteLessonMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteLesson>>,
+        TError,
+        DeleteLessonMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteLessonMutationOptions(options), queryClient);
+    }
     export type renameLessonResponse204 = {
   data: void
   status: 204
