@@ -7,7 +7,7 @@
 
 export interface StudentPasswordRequestChange {
   /**
-     * @minLength 8
+     * @minLength 6
      * @maxLength 72
      * @nullable
      */

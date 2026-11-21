@@ -5,27 +5,14 @@
  * OpenAPI spec version: v1
  */
 import {
-  useMutation,
-  useQuery
+  useMutation
 } from '@tanstack/react-query';
 import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
   UseMutationOptions,
-  UseMutationResult,
-  UseQueryOptions,
-  UseQueryResult
+  UseMutationResult
 } from '@tanstack/react-query';
-
-import type {
-  LessonOpeningResponseResult
-} from '../model';
 
 import { apiFetcher } from '../../../lib/api-fetcher';
 
@@ -33,21 +20,6 @@ import { apiFetcher } from '../../../lib/api-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-
-const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
-  const result = { queryKey } as T & { queryKey: K };
-  for (const key of Object.keys(query)) {
-    // The explicit queryKey always wins, matching the previous
-    // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
-    Object.defineProperty(result, key, {
-      enumerable: true,
-      configurable: true,
-      get: () => (query as Record<string, unknown>)[key],
-    });
-  }
-  return result;
-};
 
 export type openLessonResponse204 = {
   data: void
@@ -313,115 +285,3 @@ export const useCloseLesson = <TError = unknown,
       > => {
       return useMutation(getCloseLessonMutationOptions(options), queryClient);
     }
-    export type findLessonOpeningsResponse200 = {
-  data: LessonOpeningResponseResult[]
-  status: 200
-}
-
-export type findLessonOpeningsResponseSuccess = (findLessonOpeningsResponse200) & {
-  headers: Headers;
-};
-;
-
-export type findLessonOpeningsResponse = (findLessonOpeningsResponseSuccess)
-
-export const getFindLessonOpeningsUrl = () => {
-
-
-
-
-  return `/api/v1/teacher/lesson-openings`
-}
-
-/**
- * @summary 반별 현재 차시와 열림 현황
- */
-export const findLessonOpenings = async ( options?: Parameters<typeof apiFetcher>[1]): Promise<findLessonOpeningsResponse> => {
-
-  return apiFetcher<findLessonOpeningsResponse>(getFindLessonOpeningsUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getFindLessonOpeningsQueryKey = () => {
-    return [
-    `/api/v1/teacher/lesson-openings`
-    ] as const;
-    }
-
-
-export const getFindLessonOpeningsQueryOptions = <TData = Awaited<ReturnType<typeof findLessonOpenings>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findLessonOpenings>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getFindLessonOpeningsQueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findLessonOpenings>>> = ({ signal }) => findLessonOpenings({ signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findLessonOpenings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type FindLessonOpeningsQueryResult = NonNullable<Awaited<ReturnType<typeof findLessonOpenings>>>
-export type FindLessonOpeningsQueryError = unknown
-
-
-export function useFindLessonOpenings<TData = Awaited<ReturnType<typeof findLessonOpenings>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findLessonOpenings>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findLessonOpenings>>,
-          TError,
-          Awaited<ReturnType<typeof findLessonOpenings>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindLessonOpenings<TData = Awaited<ReturnType<typeof findLessonOpenings>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findLessonOpenings>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findLessonOpenings>>,
-          TError,
-          Awaited<ReturnType<typeof findLessonOpenings>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindLessonOpenings<TData = Awaited<ReturnType<typeof findLessonOpenings>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findLessonOpenings>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 반별 현재 차시와 열림 현황
- */
-
-export function useFindLessonOpenings<TData = Awaited<ReturnType<typeof findLessonOpenings>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findLessonOpenings>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getFindLessonOpeningsQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-

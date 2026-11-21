@@ -26,7 +26,6 @@ export * from './findSubjectsParams';
 export * from './findSubjectsSchoolLevel';
 export * from './lessonOpeningResponseOpenedResult';
 export * from './lessonOpeningResponseOpenedResultStatus';
-export * from './lessonOpeningResponseResult';
 export * from './lessonRequestSave';
 export * from './lessonResponseClassroomStatus';
 export * from './lessonResponseClassroomStatusStatus';

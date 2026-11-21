@@ -15,6 +15,11 @@ import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
 import { LessonOpenControls } from "@/components/teacher/lesson-open-controls";
 import { QuestionForm } from "@/components/teacher/question-form";
+import {
+  ConfirmDelete,
+  losses,
+  withParticle,
+} from "@/components/teacher/confirm-delete";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
 import { Card } from "@/components/ui/card";
@@ -22,6 +27,7 @@ import {
   createLesson,
   renameLesson,
   createQuestion,
+  deleteLesson,
   deleteQuestion,
   updateQuestion,
   getFindLessonsQueryKey,
@@ -44,12 +50,19 @@ export default function TeacherQuestionsPage() {
   const [newTitle, setNewTitle] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [renaming, setRenaming] = useState<string | null>(null);
+  const [deletingQuestion, setDeletingQuestion] = useState<
+    (typeof questionList)[number] | null
+  >(null);
+  const [deletingLesson, setDeletingLesson] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const lessons = useFindLessons(course, { query: { enabled: Boolean(courseId) } });
   const lessonList = lessons.data?.data ?? [];
-  const lessonNumber = selected ?? lessonList[0]?.lessonNumber ?? null;
+  // 고른 차시를 지우면 selected는 없는 번호를 가리킨다. 그때는 첫 차시로 돌아간다.
+  const stillThere = lessonList.some((item) => item.lessonNumber === selected);
+  const lessonNumber =
+    (stillThere ? selected : null) ?? lessonList[0]?.lessonNumber ?? null;
   const lesson = lessonList.find((item) => item.lessonNumber === lessonNumber);
 
   const questions = useFindQuestions(course, lessonNumber ?? 0, {
@@ -188,6 +201,15 @@ export default function TeacherQuestionsPage() {
                     >
                       <Pencil className="size-4" aria-hidden />
                     </button>
+                    <button
+                      type="button"
+                      aria-label="차시 삭제"
+                      disabled={busy}
+                      onClick={() => setDeletingLesson(true)}
+                      className="inline-grid size-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-40"
+                    >
+                      <Trash2 className="size-4" aria-hidden />
+                    </button>
                   </div>
                 ) : (
                   <form
@@ -237,7 +259,7 @@ export default function TeacherQuestionsPage() {
                 <h2 className="text-lg font-bold">문제 {questionList.length}개</h2>
                 {everOpened ? (
                   <span className="text-sm text-muted-foreground">
-                    열었던 차시라 내용만 고칠 수 있습니다
+                    열었던 차시라 새 문제는 넣을 수 없습니다
                   </span>
                 ) : null}
               </div>
@@ -290,10 +312,8 @@ export default function TeacherQuestionsPage() {
                               <button
                                 type="button"
                                 aria-label={`${index + 1}번 문제 삭제`}
-                                disabled={busy || everOpened}
-                                onClick={() =>
-                                  run(() => deleteQuestion(question.id ?? 0))
-                                }
+                                disabled={busy}
+                                onClick={() => setDeletingQuestion(question)}
                                 className="inline-grid size-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-40"
                               >
                                 <Trash2 className="size-4" aria-hidden />
@@ -337,6 +357,39 @@ export default function TeacherQuestionsPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDelete
+        open={deletingQuestion != null}
+        onOpenChange={() => setDeletingQuestion(null)}
+        title="이 문제를 지울까요?"
+        losses={[]}
+        busy={busy}
+        onConfirm={() => {
+          const id = deletingQuestion?.id ?? 0;
+          setDeletingQuestion(null);
+          run(() => deleteQuestion(id));
+        }}
+      />
+
+      <ConfirmDelete
+        open={deletingLesson}
+        onOpenChange={() => setDeletingLesson(false)}
+        title={`${lessonNumber}차시 ${withParticle(lesson?.title ?? "")} 지울까요?`}
+        losses={losses({
+          count: questionList.length,
+          label: "문제",
+          unit: "개",
+        })}
+        busy={busy}
+        onConfirm={() => {
+          const number = lessonNumber ?? 0;
+          setDeletingLesson(false);
+          run(async () => {
+            await deleteLesson(course, number);
+            setSelected(null);
+          });
+        }}
+      />
 
       {error ? (
         <p role="alert" className="text-sm font-medium text-destructive">
