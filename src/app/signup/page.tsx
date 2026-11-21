@@ -31,6 +31,24 @@ import {
 
 const STEPS = ["학교", "학번과 이름", "비밀번호"] as const;
 
+// Supabase가 가입을 거절하는 이유는 여러 가지인데, 전부 "이미 가입된 학번"으로 뭉치면
+// 학생도 선생님도 엉뚱한 곳을 고치게 된다. 실제로 설정 때문에 막힌 적이 있다.
+const signUpMessage = (code?: string): string => {
+  switch (code) {
+    case "user_already_exists":
+    case "email_exists":
+      return "이미 가입된 학번이에요. 번호를 확인하거나 로그인해 주세요.";
+    case "weak_password":
+      return `비밀번호가 너무 짧아요. ${MIN_PASSWORD_LENGTH}자 이상으로 다시 만들어 주세요.`;
+    case "over_email_send_rate_limit":
+    case "over_request_rate_limit":
+      return "지금은 가입이 밀려 있어요. 잠시 뒤에 다시 눌러 주세요.";
+    default:
+      // 학번·비밀번호를 고쳐도 풀리지 않는 종류다. 학생이 혼자 해결할 수 없으니 그렇게 말한다.
+      return "지금은 가입할 수 없어요. 선생님께 말씀해 주세요.";
+  }
+};
+
 export default function StudentSignupPage() {
   const router = useRouter();
 
@@ -67,8 +85,9 @@ export default function StudentSignupPage() {
     const { error: signUpError } = await supabase.auth.signUp({ email, password });
 
     if (signUpError) {
-      // 같은 학교에 같은 학번이 이미 있다는 뜻이다.
-      setError("이미 가입된 학번이에요. 번호를 확인하거나 로그인해 주세요.");
+      // 원인 코드는 화면에 쓰지 않지만, 남겨 두지 않으면 설정 문제를 추적할 길이 없다.
+      console.error("signUp 실패", signUpError.code, signUpError.message);
+      setError(signUpMessage(signUpError.code));
       return;
     }
 

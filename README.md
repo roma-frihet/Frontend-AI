@@ -75,11 +75,31 @@ Vercel 빌드에서는 값이 없으면 빌드를 멈춘다.
 
 함수 리전은 `vercel.json`에서 서울(`icn1`)로 둔다. 백엔드도 서울이라 왕복이 짧다.
 
+### 운영 Supabase 설정
+
+학생은 학번을 `s1-0101@students.roma-frihet.app` 꼴로 바꿔 가입한다. 받을 수 없는
+주소이므로 **Confirm email을 꺼 두어야 한다.** 켜면 Supabase가 주소로 메일을 보낼 수
+있는지 먼저 검사해서, 이 도메인이 실재하지 않으므로 `email_address_invalid`로
+**모든 학생 가입이 막힌다.** 로컬 Supabase에는 이 검사가 없어 로컬에서는 드러나지 않는다.
+
+`Minimum password length`는 6이어야 한다. 프론트 `MIN_PASSWORD_LENGTH`, 서버
+`StudentPasswordRequest`와 같은 값이다. 하나만 다르면 화면은 통과시키고 뒤에서 거절당한다.
+
 ### 교사 계정
 
 교사 권한은 토큰의 `app_metadata.role`이 `teacher`일 때만 생긴다. 이 값은 service_role
 키로만 넣을 수 있어 가입 화면이 없다. Supabase 대시보드에서 계정을 만든 뒤
 **App Metadata**(User Metadata가 아니다)에 `{"role": "teacher"}`를 넣는다.
+
+교사 프로필(이름·학교)은 화면에서 만들 수 없다. 마이페이지는 저장된 학교를 그대로
+돌려보내므로 프로필이 없으면 `schoolId`가 비어 400이 난다. 계정을 만들 때 아래처럼
+프로필까지 같이 넣는다.
+
+```bash
+curl -X PUT "$API_ORIGIN/api/v1/teacher/profile" \
+  -H "Authorization: Bearer <교사 토큰>" -H "Content-Type: application/json" \
+  -d '{"schoolId":1,"name":"이름"}'
+```
 
 ## 6. 명령어
 
