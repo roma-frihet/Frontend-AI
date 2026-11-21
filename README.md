@@ -57,7 +57,31 @@ cd ../Frontend-AI && npm run dev  # http://localhost:3000
 4. 화면을 바꿨다면 `npm run e2e` 실행
 5. PR 생성 → CI 통과 → 머지
 
-## 5. 명령어
+## 5. 배포
+
+프론트는 **Vercel**, 백엔드는 Cloud Run이다. 브라우저는 백엔드를 직접 부르지 않고
+`next.config.ts`의 rewrites가 `/api/v1/*`을 `API_ORIGIN`으로 넘긴다 (백엔드에 CORS 설정이 없다).
+
+### Vercel 환경변수
+
+| 이름 | 값 | 비고 |
+| --- | --- | --- |
+| `API_ORIGIN` | 백엔드 Cloud Run 주소 | **빌드할 때 구워진다.** 바꾸면 다시 배포해야 한다 |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://<project-ref>.supabase.co` | 운영 Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable key (`sb_publishable_…`) | 공개 키다. Secret key를 넣지 않는다 |
+
+`API_ORIGIN`을 빼먹으면 localhost가 그대로 박혀 배포본이 조용히 죽으므로,
+Vercel 빌드에서는 값이 없으면 빌드를 멈춘다.
+
+함수 리전은 `vercel.json`에서 서울(`icn1`)로 둔다. 백엔드도 서울이라 왕복이 짧다.
+
+### 교사 계정
+
+교사 권한은 토큰의 `app_metadata.role`이 `teacher`일 때만 생긴다. 이 값은 service_role
+키로만 넣을 수 있어 가입 화면이 없다. Supabase 대시보드에서 계정을 만든 뒤
+**App Metadata**(User Metadata가 아니다)에 `{"role": "teacher"}`를 넣는다.
+
+## 6. 명령어
 
 | 명령어 | 설명 |
 | --- | --- |
@@ -71,12 +95,12 @@ cd ../Frontend-AI && npm run dev  # http://localhost:3000
 | `npm run api:update` | api:sync → api:gen → typecheck |
 | `npx shadcn@latest add <name>` | UI 컴포넌트 추가 |
 
-## 6. Claude Code
+## 7. Claude Code
 
 - 레포를 열면 `.mcp.json`의 Playwright MCP 사용 승인 프롬프트가 뜬다 → 승인
 - 디자인 작업은 `.claude/skills/hallmark` 스킬 사용
 
-## 7. 문제 해결
+## 8. 문제 해결
 
 | 증상 | 해결 |
 | --- | --- |
