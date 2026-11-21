@@ -49,3 +49,6 @@ next-env.d.ts
 
 # JetBrains IDE
 .idea/
+
+# Playwright MCP 임시 산출물
+.playwright-mcp/
