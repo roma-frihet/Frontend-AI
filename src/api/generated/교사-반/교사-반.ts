@@ -24,7 +24,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ClassroomMembershipResponseResult,
   ClassroomRequestCreate,
   ClassroomResponseResult
 } from '../model';
@@ -435,120 +434,7 @@ export const useCloseJoinCode = <TError = unknown,
       > => {
       return useMutation(getCloseJoinCodeMutationOptions(options), queryClient);
     }
-    export type findClassroomMembershipsResponse200 = {
-  data: ClassroomMembershipResponseResult[]
-  status: 200
-}
-
-export type findClassroomMembershipsResponseSuccess = (findClassroomMembershipsResponse200) & {
-  headers: Headers;
-};
-;
-
-export type findClassroomMembershipsResponse = (findClassroomMembershipsResponseSuccess)
-
-export const getFindClassroomMembershipsUrl = (classroomId: number,) => {
-
-
-
-
-  return `/api/v1/teacher/classrooms/${classroomId}/memberships`
-}
-
-/**
- * 코드로 연결된 학생입니다. 승인 절차는 없습니다.
- * @summary 반 학생 목록
- */
-export const findClassroomMemberships = async (classroomId: number, options?: Parameters<typeof apiFetcher>[1]): Promise<findClassroomMembershipsResponse> => {
-
-  return apiFetcher<findClassroomMembershipsResponse>(getFindClassroomMembershipsUrl(classroomId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getFindClassroomMembershipsQueryKey = (classroomId: number,) => {
-    return [
-    `/api/v1/teacher/classrooms/${classroomId}/memberships`
-    ] as const;
-    }
-
-
-export const getFindClassroomMembershipsQueryOptions = <TData = Awaited<ReturnType<typeof findClassroomMemberships>>, TError = unknown>(classroomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomMemberships>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getFindClassroomMembershipsQueryKey(classroomId);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findClassroomMemberships>>> = ({ signal }) => findClassroomMemberships(classroomId, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: classroomId !== null && classroomId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findClassroomMemberships>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type FindClassroomMembershipsQueryResult = NonNullable<Awaited<ReturnType<typeof findClassroomMemberships>>>
-export type FindClassroomMembershipsQueryError = unknown
-
-
-export function useFindClassroomMemberships<TData = Awaited<ReturnType<typeof findClassroomMemberships>>, TError = unknown>(
- classroomId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomMemberships>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findClassroomMemberships>>,
-          TError,
-          Awaited<ReturnType<typeof findClassroomMemberships>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindClassroomMemberships<TData = Awaited<ReturnType<typeof findClassroomMemberships>>, TError = unknown>(
- classroomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomMemberships>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findClassroomMemberships>>,
-          TError,
-          Awaited<ReturnType<typeof findClassroomMemberships>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindClassroomMemberships<TData = Awaited<ReturnType<typeof findClassroomMemberships>>, TError = unknown>(
- classroomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomMemberships>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 반 학생 목록
- */
-
-export function useFindClassroomMemberships<TData = Awaited<ReturnType<typeof findClassroomMemberships>>, TError = unknown>(
- classroomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomMemberships>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getFindClassroomMembershipsQueryOptions(classroomId,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-export type removeClassroomStudentResponse204 = {
+    export type removeClassroomStudentResponse204 = {
   data: void
   status: 204
 }
