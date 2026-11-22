@@ -2,82 +2,73 @@
 
 // 교사 화면의 껍데기 — 왼쪽 사이드바 + 본문.
 //
-// 담당 수업(학년+과목)을 사이드바에서 고르고, 고른 수업이 아래 화면 전체의 기준이 된다.
-// 반·수업 추가처럼 드물게 쓰는 것은 마이페이지로 보낸다.
+// 교사 화면은 반이 중심이다. 수업 중에는 학급 관리 → 반으로 들어가 열고 마감하고,
+// 수업 전에는 차시·문제 준비에서 만든다. 마이페이지에는 내 정보만 둔다.
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, FileText, LayoutDashboard, Users } from "lucide-react";
+import { FileText, LayoutGrid, UserRound } from "lucide-react";
 
-import { AppSelect } from "@/components/app-select";
 import { Brand } from "@/components/brand";
 import { useFindMyPage } from "@/api/generated";
-import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
 import { cn } from "cn";
 
 const NAV = [
-  { href: "/teacher", label: "대시보드", icon: LayoutDashboard },
-  { href: "/teacher/questions", label: "문제 관리", icon: FileText },
-  { href: "/teacher/students", label: "학생 관리", icon: Users },
+  {
+    href: "/teacher",
+    label: "학급 관리",
+    icon: LayoutGrid,
+    match: (path: string) => path === "/teacher" || path.startsWith("/teacher/classrooms"),
+  },
+  {
+    href: "/teacher/prepare",
+    label: "차시·문제 준비",
+    icon: FileText,
+    match: (path: string) => path.startsWith("/teacher/prepare"),
+  },
+  {
+    href: "/teacher/mypage",
+    label: "마이페이지",
+    icon: UserRound,
+    match: (path: string) => path.startsWith("/teacher/mypage"),
+  },
 ] as const;
 
 export function TeacherShell({
   title,
+  description,
+  actions,
   children,
 }: {
   title: string;
+  description?: React.ReactNode;
+  actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-
   const mypage = useFindMyPage();
   const profile = mypage.data?.data.profile;
-  const courses = mypage.data?.data.courses ?? [];
-
-  const { courseId, setCourseId } = useTeacherCourse(courses);
 
   return (
     <div className="grid flex-1 grid-cols-[minmax(0,1fr)] lg:grid-cols-[248px_minmax(0,1fr)]">
-      {/* 좁은 화면에서는 사이드바를 위쪽 띠로 눕힌다. 248px를 고정으로 먹으면 본문이 남지 않는다. */}
+      {/* 좁은 화면에서는 사이드바를 위쪽 띠로 눕히고 메뉴를 쌓는다. */}
       <aside
         aria-label="교사 메뉴"
         className="flex min-w-0 flex-col gap-4 border-b border-border bg-card p-4 lg:sticky lg:top-0 lg:h-screen lg:gap-6 lg:self-start lg:border-r lg:border-b-0 lg:pt-5"
       >
         <Brand badge="교사" href="/teacher" className="px-2" />
 
-        {courses.length > 0 ? (
-          <label className="grid gap-1.5 px-1 lg:px-1">
-            <span className="text-sm text-muted-foreground">담당 수업</span>
-            <AppSelect
-              items={courses.map((course) => ({
-                value: String(course.id),
-                label: `${course.grade}학년 ${course.subjectName}`,
-              }))}
-              value={courseId}
-              onValueChange={setCourseId}
-              placeholder="수업 선택"
-              className="font-bold"
-            />
-          </label>
-        ) : null}
-
         <nav>
-          <ul className="m-0 flex list-none gap-1 overflow-x-auto p-0 lg:grid">
+          <ul className="m-0 grid list-none gap-1 p-0 sm:grid-cols-3 lg:grid-cols-1">
             {NAV.map((item) => {
-              const active =
-                item.href === "/teacher"
-                  ? pathname === "/teacher"
-                  : pathname.startsWith(item.href);
-
+              const active = item.match(pathname);
               return (
                 <li key={item.href}>
-                  <button
-                    type="button"
+                  <Link
+                    href={item.href}
                     aria-current={active ? "page" : undefined}
-                    onClick={() => router.push(item.href)}
                     className={cn(
-                      "flex min-h-11.5 w-full shrink-0 items-center gap-3 rounded-md px-3.5 text-left font-medium whitespace-nowrap transition-colors",
+                      "flex min-h-11.5 w-full items-center gap-3 rounded-md px-3.5 font-medium whitespace-nowrap transition-colors",
                       active
                         ? "bg-primary-soft font-bold text-primary-deep"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -85,7 +76,7 @@ export function TeacherShell({
                   >
                     <item.icon className="size-4.5" aria-hidden />
                     {item.label}
-                  </button>
+                  </Link>
                 </li>
               );
             })}
@@ -95,32 +86,24 @@ export function TeacherShell({
         <div className="mt-auto hidden gap-0.5 rounded-lg bg-secondary p-4 lg:grid">
           <p className="text-sm text-muted-foreground">학교</p>
           <p className="font-bold">{profile?.schoolName ?? "–"}</p>
-          <Link
-            href="/teacher/mypage"
-            className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary-deep hover:underline"
-          >
-            마이페이지
-            <ChevronRight className="size-4" aria-hidden />
-          </Link>
+          <p className="text-sm text-muted-foreground">{profile?.name ?? "선생님"}</p>
         </div>
       </aside>
 
-      <div className="min-w-0 px-4 lg:px-8">
-        <header className="mb-7 flex min-h-19 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border py-3 lg:py-0">
-          <h1 className="text-xl font-extrabold whitespace-nowrap">{title}</h1>
-          <Link
-            href="/teacher/mypage"
-            className="flex items-center gap-2.5 font-medium"
-          >
-            <span className="inline-grid size-9 place-items-center rounded-full bg-accent text-sm font-bold text-accent-deep">
-              {profile?.name?.slice(0, 1) ?? "선"}
-            </span>
-            {profile?.name ?? "선생님"}
-          </Link>
-        </header>
-
-        <div className="grid gap-6 pb-10">{children}</div>
-      </div>
+      <main className="min-w-0 px-4 pt-6 pb-10 lg:px-10 lg:pt-8">
+        <div className="mx-auto grid max-w-page gap-6">
+          <header className="flex flex-wrap items-end justify-between gap-4">
+            <div className="grid min-w-0 gap-1.5">
+              <h1 className="text-2xl font-extrabold sm:text-3xl">{title}</h1>
+              {description ? (
+                <div className="text-muted-foreground">{description}</div>
+              ) : null}
+            </div>
+            {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+          </header>
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

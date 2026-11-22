@@ -3,6 +3,7 @@ export * from './교사-과목/교사-과목';
 export * from './교사-대시보드-학생-관리/교사-대시보드-학생-관리';
 export * from './교사-마이페이지/교사-마이페이지';
 export * from './교사-문제/교사-문제';
+export * from './교사-문제별-결과/교사-문제별-결과';
 export * from './교사-반/교사-반';
 export * from './교사-수업/교사-수업';
 export * from './교사-차시/교사-차시';

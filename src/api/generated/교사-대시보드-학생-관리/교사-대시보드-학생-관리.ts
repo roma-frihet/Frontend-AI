@@ -20,12 +20,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ExportScoresParams,
   FindClassroomStudentsParams,
   FindScoresParams,
   ReportResponseClassroom,
+  ReportResponseClassroomSummary,
   ReportResponseDashboard,
   ReportResponseScoreResultPage,
-  ReportResponseStudentDetail
+  ReportResponseStudentDetail,
+  StudentAnswerResponseLesson
 } from '../model';
 
 import { apiFetcher } from '../../../lib/api-fetcher';
@@ -167,6 +170,134 @@ export function useFindScores<TData = Awaited<ReturnType<typeof findScores>>, TE
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getFindScoresQueryOptions(courseId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export type exportScoresResponse200 = {
+  data: Blob
+  status: 200
+}
+
+export type exportScoresResponseSuccess = (exportScoresResponse200) & {
+  headers: Headers;
+};
+;
+
+export type exportScoresResponse = (exportScoresResponseSuccess)
+
+export const getExportScoresUrl = (courseId: number,
+    params?: ExportScoresParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/teacher/courses/${courseId}/scores/export?${stringifiedParams}` : `/api/v1/teacher/courses/${courseId}/scores/export`
+}
+
+/**
+ * 엑셀에서 바로 열리는 CSV(UTF-8 BOM)를 내려받습니다. STUDENT_SCORES는 학생 × 차시 점수, QUESTION_RATES는 차시의 문제별 정답률, ANSWER_SHEET는 차시의 학생 × 문제 정오표입니다.
+ * @summary 성적 내보내기
+ */
+export const exportScores = async (courseId: number,
+    params?: ExportScoresParams, options?: Parameters<typeof apiFetcher>[1]): Promise<exportScoresResponse> => {
+
+  return apiFetcher<exportScoresResponse>(getExportScoresUrl(courseId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getExportScoresQueryKey = (courseId: number,
+    params?: ExportScoresParams,) => {
+    return [
+    `/api/v1/teacher/courses/${courseId}/scores/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getExportScoresQueryOptions = <TData = Awaited<ReturnType<typeof exportScores>>, TError = unknown>(courseId: number,
+    params?: ExportScoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportScores>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getExportScoresQueryKey(courseId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof exportScores>>> = ({ signal }) => exportScores(courseId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: courseId !== null && courseId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof exportScores>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ExportScoresQueryResult = NonNullable<Awaited<ReturnType<typeof exportScores>>>
+export type ExportScoresQueryError = unknown
+
+
+export function useExportScores<TData = Awaited<ReturnType<typeof exportScores>>, TError = unknown>(
+ courseId: number,
+    params: undefined |  ExportScoresParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportScores>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof exportScores>>,
+          TError,
+          Awaited<ReturnType<typeof exportScores>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExportScores<TData = Awaited<ReturnType<typeof exportScores>>, TError = unknown>(
+ courseId: number,
+    params?: ExportScoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportScores>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof exportScores>>,
+          TError,
+          Awaited<ReturnType<typeof exportScores>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExportScores<TData = Awaited<ReturnType<typeof exportScores>>, TError = unknown>(
+ courseId: number,
+    params?: ExportScoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportScores>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 성적 내보내기
+ */
+
+export function useExportScores<TData = Awaited<ReturnType<typeof exportScores>>, TError = unknown>(
+ courseId: number,
+    params?: ExportScoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportScores>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getExportScoresQueryOptions(courseId,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -529,6 +660,248 @@ export function useFindClassroomStudentDetail<TData = Awaited<ReturnType<typeof 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getFindClassroomStudentDetailQueryOptions(classroomId,membershipId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export type findStudentLessonAnswersResponse200 = {
+  data: StudentAnswerResponseLesson
+  status: 200
+}
+
+export type findStudentLessonAnswersResponseSuccess = (findStudentLessonAnswersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type findStudentLessonAnswersResponse = (findStudentLessonAnswersResponseSuccess)
+
+export const getFindStudentLessonAnswersUrl = (classroomId: number,
+    membershipId: number,
+    lessonNumber: number,) => {
+
+
+
+
+  return `/api/v1/teacher/classrooms/${classroomId}/students/${membershipId}/lessons/${lessonNumber}/answers`
+}
+
+/**
+ * 문제마다 학생이 고른 보기와 쓴 답, 정답, 결과를 내립니다. 시작하지 않은 문제는 NOT_STARTED, 푸는 중인 문제는 IN_PROGRESS입니다. 결과를 고칠 때는 attemptAnswerId를 씁니다.
+ * @summary 학생의 차시 풀이
+ */
+export const findStudentLessonAnswers = async (classroomId: number,
+    membershipId: number,
+    lessonNumber: number, options?: Parameters<typeof apiFetcher>[1]): Promise<findStudentLessonAnswersResponse> => {
+
+  return apiFetcher<findStudentLessonAnswersResponse>(getFindStudentLessonAnswersUrl(classroomId,membershipId,lessonNumber),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getFindStudentLessonAnswersQueryKey = (classroomId: number,
+    membershipId: number,
+    lessonNumber: number,) => {
+    return [
+    `/api/v1/teacher/classrooms/${classroomId}/students/${membershipId}/lessons/${lessonNumber}/answers`
+    ] as const;
+    }
+
+
+export const getFindStudentLessonAnswersQueryOptions = <TData = Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError = unknown>(classroomId: number,
+    membershipId: number,
+    lessonNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFindStudentLessonAnswersQueryKey(classroomId,membershipId,lessonNumber);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof findStudentLessonAnswers>>> = ({ signal }) => findStudentLessonAnswers(classroomId,membershipId,lessonNumber, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: classroomId !== null && classroomId !== undefined && membershipId !== null && membershipId !== undefined && lessonNumber !== null && lessonNumber !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindStudentLessonAnswersQueryResult = NonNullable<Awaited<ReturnType<typeof findStudentLessonAnswers>>>
+export type FindStudentLessonAnswersQueryError = unknown
+
+
+export function useFindStudentLessonAnswers<TData = Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError = unknown>(
+ classroomId: number,
+    membershipId: number,
+    lessonNumber: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findStudentLessonAnswers>>,
+          TError,
+          Awaited<ReturnType<typeof findStudentLessonAnswers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindStudentLessonAnswers<TData = Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError = unknown>(
+ classroomId: number,
+    membershipId: number,
+    lessonNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findStudentLessonAnswers>>,
+          TError,
+          Awaited<ReturnType<typeof findStudentLessonAnswers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindStudentLessonAnswers<TData = Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError = unknown>(
+ classroomId: number,
+    membershipId: number,
+    lessonNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 학생의 차시 풀이
+ */
+
+export function useFindStudentLessonAnswers<TData = Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError = unknown>(
+ classroomId: number,
+    membershipId: number,
+    lessonNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findStudentLessonAnswers>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFindStudentLessonAnswersQueryOptions(classroomId,membershipId,lessonNumber,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export type findClassroomSummariesResponse200 = {
+  data: ReportResponseClassroomSummary[]
+  status: 200
+}
+
+export type findClassroomSummariesResponseSuccess = (findClassroomSummariesResponse200) & {
+  headers: Headers;
+};
+;
+
+export type findClassroomSummariesResponse = (findClassroomSummariesResponseSuccess)
+
+export const getFindClassroomSummariesUrl = () => {
+
+
+
+
+  return `/api/v1/teacher/classrooms/summaries`
+}
+
+/**
+ * 내 모든 반을 학생 수, 지금 열린 차시, 최근 평균, 살펴볼 학생 수와 함께 내립니다.
+ * @summary 학급 관리 반 목록
+ */
+export const findClassroomSummaries = async ( options?: Parameters<typeof apiFetcher>[1]): Promise<findClassroomSummariesResponse> => {
+
+  return apiFetcher<findClassroomSummariesResponse>(getFindClassroomSummariesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getFindClassroomSummariesQueryKey = () => {
+    return [
+    `/api/v1/teacher/classrooms/summaries`
+    ] as const;
+    }
+
+
+export const getFindClassroomSummariesQueryOptions = <TData = Awaited<ReturnType<typeof findClassroomSummaries>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomSummaries>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFindClassroomSummariesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof findClassroomSummaries>>> = ({ signal }) => findClassroomSummaries({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findClassroomSummaries>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindClassroomSummariesQueryResult = NonNullable<Awaited<ReturnType<typeof findClassroomSummaries>>>
+export type FindClassroomSummariesQueryError = unknown
+
+
+export function useFindClassroomSummaries<TData = Awaited<ReturnType<typeof findClassroomSummaries>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomSummaries>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findClassroomSummaries>>,
+          TError,
+          Awaited<ReturnType<typeof findClassroomSummaries>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindClassroomSummaries<TData = Awaited<ReturnType<typeof findClassroomSummaries>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomSummaries>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findClassroomSummaries>>,
+          TError,
+          Awaited<ReturnType<typeof findClassroomSummaries>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindClassroomSummaries<TData = Awaited<ReturnType<typeof findClassroomSummaries>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomSummaries>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 학급 관리 반 목록
+ */
+
+export function useFindClassroomSummaries<TData = Awaited<ReturnType<typeof findClassroomSummaries>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findClassroomSummaries>>, TError, TData>>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFindClassroomSummariesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
