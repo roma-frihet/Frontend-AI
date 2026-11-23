@@ -10,4 +10,14 @@ export interface LessonResponseClassroomStatus {
   classroomId?: number;
   classNo?: number;
   status?: LessonResponseClassroomStatusStatus;
+  /**
+     * 열기 예약 시각(시간대 포함). 없으면 null
+     * @nullable
+     */
+  scheduledOpenAt?: string | null;
+  /**
+     * 자동 마감 시각(시간대 포함). 없으면 null
+     * @nullable
+     */
+  scheduledFinishAt?: string | null;
 }

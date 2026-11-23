@@ -52,6 +52,16 @@ export const apiFetcher = async <T>(
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const response = await fetch(`${baseUrl}${url}`, { ...options, headers });
+
+  // 파일 응답(성적 CSV 등)은 스펙에서 binary라 생성된 훅이 Blob을 기대한다.
+  // 글자로 풀면 BOM이 떨어지고 타입과도 어긋나므로 성공한 비 JSON 응답은 Blob 그대로 넘긴다.
+  // 오류 응답은 파일 요청이어도 JSON(ProblemDetail)이라 아래에서 읽는다.
+  const contentType = response.headers.get("content-type") ?? "";
+  if (response.ok && contentType && !contentType.includes("json")) {
+    const data = await response.blob();
+    return { data, status: response.status, headers: response.headers } as T;
+  }
+
   const body = [204, 205, 304].includes(response.status)
     ? null
     : await response.text();

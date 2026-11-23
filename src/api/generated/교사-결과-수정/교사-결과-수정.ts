@@ -15,7 +15,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AttemptOverrideRequestUpdate
+  AttemptOverrideRequestByAnswer,
+  AttemptOverrideRequestUpdate,
+  AttemptOverrideResponseByAnswer
 } from '../model';
 
 import { apiFetcher } from '../../../lib/api-fetcher';
@@ -125,4 +127,109 @@ export const useOverrideAttemptResult = <TError = unknown,
         TContext
       > => {
       return useMutation(getOverrideAttemptResultMutationOptions(options), queryClient);
+    }
+    export type overrideResultsByAnswerResponse200 = {
+  data: AttemptOverrideResponseByAnswer
+  status: 200
+}
+
+export type overrideResultsByAnswerResponseSuccess = (overrideResultsByAnswerResponse200) & {
+  headers: Headers;
+};
+;
+
+export type overrideResultsByAnswerResponse = (overrideResultsByAnswerResponseSuccess)
+
+export const getOverrideResultsByAnswerUrl = (classroomId: number,
+    lessonNumber: number,
+    questionId: number,) => {
+
+
+
+
+  return `/api/v1/teacher/classrooms/${classroomId}/lessons/${lessonNumber}/questions/${questionId}/answer-overrides`
+}
+
+/**
+ * 이 반·차시·문제에서 같은 답(공백, 대소문자 무시)을 쓴 확정 응답의 결과를 한 번에 바꿉니다. 인정은 RIGHT, 취소는 WRONG입니다. 응답마다 수정 이력이 남습니다.
+ * @summary 주관식 같은 답 한 번에 인정
+ */
+export const overrideResultsByAnswer = async (classroomId: number,
+    lessonNumber: number,
+    questionId: number,
+    attemptOverrideRequestByAnswer: AttemptOverrideRequestByAnswer, options?: Parameters<typeof apiFetcher>[1]): Promise<overrideResultsByAnswerResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetcher<overrideResultsByAnswerResponse>(getOverrideResultsByAnswerUrl(classroomId,lessonNumber,questionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(attemptOverrideRequestByAnswer)
+  }
+);}
+
+
+
+
+
+export const getOverrideResultsByAnswerMutationKey = () => ['overrideResultsByAnswer'] as const;
+
+export const getOverrideResultsByAnswerMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof overrideResultsByAnswer>>, TError,OverrideResultsByAnswerMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof overrideResultsByAnswer>>, TError,OverrideResultsByAnswerMutationVariables, TContext> => {
+
+const mutationKey = getOverrideResultsByAnswerMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof overrideResultsByAnswer>>, OverrideResultsByAnswerMutationVariables> = (props) => {
+          const {classroomId,lessonNumber,questionId,data} = props ?? {};
+
+          return  overrideResultsByAnswer(classroomId,lessonNumber,questionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OverrideResultsByAnswerMutationResult = NonNullable<Awaited<ReturnType<typeof overrideResultsByAnswer>>>
+    export type OverrideResultsByAnswerMutationBody = AttemptOverrideRequestByAnswer
+    export type OverrideResultsByAnswerMutationError = unknown
+    export type OverrideResultsByAnswerMutationVariables = {classroomId: number;lessonNumber: number;questionId: number;data: AttemptOverrideRequestByAnswer}
+
+    /**
+ * @summary 주관식 같은 답 한 번에 인정
+ */
+export const useOverrideResultsByAnswer = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof overrideResultsByAnswer>>, TError,OverrideResultsByAnswerMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof overrideResultsByAnswer>>,
+        TError,
+        OverrideResultsByAnswerMutationVariables,
+        TContext
+      > => {
+      return useMutation(getOverrideResultsByAnswerMutationOptions(options), queryClient);
     }

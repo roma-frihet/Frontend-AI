@@ -8,6 +8,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
+import { useRefreshOnChange, useRefreshOnFocus } from "@/components/teacher/use-refresh";
 import { TeacherCourseProvider } from "@/components/teacher/use-teacher-course";
 import { useSession } from "@/lib/use-session";
 
@@ -17,6 +18,10 @@ export function TeacherGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
+
+  // 탭이나 창으로 돌아오거나 메뉴를 옮기면 최신으로 맞춘다.
+  useRefreshOnFocus();
+  useRefreshOnChange(pathname);
 
   const isLoginPage = pathname === LOGIN_PATH;
   const blocked =
