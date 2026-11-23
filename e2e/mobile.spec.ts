@@ -4,13 +4,10 @@ import {
   MEMBERSHIPS,
   REPORT,
   SCHOOLS,
-  TEACHER_CLASSROOMS,
-  TEACHER_LESSONS,
-  TEACHER_MYPAGE,
-  TEACHER_QUESTIONS,
   fakeAccessToken,
   mockApi,
   mockSupabaseAuth,
+  teacherStubs,
 } from "./fixtures";
 
 // 학생은 수업 중 자기 폰으로 들어온다. 좁은 화면에서 가로로 밀리면 못 쓴다.
@@ -118,55 +115,20 @@ for (const [name, path] of [
   });
 }
 
-const TEACHER_STUBS = {
-  "/api/v1/teacher/mypage": TEACHER_MYPAGE,
-  "/api/v1/teacher/courses/2/dashboard": {
-    classroomCount: 1,
-    openLessonCount: 0,
-    averageCorrect: null,
-    averageQuestionCount: null,
-    setup: {
-      hasClassroom: true,
-      hasLesson: true,
-      hasQuestion: true,
-      hasOpenedLesson: false,
-    },
-    liveLessons: [],
-    lessons: [],
-    classrooms: [],
-    droppedStudents: [],
-    notRespondedStudents: [],
-  },
-  "/api/v1/teacher/classrooms": TEACHER_CLASSROOMS,
-  "/api/v1/teacher/courses/2/lessons/1/questions": TEACHER_QUESTIONS,
-  "/api/v1/teacher/courses/2/lessons": TEACHER_LESSONS,
-  "/api/v1/teacher/subjects": [{ id: 251, schoolLevel: "MIDDLE", name: "과학" }],
-  "/api/v1/teacher/classrooms/2/students": {
-    classroomId: 2,
-    classNo: 5,
-    studentCount: 1,
-    students: [
-      {
-        membershipId: 1,
-        studentName: "김하늘",
-        studentNumber: "30512",
-        totalCorrectCount: 1,
-        totalQuestionCount: 2,
-        status: "NOT_RESPONDED",
-      },
-    ],
-  },
-};
-
 for (const [name, path] of [
-  ["대시보드", "/teacher"],
-  ["문제 관리", "/teacher/questions"],
-  ["학생 관리", "/teacher/students"],
+  ["학급 관리", "/teacher"],
+  ["반 수업 진행", "/teacher/classrooms/2"],
+  ["차시 상세", "/teacher/classrooms/2?lesson=1"],
+  ["반 비교", "/teacher/classrooms/2?lesson=1&view=compare"],
+  ["학생", "/teacher/classrooms/2?tab=students"],
+  ["성적", "/teacher/classrooms/2?tab=scores"],
+  ["수업 중 화면", "/teacher/classrooms/2/live?lesson=1"],
+  ["차시·문제 준비", "/teacher/prepare"],
   ["마이페이지", "/teacher/mypage"],
 ] as const) {
   test(`교사 ${name}가 좁은 화면에서 넘치지 않는다`, async ({ page }) => {
     await mockSupabaseAuth(page, "teacher");
-    await mockApi(page, TEACHER_STUBS);
+    await mockApi(page, teacherStubs());
 
     await page.goto("/teacher/login");
     await page.getByLabel("이메일").fill("teacher1@example.com");

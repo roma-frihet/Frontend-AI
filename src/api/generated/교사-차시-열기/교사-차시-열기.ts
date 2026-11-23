@@ -14,6 +14,10 @@ import type {
   UseMutationResult
 } from '@tanstack/react-query';
 
+import type {
+  LessonOpeningRequestSchedule
+} from '../model';
+
 import { apiFetcher } from '../../../lib/api-fetcher';
 
 
@@ -21,7 +25,197 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
-export type openLessonResponse204 = {
+export type scheduleLessonResponse204 = {
+  data: void
+  status: 204
+}
+
+export type scheduleLessonResponseSuccess = (scheduleLessonResponse204) & {
+  headers: Headers;
+};
+;
+
+export type scheduleLessonResponse = (scheduleLessonResponseSuccess)
+
+export const getScheduleLessonUrl = (classroomId: number,
+    lessonNumber: number,) => {
+
+
+
+
+  return `/api/v1/teacher/classrooms/${classroomId}/lessons/${lessonNumber}/schedule`
+}
+
+/**
+ * 정한 시각에 차시를 열고 마감합니다. 이미 예약이 있으면 바꿉니다. 열린 차시는 finishAt만 보냅니다. 시각이 지난 뒤 이 반의 차시 상태를 처음 읽을 때 반영됩니다.
+ * @summary 열기 예약, 자동 마감
+ */
+export const scheduleLesson = async (classroomId: number,
+    lessonNumber: number,
+    lessonOpeningRequestSchedule: LessonOpeningRequestSchedule, options?: Parameters<typeof apiFetcher>[1]): Promise<scheduleLessonResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetcher<scheduleLessonResponse>(getScheduleLessonUrl(classroomId,lessonNumber),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(lessonOpeningRequestSchedule)
+  }
+);}
+
+
+
+
+
+export const getScheduleLessonMutationKey = () => ['scheduleLesson'] as const;
+
+export const getScheduleLessonMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scheduleLesson>>, TError,ScheduleLessonMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof scheduleLesson>>, TError,ScheduleLessonMutationVariables, TContext> => {
+
+const mutationKey = getScheduleLessonMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof scheduleLesson>>, ScheduleLessonMutationVariables> = (props) => {
+          const {classroomId,lessonNumber,data} = props ?? {};
+
+          return  scheduleLesson(classroomId,lessonNumber,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ScheduleLessonMutationResult = NonNullable<Awaited<ReturnType<typeof scheduleLesson>>>
+    export type ScheduleLessonMutationBody = LessonOpeningRequestSchedule
+    export type ScheduleLessonMutationError = unknown
+    export type ScheduleLessonMutationVariables = {classroomId: number;lessonNumber: number;data: LessonOpeningRequestSchedule}
+
+    /**
+ * @summary 열기 예약, 자동 마감
+ */
+export const useScheduleLesson = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scheduleLesson>>, TError,ScheduleLessonMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof scheduleLesson>>,
+        TError,
+        ScheduleLessonMutationVariables,
+        TContext
+      > => {
+      return useMutation(getScheduleLessonMutationOptions(options), queryClient);
+    }
+    export type cancelLessonScheduleResponse204 = {
+  data: void
+  status: 204
+}
+
+export type cancelLessonScheduleResponseSuccess = (cancelLessonScheduleResponse204) & {
+  headers: Headers;
+};
+;
+
+export type cancelLessonScheduleResponse = (cancelLessonScheduleResponseSuccess)
+
+export const getCancelLessonScheduleUrl = (classroomId: number,
+    lessonNumber: number,) => {
+
+
+
+
+  return `/api/v1/teacher/classrooms/${classroomId}/lessons/${lessonNumber}/schedule`
+}
+
+/**
+ * @summary 예약 취소
+ */
+export const cancelLessonSchedule = async (classroomId: number,
+    lessonNumber: number, options?: Parameters<typeof apiFetcher>[1]): Promise<cancelLessonScheduleResponse> => {
+
+  return apiFetcher<cancelLessonScheduleResponse>(getCancelLessonScheduleUrl(classroomId,lessonNumber),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getCancelLessonScheduleMutationKey = () => ['cancelLessonSchedule'] as const;
+
+export const getCancelLessonScheduleMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelLessonSchedule>>, TError,CancelLessonScheduleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelLessonSchedule>>, TError,CancelLessonScheduleMutationVariables, TContext> => {
+
+const mutationKey = getCancelLessonScheduleMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelLessonSchedule>>, CancelLessonScheduleMutationVariables> = (props) => {
+          const {classroomId,lessonNumber} = props ?? {};
+
+          return  cancelLessonSchedule(classroomId,lessonNumber,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelLessonScheduleMutationResult = NonNullable<Awaited<ReturnType<typeof cancelLessonSchedule>>>
+
+    export type CancelLessonScheduleMutationError = unknown
+    export type CancelLessonScheduleMutationVariables = {classroomId: number;lessonNumber: number}
+
+    /**
+ * @summary 예약 취소
+ */
+export const useCancelLessonSchedule = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelLessonSchedule>>, TError,CancelLessonScheduleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelLessonSchedule>>,
+        TError,
+        CancelLessonScheduleMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelLessonScheduleMutationOptions(options), queryClient);
+    }
+    export type openLessonResponse204 = {
   data: void
   status: 204
 }

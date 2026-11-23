@@ -24,7 +24,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  QuestionRequestCopy,
   QuestionRequestSave,
+  QuestionResponseCopyResult,
   QuestionResponseIdResult,
   QuestionResponseImageResult,
   QuestionResponseResult,
@@ -661,4 +663,107 @@ export const useCreateQuestion = <TError = unknown,
         TContext
       > => {
       return useMutation(getCreateQuestionMutationOptions(options), queryClient);
+    }
+    export type copyQuestionsResponse201 = {
+  data: QuestionResponseCopyResult
+  status: 201
+}
+
+export type copyQuestionsResponseSuccess = (copyQuestionsResponse201) & {
+  headers: Headers;
+};
+;
+
+export type copyQuestionsResponse = (copyQuestionsResponseSuccess)
+
+export const getCopyQuestionsUrl = (courseId: number,
+    lessonNumber: number,) => {
+
+
+
+
+  return `/api/v1/teacher/courses/${courseId}/lessons/${lessonNumber}/copy`
+}
+
+/**
+ * 차시의 문제를 같은 수업이나 다른 수업으로 복사합니다. 대상 차시를 비우면 원본 제목으로 새 차시를 만듭니다. 문제를 골라 일부만 복사할 수 있고, 학생 풀이 기록은 복사하지 않습니다.
+ * @summary 차시·문제 복사
+ */
+export const copyQuestions = async (courseId: number,
+    lessonNumber: number,
+    questionRequestCopy: QuestionRequestCopy, options?: Parameters<typeof apiFetcher>[1]): Promise<copyQuestionsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetcher<copyQuestionsResponse>(getCopyQuestionsUrl(courseId,lessonNumber),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(questionRequestCopy)
+  }
+);}
+
+
+
+
+
+export const getCopyQuestionsMutationKey = () => ['copyQuestions'] as const;
+
+export const getCopyQuestionsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof copyQuestions>>, TError,CopyQuestionsMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof copyQuestions>>, TError,CopyQuestionsMutationVariables, TContext> => {
+
+const mutationKey = getCopyQuestionsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof copyQuestions>>, CopyQuestionsMutationVariables> = (props) => {
+          const {courseId,lessonNumber,data} = props ?? {};
+
+          return  copyQuestions(courseId,lessonNumber,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CopyQuestionsMutationResult = NonNullable<Awaited<ReturnType<typeof copyQuestions>>>
+    export type CopyQuestionsMutationBody = QuestionRequestCopy
+    export type CopyQuestionsMutationError = unknown
+    export type CopyQuestionsMutationVariables = {courseId: number;lessonNumber: number;data: QuestionRequestCopy}
+
+    /**
+ * @summary 차시·문제 복사
+ */
+export const useCopyQuestions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof copyQuestions>>, TError,CopyQuestionsMutationVariables, TContext>, request?: SecondParameter<typeof apiFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof copyQuestions>>,
+        TError,
+        CopyQuestionsMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCopyQuestionsMutationOptions(options), queryClient);
     }

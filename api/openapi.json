@@ -129,6 +129,83 @@
         }
       }
     },
+    "/api/v1/teacher/classrooms/{classroomId}/lessons/{lessonNumber}/schedule": {
+      "put": {
+        "tags": [
+          "교사 - 차시 열기"
+        ],
+        "summary": "열기 예약, 자동 마감",
+        "description": "정한 시각에 차시를 열고 마감합니다. 이미 예약이 있으면 바꿉니다. 열린 차시는 finishAt만 보냅니다. 시각이 지난 뒤 이 반의 차시 상태를 처음 읽을 때 반영됩니다.",
+        "operationId": "scheduleLesson",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonOpeningRequestSchedule"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "교사 - 차시 열기"
+        ],
+        "summary": "예약 취소",
+        "operationId": "cancelLessonSchedule",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/api/v1/teacher/attempt-answers/{attemptAnswerId}/result": {
       "put": {
         "tags": [
@@ -515,6 +592,58 @@
         }
       }
     },
+    "/api/v1/teacher/courses/{courseId}/lessons/{lessonNumber}/copy": {
+      "post": {
+        "tags": [
+          "교사 - 문제"
+        ],
+        "summary": "차시·문제 복사",
+        "description": "차시의 문제를 같은 수업이나 다른 수업으로 복사합니다. 대상 차시를 비우면 원본 제목으로 새 차시를 만듭니다. 문제를 골라 일부만 복사할 수 있고, 학생 풀이 기록은 복사하지 않습니다.",
+        "operationId": "copyQuestions",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionRequestCopy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionResponseCopyResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/teacher/classrooms": {
       "get": {
         "tags": [
@@ -604,6 +733,67 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TeacherResponseTemporaryPassword"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/lessons/{lessonNumber}/questions/{questionId}/answer-overrides": {
+      "post": {
+        "tags": [
+          "교사 - 결과 수정"
+        ],
+        "summary": "주관식 같은 답 한 번에 인정",
+        "description": "이 반·차시·문제에서 같은 답(공백, 대소문자 무시)을 쓴 확정 응답의 결과를 한 번에 바꿉니다. 인정은 RIGHT, 취소는 WRONG입니다. 응답마다 수정 이력이 남습니다.",
+        "operationId": "overrideResultsByAnswer",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "questionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptOverrideRequestByAnswer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptOverrideResponseByAnswer"
                 }
               }
             }
@@ -1182,6 +1372,137 @@
         }
       }
     },
+    "/api/v1/teacher/courses/{courseId}/scores/export": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "성적 내보내기",
+        "description": "엑셀에서 바로 열리는 CSV(UTF-8 BOM)를 내려받습니다. STUDENT_SCORES는 학생 × 차시 점수, QUESTION_RATES는 차시의 문제별 정답률, ANSWER_SHEET는 차시의 학생 × 문제 정오표입니다.",
+        "operationId": "exportScores",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "classroomId",
+            "in": "query",
+            "description": "비우면 수업의 모든 반",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "비우면 수업의 모든 반"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "query",
+            "description": "QUESTION_RATES, ANSWER_SHEET는 필수",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "description": "QUESTION_RATES, ANSWER_SHEET는 필수"
+            }
+          },
+          {
+            "name": "sheet",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "STUDENT_SCORES",
+                "QUESTION_RATES",
+                "ANSWER_SHEET"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV 파일. 파일 이름은 Content-Disposition의 filename*에 있다",
+            "content": {
+              "text/csv;charset=UTF-8": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/courses/{courseId}/lessons/{lessonNumber}/question-stats": {
+      "get": {
+        "tags": [
+          "교사 - 문제별 결과"
+        ],
+        "summary": "차시 문제별 결과",
+        "description": "반마다 차시 상태, 응답 수, 문제별 정답 수와 보기·주관식 답 분포를 내립니다. classroomIds를 여러 개 주면 반 비교에, 하나만 주면 차시 상세와 수업 중 화면에 씁니다. 이 수업의 반이 아닌 id는 빼고 내리므로, 요청한 반 수보다 항목이 적을 수 있습니다.",
+        "operationId": "findQuestionStats",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "classroomIds",
+            "in": "query",
+            "description": "비우면 수업의 모든 반",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "비우면 수업의 모든 반",
+              "items": {
+                "type": "integer",
+                "format": "int64",
+                "description": "비우면 수업의 모든 반"
+              },
+              "maxItems": 20,
+              "minItems": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionStatsResponseClassroom"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/teacher/courses/{courseId}/dashboard": {
       "get": {
         "tags": [
@@ -1293,6 +1614,82 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ReportResponseStudentDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/{classroomId}/students/{membershipId}/lessons/{lessonNumber}/answers": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "학생의 차시 풀이",
+        "description": "문제마다 학생이 고른 보기와 쓴 답, 정답, 결과를 내립니다. 시작하지 않은 문제는 NOT_STARTED, 푸는 중인 문제는 IN_PROGRESS입니다. 결과를 고칠 때는 attemptAnswerId를 씁니다.",
+        "operationId": "findStudentLessonAnswers",
+        "parameters": [
+          {
+            "name": "classroomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "membershipId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "lessonNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentAnswerResponseLesson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/classrooms/summaries": {
+      "get": {
+        "tags": [
+          "교사 - 대시보드, 학생 관리"
+        ],
+        "summary": "학급 관리 반 목록",
+        "description": "내 모든 반을 학생 수, 지금 열린 차시, 최근 평균, 살펴볼 학생 수와 함께 내립니다.",
+        "operationId": "findClassroomSummaries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportResponseClassroomSummary"
+                  }
                 }
               }
             }
@@ -1740,6 +2137,27 @@
           "schoolId"
         ]
       },
+      "LessonOpeningRequestSchedule": {
+        "type": "object",
+        "properties": {
+          "openAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "열 시각. 시간대를 포함한다(예: 2026-11-23T09:10:00+09:00). 이미 열린 차시는 비운다"
+          },
+          "finishAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "자동 마감 시각. 시간대를 포함한다. 열 시각보다 뒤여야 한다"
+          }
+        }
+      },
       "AttemptOverrideRequestUpdate": {
         "type": "object",
         "properties": {
@@ -2102,6 +2520,22 @@
               "CLOSED",
               "FINISHED"
             ]
+          },
+          "scheduledOpenAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "열기 예약 시각(시간대 포함). 없으면 null"
+          },
+          "scheduledFinishAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "자동 마감 시각(시간대 포함). 없으면 null"
           }
         }
       },
@@ -2133,6 +2567,61 @@
           "id": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "QuestionRequestCopy": {
+        "type": "object",
+        "properties": {
+          "targetCourseId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "복사해 넣을 수업. 같은 수업이어도 된다"
+          },
+          "targetLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "복사해 넣을 차시. 비우면 대상 수업에 원본 제목으로 새 차시를 만든다",
+            "exclusiveMinimum": 0
+          },
+          "questionIds": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "description": "복사할 문제. 비우면 차시의 모든 문제",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 100,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "targetCourseId"
+        ]
+      },
+      "QuestionResponseCopyResult": {
+        "type": "object",
+        "properties": {
+          "targetCourseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "targetLessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "copiedCount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -2207,6 +2696,45 @@
         "properties": {
           "temporaryPassword": {
             "type": "string"
+          }
+        }
+      },
+      "AttemptOverrideRequestByAnswer": {
+        "type": "object",
+        "properties": {
+          "answerText": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "문제별 분포의 answerText를 그대로 넘긴다. 공백과 대소문자는 무시하고 비교한다. 학생 답에 길이 제한이 없어 여기도 두지 않는다",
+            "minLength": 1
+          },
+          "result": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "인정은 RIGHT, 인정 취소는 WRONG",
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE"
+            ]
+          }
+        },
+        "required": [
+          "answerText",
+          "result"
+        ]
+      },
+      "AttemptOverrideResponseByAnswer": {
+        "type": "object",
+        "properties": {
+          "changedCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "결과가 바뀐 응답 수. 이미 그 결과였던 응답은 세지 않는다"
           }
         }
       },
@@ -2623,6 +3151,153 @@
               "null"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "QuestionStatsResponseAnswerText": {
+        "type": "object",
+        "properties": {
+          "answerText": {
+            "type": "string",
+            "description": "묶인 답 중 가장 많이 쓴 원문. 일괄 인정에 그대로 넘긴다"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rightCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "그중 정답으로 처리된 수. count와 같으면 모두 인정된 답"
+          }
+        }
+      },
+      "QuestionStatsResponseClassroom": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "OPEN",
+              "CLOSED",
+              "FINISHED"
+            ]
+          },
+          "studentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "responseCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "이 차시에 하나라도 답한 학생 수"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionStatsResponseQuestion"
+            }
+          }
+        }
+      },
+      "QuestionStatsResponseOption": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hasImage": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isCorrect": {
+            "type": "boolean"
+          }
+        }
+      },
+      "QuestionStatsResponseQuestion": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "MULTIPLE_CHOICE",
+              "SHORT_ANSWER"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hasImage": {
+            "type": "boolean"
+          },
+          "answeredCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "답을 낸 응답 수. 시간이 지나 미응답으로 확정된 것은 빠진다"
+          },
+          "rightCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "noAnswerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "options": {
+            "type": "array",
+            "description": "객관식 보기별 응답 수. 주관식이면 빈 목록",
+            "items": {
+              "$ref": "#/components/schemas/QuestionStatsResponseOption"
+            }
+          },
+          "acceptedAnswers": {
+            "type": "array",
+            "description": "주관식 인정 답안. 객관식이면 빈 목록",
+            "items": {
+              "type": "string"
+            }
+          },
+          "answerTexts": {
+            "type": "array",
+            "description": "주관식 답을 정규화(공백 제거, 소문자)해 묶은 분포. 많은 순",
+            "items": {
+              "$ref": "#/components/schemas/QuestionStatsResponseAnswerText"
+            }
           }
         }
       },
@@ -3050,6 +3725,265 @@
             "items": {
               "$ref": "#/components/schemas/ReportResponseStudentAnswer"
             }
+          }
+        }
+      },
+      "StudentAnswerResponseAnswer": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32",
+            "description": "학생이 본 문제 번호. 1부터 빈 번호 없이 이어진다"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "정렬 순서. 가운데 문제를 지우면 빈 번호가 생기므로 화면 번호로는 number를 쓴다"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "MULTIPLE_CHOICE",
+              "SHORT_ANSWER"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "문제 이미지의 서명 URL. 10분간 유효하다"
+          },
+          "explanation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "description": "객관식 보기. 주관식이면 빈 목록",
+            "items": {
+              "$ref": "#/components/schemas/StudentAnswerResponseOption"
+            }
+          },
+          "acceptedAnswers": {
+            "type": "array",
+            "description": "주관식 인정 답안. 객관식이면 빈 목록",
+            "items": {
+              "type": "string"
+            }
+          },
+          "selectedOptionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "answerText": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "RIGHT",
+              "WRONG",
+              "NONE",
+              "IN_PROGRESS",
+              "NOT_STARTED"
+            ]
+          },
+          "attemptAnswerId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "결과를 고칠 때 쓴다. 시작하지 않은 문제는 null"
+          },
+          "byTimeout": {
+            "type": "boolean"
+          },
+          "isOverridden": {
+            "type": "boolean"
+          }
+        }
+      },
+      "StudentAnswerResponseLesson": {
+        "type": "object",
+        "properties": {
+          "membershipId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "studentName": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lessonTitle": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "이 반에서 이 차시의 상태",
+            "enum": [
+              "PLANNED",
+              "OPEN",
+              "CLOSED",
+              "FINISHED"
+            ]
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "correctCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "answers": {
+            "type": "array",
+            "description": "문제 순서대로. 시작하지 않은 문제도 들어 있다",
+            "items": {
+              "$ref": "#/components/schemas/StudentAnswerResponseAnswer"
+            }
+          }
+        }
+      },
+      "StudentAnswerResponseOption": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isCorrect": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportResponseClassroomOpenLesson": {
+        "type": "object",
+        "properties": {
+          "lessonNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "questionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "responseCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ReportResponseClassroomSummary": {
+        "type": "object",
+        "properties": {
+          "classroomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "courseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "grade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "classNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "openLesson": {
+            "description": "지금 열린 차시. 없으면 null",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ReportResponseClassroomOpenLesson"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lastFinishedLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "latestLessonNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "latestQuestionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestAverageCorrect": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "watchStudentCount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

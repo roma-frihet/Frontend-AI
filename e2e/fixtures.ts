@@ -205,3 +205,148 @@ export const TEACHER_QUESTIONS = [
     ],
   },
 ];
+
+/** 학급 관리 반 카드 */
+export const TEACHER_SUMMARIES = [
+  {
+    classroomId: 2,
+    courseId: 2,
+    grade: 3,
+    subjectName: "과학",
+    classNo: 5,
+    studentCount: 1,
+    openLesson: null,
+    lastFinishedLessonNumber: 1,
+    latestLessonNumber: 1,
+    latestQuestionCount: 2,
+    latestAverageCorrect: 1.0,
+    watchStudentCount: 1,
+  },
+];
+
+export const TEACHER_STUDENTS = {
+  classroomId: 2,
+  classNo: 5,
+  studentCount: 1,
+  students: [
+    {
+      membershipId: 1,
+      studentName: "김하늘",
+      studentNumber: "30512",
+      recentScores: [{ lessonNumber: 1, correctCount: 1, questionCount: 2 }],
+      latestCorrectCount: 1,
+      totalCorrectCount: 1,
+      totalQuestionCount: 2,
+      status: "NOT_RESPONDED",
+    },
+  ],
+};
+
+/** 1차시 결과. 객관식 하나, 주관식 하나. 주관식은 인정 답안에 없는 "엽록체 안"이 섞여 있다. */
+export const QUESTION_STATS = [
+  {
+    classroomId: 2,
+    classNo: 5,
+    status: "FINISHED",
+    studentCount: 1,
+    responseCount: 1,
+    questions: [
+      {
+        questionId: 102,
+        displayOrder: 0,
+        type: "MULTIPLE_CHOICE",
+        content: "광합성이 일어나는 곳은?",
+        hasImage: false,
+        answeredCount: 1,
+        rightCount: 1,
+        noAnswerCount: 0,
+        options: [
+          { optionId: 102, displayOrder: 0, content: "엽록체", hasImage: false, count: 1, isCorrect: true },
+          { optionId: 103, displayOrder: 1, content: "핵", hasImage: false, count: 0, isCorrect: false },
+        ],
+        acceptedAnswers: [],
+        answerTexts: [],
+      },
+      {
+        questionId: 104,
+        displayOrder: 1,
+        type: "SHORT_ANSWER",
+        content: "광합성에 필요한 기체는?",
+        hasImage: false,
+        answeredCount: 1,
+        rightCount: 0,
+        noAnswerCount: 0,
+        options: [],
+        acceptedAnswers: ["이산화탄소"],
+        answerTexts: [{ answerText: "이산화 탄소 기체", count: 1, rightCount: 0 }],
+      },
+    ],
+  },
+];
+
+export const STUDENT_ANSWERS = {
+  membershipId: 1,
+  studentName: "김하늘",
+  studentNumber: "30512",
+  lessonNumber: 1,
+  lessonTitle: "광합성",
+  status: "FINISHED",
+  questionCount: 2,
+  correctCount: 1,
+  answers: [
+    {
+      questionId: 104,
+      // 가운데 문제를 지워 displayOrder에 빈 번호가 생긴 경우. 화면 번호는 number를 쓴다.
+      number: 2,
+      displayOrder: 3,
+      type: "SHORT_ANSWER",
+      content: "광합성에 필요한 기체는?",
+      imageUrl: null,
+      options: [],
+      acceptedAnswers: ["이산화탄소"],
+      answerText: "이산화 탄소 기체",
+      result: "WRONG",
+      attemptAnswerId: 900,
+      byTimeout: false,
+      isOverridden: false,
+    },
+  ],
+};
+
+/** 교사 화면이 처음 그릴 때 부르는 응답 전부. 경로가 겹치면 가장 긴 키가 이긴다. */
+export const teacherStubs = (extra: Record<string, unknown> = {}) => ({
+  "/api/v1/teacher/mypage": TEACHER_MYPAGE,
+  "/api/v1/teacher/classrooms/summaries": TEACHER_SUMMARIES,
+  "/api/v1/teacher/classrooms/2/students/1/lessons/1/answers": STUDENT_ANSWERS,
+  "/api/v1/teacher/classrooms/2/students": TEACHER_STUDENTS,
+  "/api/v1/teacher/classrooms": TEACHER_CLASSROOMS,
+  "/api/v1/teacher/courses/2/lessons/1/question-stats": QUESTION_STATS,
+  "/api/v1/teacher/courses/2/lessons/1/questions": TEACHER_QUESTIONS,
+  "/api/v1/teacher/courses/2/lessons/2/questions": [],
+  "/api/v1/teacher/courses/2/lessons": TEACHER_LESSONS,
+  "/api/v1/teacher/courses/2/scores": {
+    content: [
+      {
+        classroomId: 2,
+        classNo: 5,
+        membershipId: 1,
+        studentName: "김하늘",
+        studentNumber: "30512",
+        lessonNumber: 1,
+        correctCount: 1,
+        questionCount: 2,
+      },
+    ],
+    pageInfo: { page: 0, size: 100, hasNext: false },
+  },
+  "/api/v1/teacher/subjects": [{ id: 251, schoolLevel: "MIDDLE", name: "과학" }],
+  ...extra,
+});
+
+export const signInAsTeacher = async (page: Page) => {
+  await page.goto("/teacher/login");
+  await page.getByLabel("이메일").fill("teacher1@example.com");
+  await page.getByLabel("비밀번호").fill("test1234");
+  await page.getByRole("button", { name: "로그인" }).click();
+  await page.waitForURL("/teacher");
+};

@@ -1,226 +1,257 @@
 "use client";
 
-// 교사 대시보드.
+// 학급 관리 — 교사 화면의 첫 화면.
 //
-// 수업이 하나도 없는 상태로 시작하는 것이 정상이다. 빈 화면이 아니라 안내 화면이어야 한다.
-// 서버가 setup으로 어디까지 했는지 알려 주므로 그걸로 다음에 할 일을 짚어 준다.
+// 지금 진행 중인 반을 맨 위에 두고, 학년·과목별로 반 카드를 늘어놓는다.
+// 반을 누르면 그 반에서 차시를 열고, 학생과 성적을 본다.
+//
+// 반 카드 숫자는 summaries가 준다. 수업(학년·과목) 목록과 차시 수는 마이페이지 응답에 있다.
+// 반이 없는 수업도 보여야 하므로 수업 목록을 기준으로 묶는다.
 
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { BarChart3, Check, Unlock } from "lucide-react";
+import { ArrowRight, Plus, Trash2 } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
-import { StatCard } from "@/components/student/stat-card";
+import { ConfirmDelete, losses, withParticle } from "@/components/teacher/confirm-delete";
+import { CreateClassroomDialog } from "@/components/teacher/create-classroom-dialog";
+import { Chip, Panel } from "@/components/teacher/panel";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
-import { Card } from "@/components/ui/card";
-import { useFindMyPage, useFindDashboard } from "@/api/generated";
-import { cn } from "cn";
+import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { deleteCourse, useFindClassroomSummaries, useFindMyPage } from "@/api/generated";
+import type {
+  ReportResponseClassroomSummary,
+  TeacherResponseCourse,
+} from "@/api/generated/model";
 
-export default function TeacherDashboardPage() {
-  const router = useRouter();
+export default function TeacherHomePage() {
   const mypage = useFindMyPage();
   const courses = mypage.data?.data.courses ?? [];
   const profile = mypage.data?.data.profile;
-  const { courseId } = useTeacherCourse(courses);
+  const summaries = useFindClassroomSummaries();
+  const rooms = summaries.data?.data ?? [];
 
-  const dashboard = useFindDashboard(Number(courseId), {
-    query: { enabled: Boolean(courseId) },
-  });
-  const data = dashboard.data?.data;
-  const setup = data?.setup;
+  const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<TeacherResponseCourse | null>(null);
+  const { run, busy, error } = useRun();
 
-  const steps = [
-    { done: setup?.hasClassroom, label: "반 만들기", href: "/teacher/mypage" },
-    { done: setup?.hasLesson, label: "차시 추가하기", href: "/teacher/questions" },
-    { done: setup?.hasQuestion, label: "문제 넣기", href: "/teacher/questions" },
-    { done: setup?.hasOpenedLesson, label: "차시 열기", href: "/teacher/questions" },
-  ];
-  const remaining = steps.filter((step) => !step.done).length;
+  const live = rooms.filter((room) => room.openLesson);
+  const pending = mypage.isPending || summaries.isPending;
 
   return (
-    <TeacherShell title="대시보드">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="grid gap-0.5">
-          <h2 className="text-2xl font-extrabold">
-            안녕하세요, {profile?.name ?? "선생님"}
-          </h2>
-          <p className="text-muted-foreground">
-            {courses.length === 0
-              ? "먼저 마이페이지에서 담당 수업을 만들어 주세요."
-              : "수업이 끝나면 차시를 열어 주세요."}
-          </p>
-        </div>
-        {courses.length > 0 ? (
-          <AppButton onClick={() => router.push("/teacher/questions")}>
-            <Unlock className="size-4" aria-hidden />
-            문제 열기
-          </AppButton>
-        ) : (
-          <AppButton onClick={() => router.push("/teacher/mypage")}>
-            수업 만들기
-          </AppButton>
-        )}
-      </div>
-
-      {courses.length === 0 ? (
-        <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
-          <p className="text-muted-foreground">
-            마이페이지에서 담당 수업을 만들면 여기에서 수업 현황을 볼 수 있습니다.
-          </p>
-        </Card>
-      ) : dashboard.isPending ? (
+    <TeacherShell
+      title="학급 관리"
+      description="반을 눌러 차시를 열고, 학생과 성적을 확인하세요."
+      actions={
+        <AppButton onClick={() => setCreating(true)}>
+          <Plus className="size-4" aria-hidden />
+          반 만들기
+        </AppButton>
+      }
+    >
+      {pending ? (
         <p className="text-muted-foreground">불러오는 중…</p>
+      ) : courses.length === 0 ? (
+        <Panel>
+          <h2 className="text-lg font-bold">첫 반을 만들어 주세요</h2>
+          <p className="text-muted-foreground">
+            학년·과목과 반 번호를 고르면 바로 학생을 모을 수 있습니다.
+          </p>
+          <AppButton className="justify-self-start" onClick={() => setCreating(true)}>
+            <Plus className="size-4" aria-hidden />
+            반 만들기
+          </AppButton>
+        </Panel>
       ) : (
         <>
-          {remaining > 0 ? (
-            <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <Check className="size-5 text-primary" aria-hidden />
-                <h3 className="text-lg font-bold">시작하기</h3>
-                <span className="ml-auto text-sm text-muted-foreground tabular-nums">
-                  {steps.length - remaining} / {steps.length}
-                </span>
+          {live.length > 0 ? (
+            <section
+              aria-labelledby="live-title"
+              className="grid gap-3 rounded-lg bg-success-soft p-5"
+            >
+              <div className="flex items-center gap-2">
+                <span aria-hidden className="size-2.5 rounded-full bg-success" />
+                <h2 id="live-title" className="font-bold">
+                  지금 진행 중
+                </h2>
+                <span className="text-sm text-muted-foreground">{live.length}개 반</span>
               </div>
-              <p className="text-muted-foreground">
-                네 가지만 준비하면 학생에게 문제를 열 수 있습니다.
-              </p>
-              <ol className="m-0 grid list-none gap-3 p-0 md:grid-cols-4">
-                {steps.map((step, index) => (
-                  <li
-                    key={step.label}
-                    className={cn(
-                      "grid content-start gap-2.5 rounded-lg p-4",
-                      step.done ? "bg-success-soft" : "bg-secondary",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "inline-grid size-7 place-items-center rounded-full text-sm font-bold",
-                        step.done
-                          ? "bg-success text-white"
-                          : "bg-card text-muted-foreground",
-                      )}
-                    >
-                      {step.done ? <Check className="size-4" aria-hidden /> : index + 1}
-                    </span>
+              <ul className="m-0 grid list-none gap-2 p-0">
+                {live.map((room) => (
+                  <li key={room.classroomId}>
                     <Link
-                      href={step.href}
-                      className={cn(
-                        "font-bold",
-                        step.done ? "text-success" : "hover:underline",
-                      )}
+                      href={`/teacher/classrooms/${room.classroomId}?tab=lessons&lesson=${room.openLesson?.lessonNumber}`}
+                      className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-border bg-card px-4 py-3 transition-colors hover:border-success"
                     >
-                      {step.label}
+                      <strong className="min-w-28">
+                        {room.grade}학년 {room.classNo}반
+                      </strong>
+                      <span className="min-w-0 flex-1 text-muted-foreground">
+                        {room.openLesson?.lessonNumber}차시 · {room.openLesson?.title}
+                      </span>
+                      <span className="font-bold text-success tabular-nums">
+                        응답 {room.openLesson?.responseCount ?? 0} / {room.studentCount ?? 0}
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-bold text-primary-deep">
+                        반으로 가기
+                        <ArrowRight className="size-4" aria-hidden />
+                      </span>
                     </Link>
                   </li>
                 ))}
-              </ol>
-            </Card>
+              </ul>
+            </section>
           ) : null}
 
-          <div className="grid gap-gap md:grid-cols-2">
-            <StatCard
-              icon={<Unlock className="size-5.5" aria-hidden />}
-              title="지금 열린 반"
-              value={String(data?.openLessonCount ?? 0)}
-              unit={`/ ${data?.classroomCount ?? 0}반`}
-              ratio={
-                data?.classroomCount
-                  ? (data.openLessonCount ?? 0) / data.classroomCount
-                  : null
-              }
+          {courses.map((course) => (
+            <CourseSection
+              key={course.id}
+              course={course}
+              rooms={rooms.filter((room) => room.courseId === course.id)}
+              busy={busy}
+              onCreate={() => setCreating(true)}
+              onDelete={() => setDeleting(course)}
             />
-            <StatCard
-              icon={<BarChart3 className="size-5.5" aria-hidden />}
-              title="최근 평균 정답"
-              tone="compare"
-              value={
-                data?.averageCorrect == null ? "–" : data.averageCorrect.toFixed(1)
-              }
-              unit={
-                data?.averageQuestionCount
-                  ? `/ ${data.averageQuestionCount}문제`
-                  : "아직 기록이 없습니다"
-              }
-              ratio={
-                data?.averageCorrect != null && data.averageQuestionCount
-                  ? data.averageCorrect / data.averageQuestionCount
-                  : null
-              }
-            />
-          </div>
-
-          <div className="grid gap-gap lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)]">
-            <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-              <h3 className="text-lg font-bold">지금 열린 문제</h3>
-              {data?.liveLessons?.length ? (
-                <ul className="m-0 grid list-none gap-2 p-0">
-                  {data.liveLessons.map((live) => (
-                    <li
-                      key={`${live.classroomId}-${live.lessonNumber}`}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border px-4 py-3"
-                    >
-                      <span className="grid gap-0.5">
-                        <span className="font-bold">
-                          {live.classNo}반 · {live.lessonNumber}차시
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {live.lessonTitle}
-                        </span>
-                      </span>
-                      <span className="text-sm font-medium tabular-nums">
-                        {live.responseCount} / {live.studentCount}명 응답
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground">
-                  지금 열어 둔 차시가 없습니다. 수업을 시작하며 열어 주세요.
-                </p>
-              )}
-            </Card>
-
-            <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-              <h3 className="text-lg font-bold">살펴볼 학생</h3>
-              <WatchList
-                title="아직 답하지 않음"
-                students={data?.notRespondedStudents ?? []}
-              />
-              <WatchList
-                title="정답률이 떨어짐"
-                students={data?.droppedStudents ?? []}
-              />
-            </Card>
-          </div>
+          ))}
+          <ErrorText error={error} />
         </>
       )}
+
+      <CreateClassroomDialog
+        open={creating}
+        onOpenChange={setCreating}
+        courses={courses}
+        schoolId={profile?.schoolId ?? null}
+      />
+
+      <ConfirmDelete
+        open={deleting != null}
+        onOpenChange={() => setDeleting(null)}
+        title={`${deleting?.grade}학년 ${withParticle(deleting?.subjectName ?? "")} 지울까요?`}
+        losses={losses(
+          { count: deleting?.classrooms?.length ?? 0, label: "반", unit: "개" },
+          {
+            count: rooms
+              .filter((room) => room.courseId === deleting?.id)
+              .reduce((sum, room) => sum + (room.studentCount ?? 0), 0),
+            label: "학생",
+            unit: "명",
+          },
+          { count: deleting?.lessonCount ?? 0, label: "차시", unit: "개" },
+        )}
+        busy={busy}
+        onConfirm={() => {
+          const id = deleting?.id ?? 0;
+          setDeleting(null);
+          void run(() => deleteCourse(id));
+        }}
+      />
     </TeacherShell>
   );
 }
 
-function WatchList({
-  title,
-  students,
+function CourseSection({
+  course,
+  rooms,
+  busy,
+  onCreate,
+  onDelete,
 }: {
-  title: string;
-  students: { membershipId?: number; studentName?: string; classNo?: number }[];
+  course: TeacherResponseCourse;
+  rooms: ReportResponseClassroomSummary[];
+  busy: boolean;
+  onCreate: () => void;
+  onDelete: () => void;
 }) {
+  const sorted = [...rooms].sort((a, b) => (a.classNo ?? 0) - (b.classNo ?? 0));
+
   return (
-    <div className="grid gap-2">
-      <span className="text-sm font-bold text-muted-foreground">{title}</span>
-      {students.length === 0 ? (
-        <p className="text-sm text-muted-foreground">모두 잘 따라오고 있습니다.</p>
+    <section aria-labelledby={`course-${course.id}`} className="grid gap-3.5">
+      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+        <h2 id={`course-${course.id}`} className="text-xl font-extrabold">
+          {course.grade}학년 {course.subjectName}
+        </h2>
+        <span className="text-sm text-muted-foreground">
+          차시 {course.lessonCount ?? 0}개 공유
+        </span>
+        <button
+          type="button"
+          aria-label={`${course.grade}학년 ${course.subjectName} 삭제`}
+          disabled={busy}
+          onClick={onDelete}
+          className="ml-auto inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-50"
+        >
+          <Trash2 className="size-4" aria-hidden />
+        </button>
+      </div>
+
+      {sorted.length === 0 ? (
+        <Panel>
+          <p className="text-muted-foreground">
+            아직 반이 없습니다. 반을 만들면 학생을 모으고 차시를 열 수 있습니다.
+          </p>
+          <AppButton variant="outline" className="justify-self-start" onClick={onCreate}>
+            <Plus className="size-4" aria-hidden />
+            반 만들기
+          </AppButton>
+        </Panel>
       ) : (
-        <ul className="m-0 grid list-none gap-1.5 p-0">
-          {students.map((student) => (
-            <li key={student.membershipId} className="text-sm">
-              {student.classNo}반 {student.studentName}
+        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4 p-0">
+          {sorted.map((room) => (
+            <li key={room.classroomId}>
+              <ClassCard room={room} />
             </li>
           ))}
         </ul>
       )}
-    </div>
+    </section>
+  );
+}
+
+function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
+  const open = room.openLesson;
+  const status = open
+    ? `${open.lessonNumber}차시 진행 중`
+    : room.lastFinishedLessonNumber
+      ? `열린 차시 없음 · ${room.lastFinishedLessonNumber}차시까지 마감`
+      : "열린 차시 없음";
+  const watch = room.watchStudentCount ?? 0;
+
+  return (
+    <Link
+      href={`/teacher/classrooms/${room.classroomId}`}
+      className="grid h-full gap-3.5 rounded-lg border border-border bg-card p-5 shadow-card transition-colors hover:border-primary"
+    >
+      <span className="flex items-center justify-between gap-2">
+        <strong className="text-2xl font-extrabold">{room.classNo}반</strong>
+        <span className="text-sm text-muted-foreground">
+          학생 {room.studentCount ?? 0}명
+        </span>
+      </span>
+      <Chip tone={open ? "bg-success-soft text-success" : "bg-secondary text-muted-foreground"}>
+        {status}
+      </Chip>
+      <span className="grid grid-cols-2 gap-2 border-t border-border pt-3">
+        <span className="grid gap-0.5">
+          <span className="text-sm text-muted-foreground">
+            최근 평균{room.latestLessonNumber ? ` · ${room.latestLessonNumber}차시` : ""}
+          </span>
+          <span className="font-bold tabular-nums">
+            {room.latestAverageCorrect == null
+              ? "–"
+              : `${room.latestAverageCorrect.toFixed(1)} / ${room.latestQuestionCount ?? 0}`}
+          </span>
+        </span>
+        <span className="grid gap-0.5">
+          <span className="text-sm text-muted-foreground">살펴볼 학생</span>
+          <span className="inline-flex items-center gap-1.5 font-bold">
+            {watch > 0 ? (
+              <span aria-hidden className="size-2 rounded-full bg-warning" />
+            ) : null}
+            {watch > 0 ? `${watch}명` : "없음"}
+          </span>
+        </span>
+      </span>
+    </Link>
   );
 }

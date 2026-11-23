@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // 교사 화면을 반 중심으로 다시 묶으면서 옮긴 경로. 즐겨찾기해 둔 주소가 죽지 않게 넘겨 준다.
+  redirects: async () => [
+    { source: "/teacher/questions", destination: "/teacher/prepare", permanent: false },
+    { source: "/teacher/students", destination: "/teacher", permanent: false },
+  ],
   rewrites: async () => [
     { source: "/api/v1/:path*", destination: `${apiOrigin}/api/v1/:path*` },
   ],
