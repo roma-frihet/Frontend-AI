@@ -7,16 +7,14 @@
 
 import { useState } from "react";
 import { flushSync } from "react-dom";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Copy, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
 import { ConfirmDelete, losses, withParticle } from "@/components/teacher/confirm-delete";
+import { ClassStatusBoard } from "@/components/teacher/class-status-board";
 import { CopyPanel } from "@/components/teacher/copy-panel";
-import { classroomHref } from "@/components/teacher/classroom/use-classroom-query";
-import { STATUS_LABEL, STATUS_TONE, type LessonStatus } from "@/components/teacher/lesson-status";
 import { QuestionForm } from "@/components/teacher/question-form";
 import { StudentPreview } from "@/components/teacher/student-preview";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
@@ -288,29 +286,16 @@ export function PrepareLessons() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 rounded-md bg-secondary px-3.5 py-3">
-                <span className="mr-1 text-sm text-muted-foreground">반별 상태</span>
-                {(lesson.classrooms ?? []).length === 0 ? (
-                  <span className="text-sm text-muted-foreground">아직 반이 없어요</span>
-                ) : null}
-                {(lesson.classrooms ?? []).map((room) => {
-                  const status = (room.status ?? "PLANNED") as LessonStatus;
-                  return (
-                    <Link
-                      key={room.classroomId}
-                      href={classroomHref(room.classroomId ?? 0, {
-                        tab: "lessons",
-                        lesson: lessonNumber,
-                      })}
-                      className="rounded-full hover:opacity-80"
-                    >
-                      <Chip tone={STATUS_TONE[status]}>
-                        {room.classNo}반 {STATUS_LABEL[status]}
-                      </Chip>
-                    </Link>
-                  );
-                })}
-              </div>
+              {(lesson.classrooms ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  아직 이 학년·과목에 반이 없어요. 반을 만들면 반마다 진행 상황이 여기에 보여요.
+                </p>
+              ) : (
+                <ClassStatusBoard
+                  classrooms={lesson.classrooms ?? []}
+                  lessonNumber={lessonNumber ?? 0}
+                />
+              )}
             </Panel>
 
             {copying ? (

@@ -47,6 +47,8 @@ const CALLOUT_TONE = {
   warning: "border border-warning bg-warning-soft",
   danger: "bg-destructive-soft text-destructive",
   neutral: "bg-secondary",
+  /** 카드 안에서 칸을 나눌 때. 안에 색 칩을 올려도 묻히지 않는다. */
+  outline: "border border-border bg-background",
 } as const;
 
 /** 카드 안팎에 놓는 옅은 색 안내 상자 — 요약, 완료 알림, 꼭 알아야 할 정보. */
