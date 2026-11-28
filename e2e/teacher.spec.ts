@@ -565,3 +565,34 @@ test("자동 마감 시간은 직접 입력할 수도 있다", async ({ page }) 
   expect(minutes).toBeGreaterThan(43);
   expect(minutes).toBeLessThan(47);
 });
+
+test("차시·문제 준비에서 반별 상태를 진행 중·열기 전·마감으로 나눠 보여 준다", async ({ page }) => {
+  await mockSupabaseAuth(page, "teacher");
+  await mockApi(
+    page,
+    teacherStubs({
+      "/api/v1/teacher/courses/2/lessons": [
+        {
+          ...TEACHER_LESSONS[0],
+          classrooms: [
+            { classroomId: 2, classNo: 5, status: "OPEN" },
+            { classroomId: 3, classNo: 1, status: "PLANNED" },
+            { classroomId: 4, classNo: 3, status: "CLOSED" },
+            { classroomId: 6, classNo: 4, status: "FINISHED" },
+          ],
+        },
+        TEACHER_LESSONS[1],
+      ],
+    }),
+  );
+  await signInAsTeacher(page);
+  await page.goto("/teacher/prepare");
+
+  const board = page.getByRole("region", { name: "반별 상태" });
+  await expect(board).toContainText("진행 중2개 반");
+  await expect(board).toContainText("열기 전1개 반");
+  await expect(board).toContainText("마감1개 반");
+  await expect(board.getByRole("link", { name: /3반\s*닫힘/ })).toBeVisible();
+  await board.getByRole("link", { name: "5반" }).click();
+  await expect(page).toHaveURL("/teacher/classrooms/2?lesson=1");
+});

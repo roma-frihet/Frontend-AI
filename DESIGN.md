@@ -106,7 +106,7 @@
 |---|---|---|
 | 카드 | `Panel` (`size`: sm·md·lg, `as`: div·section·li·article) | `@/components/surface` |
 | 누를 수 있는 카드(Link·button) | `panelClass({ interactive: true })` | `@/components/surface` |
-| 옅은 색 안내 상자(요약·완료·주의) | `Callout` (`tone`: primary·success·warning·danger·neutral) | `@/components/surface` |
+| 옅은 색 안내 상자(요약·완료·주의) | `Callout` (`tone`: primary·success·warning·danger·neutral·outline) | `@/components/surface` |
 | 상태 칩 | `Chip` | `@/components/surface` |
 | 큰 버튼 | `AppButton` | `@/components/app-button` |
 | 글자 버튼 / 글자 링크 | `TextButton` / `TextLink` (`tone`: primary·muted, `size`: sm·base) | `@/components/text-action` |
