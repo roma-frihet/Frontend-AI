@@ -2,14 +2,15 @@
 
 // 열기 예약 / 자동 마감 고르기.
 //
-// 예약은 대개 같은 날 수업 시간에 쓴다. 그래서 날짜는 "오늘·내일"을 먼저 보여 주고, 시각은
-// 시·분을 따로 고른다(분은 5분 단위). 마감은 시각을 또 고르게 하지 않고 "열고 나서 몇 분 뒤"로 정한다.
+// 예약은 대개 같은 날 수업 시간에 쓴다. 그래서 날짜는 "오늘"을 먼저 보여 주고 다른 날은 목록으로 둔다.
+// 시각은 시·분을 따로 고른다(분은 5분 단위). 마감은 시각을 또 고르게 하지 않고 "열고 나서 몇 분 뒤"로
+// 정한다. 자주 쓰는 길이는 칩으로, 그 밖의 길이는 직접 입력한다.
 // 이미 열린 차시는 마감만 정하며, 그때는 "지금부터 몇 분 뒤"다.
 
 import { useEffect, useState } from "react";
 
 import { AppButton } from "@/components/app-button";
-import { AppField } from "@/components/app-field";
+import { AppField, AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
 import { Callout } from "@/components/surface";
 import { ToggleChip } from "@/components/text-action";
@@ -18,7 +19,8 @@ import { toLocalInput, toOffsetDateTime } from "@/components/teacher/lesson-stat
 const MINUTE_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * MINUTE_MS;
 const DAY_COUNT = 14;
-const DURATIONS = [10, 20, 30, 60] as const;
+const DURATIONS = [5, 10, 15, 30] as const;
+const MAX_CUSTOM_MINUTES = 24 * 60;
 const MINUTE_STEP = 5;
 
 const startOfDay = (offset: number, now: number) => {
@@ -28,12 +30,16 @@ const startOfDay = (offset: number, now: number) => {
   return date;
 };
 
-const dayLabel = (offset: number, now: number) => {
-  if (offset === 0) return "오늘";
-  if (offset === 1) return "내일";
+const dateLabel = (offset: number, now: number) => {
   const date = startOfDay(offset, now);
   const weekday = date.toLocaleDateString("ko-KR", { weekday: "short" });
   return `${date.getMonth() + 1}월 ${date.getDate()}일 (${weekday})`;
+};
+
+const dayLabel = (offset: number, now: number) => {
+  if (offset === 0) return "오늘";
+  if (offset === 1) return "내일";
+  return dateLabel(offset, now);
 };
 
 const hourLabel = (hour: number) => {
@@ -46,7 +52,12 @@ const hourLabel = (hour: number) => {
 const timeLabel = (date: Date) =>
   date.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" });
 
-const durationLabel = (minutes: number) => (minutes >= 60 ? `${minutes / 60}시간 뒤` : `${minutes}분 뒤`);
+const durationLabel = (minutes: number) => {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (hours === 0) return `${minutes}분 뒤`;
+  return rest === 0 ? `${hours}시간 뒤` : `${hours}시간 ${rest}분 뒤`;
+};
 
 const HOUR_ITEMS = Array.from({ length: 24 }, (_, hour) => ({
   value: String(hour),
@@ -57,9 +68,9 @@ const MINUTE_ITEMS = Array.from({ length: 60 / MINUTE_STEP }, (_, i) => ({
   label: `${String(i * MINUTE_STEP).padStart(2, "0")}분`,
 }));
 const laterDayItems = (now: number) =>
-  Array.from({ length: DAY_COUNT - 2 }, (_, i) => ({
-    value: String(i + 2),
-    label: dayLabel(i + 2, now),
+  Array.from({ length: DAY_COUNT - 1 }, (_, i) => ({
+    value: String(i + 1),
+    label: i === 0 ? `내일, ${dateLabel(1, now)}` : dateLabel(i + 1, now),
   }));
 
 /** 지금부터 10분 뒤를 5분 단위로 올린 시각. 처음 열었을 때 고를 필요가 없게 한다. */
@@ -93,14 +104,23 @@ export function SchedulePicker({
   const [day, setDay] = useState(initial.day);
   const [hour, setHour] = useState(initial.hour);
   const [minute, setMinute] = useState(initial.minute);
-  const [duration, setDuration] = useState<number | null>(isOpen ? DURATIONS[0] : null);
+  /** null은 자동 마감 안 함, "custom"은 직접 입력. */
+  const [choice, setChoice] = useState<number | "custom" | null>(isOpen ? DURATIONS[0] : null);
+  const [customMinutes, setCustomMinutes] = useState("");
+
+  const custom = Number(customMinutes);
+  const customValid = Number.isInteger(custom) && custom >= 1 && custom <= MAX_CUSTOM_MINUTES;
+  const duration = choice === "custom" ? (customValid ? custom : null) : choice;
+  const needsCustom = choice === "custom" && !customValid;
 
   const openDate = new Date(startOfDay(day, now).getTime() + (hour * 60 + minute) * MINUTE_MS);
   const base = isOpen ? new Date(now) : openDate;
   const finishDate = duration == null ? null : new Date(base.getTime() + duration * MINUTE_MS);
   const past = !isOpen && openDate.getTime() <= now;
 
-  const summary = isOpen
+  const summary = needsCustom
+    ? `몇 분 뒤에 마감할지 1분에서 ${MAX_CUSTOM_MINUTES}분 사이로 적어 주세요.`
+    : isOpen
     ? `${timeLabel(finishDate ?? base)}에 자동으로 마감해요.`
     : `${dayLabel(day, now)} ${timeLabel(openDate)}에 열어요.` +
       (finishDate ? ` ${durationLabel(duration ?? 0)}인 ${timeLabel(finishDate)}에 자동으로 마감해요.` : "");
@@ -110,7 +130,7 @@ export function SchedulePicker({
       className="grid gap-4 rounded-md bg-secondary p-4"
       onSubmit={(event) => {
         event.preventDefault();
-        if (past) return;
+        if (past || needsCustom) return;
         onSave(
           isOpen ? null : toOffsetDateTime(toLocalInput(openDate)),
           finishDate ? toOffsetDateTime(toLocalInput(finishDate)) : null,
@@ -124,13 +144,10 @@ export function SchedulePicker({
             <ToggleChip pressed={day === 0} onClick={() => setDay(0)}>
               오늘
             </ToggleChip>
-            <ToggleChip pressed={day === 1} onClick={() => setDay(1)}>
-              내일
-            </ToggleChip>
             <AppSelect
               id="schedule-later-day"
               items={laterDayItems(now)}
-              value={day >= 2 ? String(day) : ""}
+              value={day >= 1 ? String(day) : ""}
               onValueChange={(value) => value && setDay(Number(value))}
               placeholder="다른 날"
               className="w-auto min-w-36 bg-card"
@@ -165,20 +182,40 @@ export function SchedulePicker({
         <strong>{isOpen ? "언제 마감할까요?" : "자동으로 마감할까요?"}</strong>
         <div role="group" aria-label="자동 마감" className="flex flex-wrap gap-2">
           {isOpen ? null : (
-            <ToggleChip pressed={duration == null} onClick={() => setDuration(null)}>
-              직접 마감
+            <ToggleChip pressed={choice == null} onClick={() => setChoice(null)}>
+              안 함
             </ToggleChip>
           )}
           {DURATIONS.map((minutes) => (
             <ToggleChip
               key={minutes}
-              pressed={duration === minutes}
-              onClick={() => setDuration(minutes)}
+              pressed={choice === minutes}
+              onClick={() => setChoice(minutes)}
             >
               {isOpen ? `지금부터 ${durationLabel(minutes)}` : `열고 ${durationLabel(minutes)}`}
             </ToggleChip>
           ))}
+          <ToggleChip pressed={choice === "custom"} onClick={() => setChoice("custom")}>
+            직접 입력
+          </ToggleChip>
         </div>
+        {choice === "custom" ? (
+          <label className="flex flex-wrap items-center gap-2 text-sm font-medium">
+            {isOpen ? "지금부터" : "열고"}
+            <AppInput
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={MAX_CUSTOM_MINUTES}
+              autoFocus
+              aria-label="마감까지 몇 분"
+              value={customMinutes}
+              onChange={(event) => setCustomMinutes(event.target.value)}
+              className="w-24 bg-card text-right"
+            />
+            분 뒤에 마감
+          </label>
+        ) : null}
       </div>
 
       <Callout tone={past ? "danger" : "primary"} role="status" className="text-sm font-medium">
@@ -186,7 +223,7 @@ export function SchedulePicker({
       </Callout>
 
       <div className="flex flex-wrap gap-2">
-        <AppButton type="submit" disabled={busy || past}>
+        <AppButton type="submit" disabled={busy || past || needsCustom}>
           예약하기
         </AppButton>
         <AppButton type="button" variant="outline" onClick={onCancel}>

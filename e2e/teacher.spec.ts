@@ -121,7 +121,8 @@ test("열기 예약은 시간대를 붙여 보낸다", async ({ page }) => {
   await page.goto("/teacher/classrooms/2");
 
   await page.getByRole("button", { name: "예약" }).click();
-  await page.getByRole("group", { name: "여는 날" }).getByRole("button", { name: "내일" }).click();
+  await page.getByRole("group", { name: "여는 날" }).getByRole("combobox").click();
+  await page.getByRole("option", { name: /^내일,/ }).click();
   await page.getByRole("combobox", { name: "시" }).click();
   await page.getByRole("option", { name: "오전 9시", exact: true }).click();
   await page.getByRole("combobox", { name: "분" }).click();
@@ -524,13 +525,43 @@ test("열린 차시는 지금부터 몇 분 뒤에 마감할지만 고른다", a
   await page.getByRole("button", { name: "자동 마감" }).click();
   await expect(page.getByRole("group", { name: "여는 날" })).toHaveCount(0);
   const before = Date.now();
-  await page.getByRole("group", { name: "자동 마감" }).getByRole("button", { name: "지금부터 20분 뒤" }).click();
+  await page.getByRole("group", { name: "자동 마감" }).getByRole("button", { name: "지금부터 15분 뒤" }).click();
   await page.getByRole("button", { name: "예약하기" }).click();
 
   await expect.poll(() => puts.length).toBe(1);
   const body = puts[0].postDataJSON() as { openAt: string | null; finishAt: string };
   expect(body.openAt).toBeNull();
   const minutes = (new Date(body.finishAt).getTime() - before) / 60000;
-  expect(minutes).toBeGreaterThan(18);
-  expect(minutes).toBeLessThan(22);
+  expect(minutes).toBeGreaterThan(13);
+  expect(minutes).toBeLessThan(17);
+});
+
+test("자동 마감 시간은 직접 입력할 수도 있다", async ({ page }) => {
+  await mockSupabaseAuth(page, "teacher");
+  await mockApi(
+    page,
+    teacherStubs({
+      "/api/v1/teacher/courses/2/lessons": OPEN_LESSONS,
+      "/api/v1/teacher/classrooms/2/lessons/1/schedule": {},
+    }),
+  );
+  const puts = watch(page, "PUT");
+  await signInAsTeacher(page);
+  await page.goto("/teacher/classrooms/2");
+
+  await page.getByRole("button", { name: "자동 마감" }).click();
+  await page.getByRole("group", { name: "자동 마감" }).getByRole("button", { name: "직접 입력" }).click();
+  const submit = page.getByRole("button", { name: "예약하기" });
+  await expect(submit).toBeDisabled();
+
+  const before = Date.now();
+  await page.getByLabel("마감까지 몇 분").fill("45");
+  await expect(page.getByRole("status").filter({ hasText: "자동으로 마감해요" })).toBeVisible();
+  await submit.click();
+
+  await expect.poll(() => puts.length).toBe(1);
+  const body = puts[0].postDataJSON() as { finishAt: string };
+  const minutes = (new Date(body.finishAt).getTime() - before) / 60000;
+  expect(minutes).toBeGreaterThan(43);
+  expect(minutes).toBeLessThan(47);
 });
