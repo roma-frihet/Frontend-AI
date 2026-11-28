@@ -3,7 +3,7 @@
 
 import { expect, test, type Page } from "@playwright/test";
 
-import { mockApi, mockSupabaseAuth, teacherStubs } from "./fixtures";
+import { TEACHER_LESSONS, mockApi, mockSupabaseAuth, signInAsTeacher, teacherStubs } from "./fixtures";
 
 const stubs = teacherStubs();
 
@@ -115,4 +115,50 @@ test("반 삭제는 학생 수를 알려 주고 학급 관리로 돌아간다", 
     .poll(() => deletes)
     .toEqual(expect.arrayContaining(["/api/v1/teacher/classrooms/2"]));
   await expect(page).toHaveURL("/teacher");
+});
+
+test("지금 열려 있는 차시는 차시와 문제를 지울 수 없다", async ({ page }) => {
+  await mockSupabaseAuth(page, "teacher");
+  await mockApi(
+    page,
+    teacherStubs({
+      "/api/v1/teacher/courses/2/lessons": [
+        { ...TEACHER_LESSONS[0], classrooms: [{ classroomId: 2, classNo: 5, status: "OPEN" }] },
+        TEACHER_LESSONS[1],
+      ],
+    }),
+  );
+  await signInAsTeacher(page);
+  await page.goto("/teacher/prepare");
+
+  await expect(page.getByText(/진행 중인 반이 있어요/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "삭제", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "1번 문제 삭제" })).toBeDisabled();
+});
+
+test("학생이 푼 차시를 지우면 풀이 기록과 점수가 바뀐다고 알려 준다", async ({ page }) => {
+  await mockSupabaseAuth(page, "teacher");
+  await mockApi(
+    page,
+    teacherStubs({
+      "/api/v1/teacher/courses/2/lessons": [
+        { ...TEACHER_LESSONS[0], attemptedStudentCount: 3 },
+        TEACHER_LESSONS[1],
+      ],
+    }),
+  );
+  await signInAsTeacher(page);
+  await page.goto("/teacher/prepare");
+
+  await page.getByRole("button", { name: "1번 문제 삭제" }).click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "이 차시를 푼 학생 3명의 점수가 이 문제를 빼고 다시 계산돼요.",
+  );
+  await page.getByRole("dialog").getByRole("button", { name: "취소" }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+
+  await page.getByRole("main").getByRole("button", { name: "삭제", exact: true }).click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "문제 1개, 학생 풀이 기록 3명분이 함께 사라져요.",
+  );
 });
