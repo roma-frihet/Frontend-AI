@@ -21,7 +21,7 @@ import { Chip, Panel } from "@/components/teacher/panel";
 import { QuestionForm } from "@/components/teacher/question-form";
 import { StudentPreview } from "@/components/teacher/student-preview";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadError, useRun } from "@/components/teacher/use-run";
 import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
 import {
   createLesson,
@@ -35,6 +35,7 @@ import {
   useFindQuestions,
 } from "@/api/generated";
 import type { QuestionRequestSave, QuestionResponseResult } from "@/api/generated/model";
+import { toId } from "@/lib/id";
 import { cn } from "cn";
 
 export function PrepareLessons() {
@@ -49,7 +50,10 @@ export function PrepareLessons() {
   const courseId = courses.some((item) => String(item.id) === linkedCourse)
     ? (linkedCourse ?? chosen)
     : chosen;
-  const course = Number(courseId);
+  // courseId는 음수·0일 수도 있다(src/lib/id.ts). 수업이 없으면 null이다.
+  const parsedCourse = toId(courseId);
+  const hasCourse = parsedCourse != null;
+  const course = parsedCourse ?? 0;
   const [selected, setSelected] = useState<number | null>(linked);
   const [newTitle, setNewTitle] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -61,7 +65,7 @@ export function PrepareLessons() {
   const [previewing, setPreviewing] = useState(false);
   const { run, busy, error } = useRun();
 
-  const lessons = useFindLessons(course, { query: { enabled: course > 0 } });
+  const lessons = useFindLessons(course, { query: { enabled: hasCourse } });
   const lessonList = lessons.data?.data ?? [];
   // 고른 차시를 지우면 selected는 없는 번호를 가리킨다. 그때는 첫 차시로 돌아간다.
   const stillThere = lessonList.some((item) => item.lessonNumber === selected);
@@ -69,7 +73,7 @@ export function PrepareLessons() {
   const lesson = lessonList.find((item) => item.lessonNumber === lessonNumber);
 
   const questions = useFindQuestions(course, lessonNumber ?? 0, {
-    query: { enabled: course > 0 && lessonNumber != null },
+    query: { enabled: hasCourse && lessonNumber != null },
   });
   const questionList = questions.data?.data ?? [];
 
@@ -140,7 +144,11 @@ export function PrepareLessons() {
             <span className="text-sm text-muted-foreground">{lessonList.length}개</span>
           </div>
 
-          {lessons.isPending ? (
+          {lessons.isError ? (
+            <div className="px-1">
+              <LoadError error={lessons.error} onRetry={() => void lessons.refetch()} />
+            </div>
+          ) : lessons.isPending ? (
             <p className="text-muted-foreground">불러오는 중…</p>
           ) : lessonList.length === 0 ? (
             <p className="text-muted-foreground">아래에서 첫 차시를 만들어 주세요.</p>

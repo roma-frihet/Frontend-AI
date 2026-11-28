@@ -23,6 +23,7 @@ import {
   useFindQuestionStats,
   useFindScores,
 } from "@/api/generated";
+import { isId } from "@/lib/id";
 import { cn } from "cn";
 
 const REFRESH_MS = 3000;
@@ -39,24 +40,26 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
 
   const classrooms = useFindClassrooms();
   const classroom = classrooms.data?.data.find((room) => room.id === classroomId);
-  const courseId = classroom?.courseId ?? 0;
-  const lessons = useFindLessons(courseId, { query: { enabled: courseId > 0 } });
+  // courseId는 음수·0일 수도 있다(src/lib/id.ts).
+  const courseId = classroom?.courseId;
+  const hasCourse = isId(courseId);
+  const lessons = useFindLessons(courseId ?? 0, { query: { enabled: hasCourse } });
   const lesson = lessons.data?.data.find((item) => item.lessonNumber === lessonNumber);
 
   const stats = useFindQuestionStats(
-    courseId,
+    courseId ?? 0,
     lessonNumber,
     { classroomIds: [classroomId] },
-    { query: { enabled: courseId > 0 && lessonNumber > 0, refetchInterval: REFRESH_MS } },
+    { query: { enabled: hasCourse && lessonNumber > 0, refetchInterval: REFRESH_MS } },
   );
   const mine = stats.data?.data.find((room) => room.classroomId === classroomId);
 
   // 이름은 켰을 때만 받는다.
   const students = useFindClassroomStudents(classroomId, {}, { query: { enabled: showNames } });
   const scores = useFindScores(
-    courseId,
+    courseId ?? 0,
     { classroomId, lessonNumber, size: PAGE_SIZE },
-    { query: { enabled: showNames && courseId > 0, refetchInterval: REFRESH_MS } },
+    { query: { enabled: showNames && hasCourse, refetchInterval: REFRESH_MS } },
   );
   const submitted = new Set(
     (scores.data?.data.content ?? [])
