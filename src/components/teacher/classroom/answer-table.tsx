@@ -13,6 +13,7 @@ import { TableBox, td, th } from "@/components/teacher/panel";
 import { useRun } from "@/components/teacher/use-run";
 import { errorMessage, ErrorText, LoadingState } from "@/components/states";
 import { Chip } from "@/components/surface";
+import { LessonName } from "@/components/lesson-name";
 import { overrideAttemptResult, useFindStudentLessonAnswers } from "@/api/generated";
 import type { StudentAnswerResponseAnswer } from "@/api/generated/model";
 
@@ -74,7 +75,7 @@ export function AnswerTable({
             {heading ?? `${data?.studentNumber} ${data?.studentName}`}
           </h3>
           <span className="text-sm text-muted-foreground">
-            {data?.lessonNumber}차시 · {data?.lessonTitle}
+            <LessonName number={data?.lessonNumber} title={data?.lessonTitle} />
           </span>
         </div>
         <p className="flex items-baseline gap-1">

@@ -12,6 +12,7 @@ import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { LoadingState } from "@/components/states";
+import { LessonName } from "@/components/lesson-name";
 import { useFindQuestions } from "@/api/generated";
 import { cn } from "cn";
 
@@ -70,7 +71,10 @@ function PreviewBody({
   return (
     <div className="flex min-h-120 flex-col bg-background">
       <div className="flex items-center justify-between gap-2 bg-foreground px-4 py-3 text-sm font-bold text-background">
-        <DialogTitle className="text-sm font-bold">학생 화면 미리보기 · 답은 저장되지 않아요</DialogTitle>
+        <div className="flex flex-wrap items-baseline gap-x-3">
+          <DialogTitle className="text-sm font-bold">학생 화면 미리보기</DialogTitle>
+          <span className="text-sm font-medium opacity-70">답은 저장되지 않아요</span>
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -91,7 +95,7 @@ function PreviewBody({
           <div className="grid gap-2.5 border-b border-border bg-card px-5 py-4">
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm text-muted-foreground">
-                {lessonNumber}차시{lessonTitle ? ` · ${lessonTitle}` : ""}
+                <LessonName number={lessonNumber} title={lessonTitle} />
               </span>
               <span className="rounded-full bg-warning-soft px-2.5 py-0.5 text-sm font-bold tabular-nums">
                 제한 시간 {question.timeLimitSec}초

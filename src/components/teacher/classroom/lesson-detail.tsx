@@ -32,6 +32,7 @@ import { useRun } from "@/components/teacher/use-run";
 import { ErrorText, LoadingState } from "@/components/states";
 import { Chip, Panel } from "@/components/surface";
 import { TextButton, TextLink, ToggleChip } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import {
   closeLesson,
   openLesson,
@@ -107,12 +108,12 @@ export function LessonDetail({
           <div className="grid gap-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h2 className="text-xl font-extrabold">
-                {number}차시 · {lesson.title}
+                <LessonName number={number} title={lesson.title} />
               </h2>
               <Chip tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</Chip>
             </div>
             <span className="text-sm text-muted-foreground">
-              {classroom.classNo}반 기준 · 문제 {lesson.questionCount ?? 0}개
+              문제 {lesson.questionCount ?? 0}개, {classroom.classNo}반 결과
             </span>
           </div>
 

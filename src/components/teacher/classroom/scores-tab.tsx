@@ -15,6 +15,7 @@ import { statusIn } from "@/components/teacher/classroom/lessons-tab";
 import { TableBox, td, th } from "@/components/teacher/panel";
 import { ErrorText } from "@/components/states";
 import { Callout, Panel } from "@/components/surface";
+import { lessonLabel, LessonName } from "@/components/lesson-name";
 import { exportScores, getFindQuestionStatsQueryOptions } from "@/api/generated";
 import type {
   ClassroomResponseResult,
@@ -115,7 +116,7 @@ export function ScoresTab({
               return (
                 <tr key={lesson.lessonNumber}>
                   <td className={td}>
-                    {lesson.lessonNumber}차시 · {lesson.title}
+                    <LessonName number={lesson.lessonNumber} title={lesson.title} />
                   </td>
                   <td className={`${td} tabular-nums`}>
                     {mine ? `${mine.responseCount ?? 0} / ${mine.studentCount ?? 0}명` : "–"}
@@ -286,7 +287,7 @@ function ExportPanel({
           <AppSelect
             items={lessons.map((item) => ({
               value: String(item.lessonNumber),
-              label: `${item.lessonNumber}차시 · ${item.title}`,
+              label: lessonLabel(item.lessonNumber, item.title),
             }))}
             value={lesson}
             onValueChange={setLesson}

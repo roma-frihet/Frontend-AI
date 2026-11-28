@@ -25,6 +25,7 @@ import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
 import { ErrorText, LoadError, LoadingState } from "@/components/states";
 import { Chip, Panel } from "@/components/surface";
 import { IconButton, TextLink, ToggleChip } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import {
   createLesson,
   createQuestion,
@@ -215,7 +216,7 @@ export function PrepareLessons() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 {renaming == null ? (
                   <h2 className="text-xl font-extrabold">
-                    {lessonNumber}차시 · {lesson.title}
+                    <LessonName number={lessonNumber} title={lesson.title} />
                   </h2>
                 ) : (
                   <form

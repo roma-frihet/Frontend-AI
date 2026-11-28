@@ -21,6 +21,7 @@ import { useRun } from "@/components/teacher/use-run";
 import { errorMessage, ErrorText, LoadingState } from "@/components/states";
 import { Callout, Chip, Panel } from "@/components/surface";
 import { TextButton } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import {
   removeClassroomStudent,
   resetStudentPassword,
@@ -100,8 +101,8 @@ export function StudentPanel({
                   {data?.studentNumber} {data?.studentName}
                 </h2>
                 <span className="text-sm text-muted-foreground tabular-nums">
-                  {classroom.classNo}반 · 전체 {data?.totalCorrectCount ?? 0} /{" "}
-                  {data?.totalQuestionCount ?? 0}문제
+                  {classroom.classNo}반, 지금까지 {data?.totalCorrectCount ?? 0} /{" "}
+                  {data?.totalQuestionCount ?? 0}문제 맞혔어요
                 </span>
               </div>
               <span className="flex flex-wrap gap-2">
@@ -195,8 +196,7 @@ export function StudentPanel({
                             }}
                             className={cn("text-left", on ? "font-bold text-primary-deep" : "hover:underline")}
                           >
-                            {score.lessonNumber}차시
-                            {lesson?.title ? ` · ${lesson.title}` : ""}
+                            <LessonName number={score.lessonNumber} title={lesson?.title} />
                           </button>
                         </td>
                         <td className={`${td} font-bold tabular-nums`}>

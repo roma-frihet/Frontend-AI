@@ -144,7 +144,7 @@ function LessonRow({
     state?.scheduledFinishAt ? `${formatSchedule(state.scheduledFinishAt)} 자동 마감` : null,
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(", ");
 
   return (
     <Panel as="li" size="sm" className="gap-3">
@@ -158,16 +158,13 @@ function LessonRow({
           >
             {lesson.title}
           </button>
-          <span className="text-sm text-muted-foreground">
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
             문제 {lesson.questionCount ?? 0}개
             {scheduleText ? (
-              <>
-                {" · "}
-                <span className="inline-flex items-center gap-1 font-medium text-foreground">
-                  <CalendarClock className="size-3.5" aria-hidden />
-                  {scheduleText}
-                </span>
-              </>
+              <span className="inline-flex items-center gap-1 font-medium text-foreground">
+                <CalendarClock className="size-3.5" aria-hidden />
+                {scheduleText}
+              </span>
             ) : null}
           </span>
         </span>

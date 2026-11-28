@@ -21,6 +21,7 @@ const eslintConfig = defineConfig([
           [String.raw`\bshadow-card\b`, "카드는 Panel이나 panelClass()로 만드세요 (@/components/surface)."],
           [String.raw`\brounded-(sm|xl|2xl|3xl)\b`, "곡률은 rounded-lg(카드) / rounded-md(입력·버튼·안내 상자·이미지) / rounded-full(칩)만 써요."],
           ["불러오는 중", "로딩 표시는 LoadingState나 LOADING_TEXT를 쓰세요 (@/components/states)."],
+          [" · ", "가운뎃점으로 정보를 잇지 마세요. 요소를 나누거나(LessonName 등) 문장으로 쓰세요 (DESIGN.md)."],
         ].flatMap(([pattern, message]) => [
           { selector: `Literal[value=/${pattern}/]`, message },
           { selector: `TemplateElement[value.raw=/${pattern}/]`, message },

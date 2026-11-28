@@ -16,6 +16,7 @@ import { classroomHref } from "@/components/teacher/classroom/use-classroom-quer
 import { LOW_RATE, STATUS_LABEL, percent, type LessonStatus } from "@/components/teacher/lesson-status";
 import { errorMessage } from "@/components/states";
 import { Callout, Chip, Panel, panelClass } from "@/components/surface";
+import { LessonName } from "@/components/lesson-name";
 import {
   useFindClassroomStudents,
   useFindClassrooms,
@@ -86,16 +87,14 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
         <div className="grid gap-1.5">
           <div className="flex items-center gap-2.5">
             <Chip tone={status === "OPEN" ? "bg-success-soft text-success" : "bg-secondary text-muted-foreground"}>
-              {status === "OPEN" ? (
-                <span aria-hidden className="mr-2 size-2 rounded-full bg-success" />
-              ) : null}
               {STATUS_LABEL[status]}
             </Chip>
-            <span className="text-sm text-muted-foreground">3초마다 갱신</span>
+            <span className="text-sm text-muted-foreground">
+              {classroom ? `${classroom.grade}학년 ${classroom.classNo}반` : "수업 중"}, 3초마다 갱신
+            </span>
           </div>
           <h1 className="text-3xl font-extrabold sm:text-4xl">
-            {classroom ? `${classroom.grade}학년 ${classroom.classNo}반` : "수업 중"} ·{" "}
-            {lessonNumber}차시 {lesson?.title ?? ""}
+            <LessonName number={lessonNumber} title={lesson?.title} />
           </h1>
         </div>
         <div className="flex flex-wrap gap-2.5">
