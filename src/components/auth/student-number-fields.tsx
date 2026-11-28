@@ -5,6 +5,7 @@
 
 import { AppField, AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
+import { Callout } from "@/components/surface";
 import {
   STUDENT_CLASS_NUMBER_MAX,
   STUDENT_GRADE_MAX,
@@ -80,7 +81,7 @@ export function StudentNumberFields({
         <AppInput
           id="name"
           autoComplete="name"
-          placeholder="실명을 입력하세요"
+          placeholder="예: 김하늘"
           maxLength={50}
           value={value.name}
           onChange={(event) => set({ name: event.target.value })}
@@ -88,7 +89,7 @@ export function StudentNumberFields({
       </AppField>
 
       {filled ? (
-        <div className="flex flex-wrap items-baseline gap-2.5 rounded-md bg-primary-soft px-4 py-3.5">
+        <Callout className="flex flex-wrap items-baseline gap-2.5">
           <span className="text-sm text-muted-foreground">학번</span>
           <b className="text-xl tracking-wide text-primary-deep tabular-nums">
             {formatStudentNumber({
@@ -100,12 +101,11 @@ export function StudentNumberFields({
           <span className="text-sm text-muted-foreground">
             {`${value.grade}학년 ${value.classNumber}반 ${value.seatNumber}번`}
           </span>
-        </div>
+        </Callout>
       ) : null}
 
       <p className="text-sm text-muted-foreground">
-        선생님 화면에는 이 학번과 이름으로 보여요. 잘못 고르면 다른 친구 자리에 들어가니 꼭
-        확인해 주세요.
+        학번이 맞는지 한 번 더 확인해 주세요.
       </p>
     </div>
   );

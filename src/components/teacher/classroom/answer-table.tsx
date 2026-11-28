@@ -9,15 +9,18 @@
 import Image from "next/image";
 
 import { AppButton } from "@/components/app-button";
-import { Chip, TableBox, td, th } from "@/components/teacher/panel";
-import { ErrorText, errorMessage, useRun } from "@/components/teacher/use-run";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { useRun } from "@/components/teacher/use-run";
+import { errorMessage, ErrorText, LoadingState } from "@/components/states";
+import { Chip } from "@/components/surface";
+import { LessonName } from "@/components/lesson-name";
 import { overrideAttemptResult, useFindStudentLessonAnswers } from "@/api/generated";
 import type { StudentAnswerResponseAnswer } from "@/api/generated/model";
 
 const RESULT = {
   RIGHT: { label: "정답", tone: "bg-success-soft text-success" },
   WRONG: { label: "오답", tone: "bg-destructive-soft text-destructive" },
-  NONE: { label: "미응답", tone: "bg-secondary text-muted-foreground" },
+  NONE: { label: "응답 안 함", tone: "bg-secondary text-muted-foreground" },
   IN_PROGRESS: { label: "푸는 중", tone: "bg-primary-soft text-primary-deep" },
   NOT_STARTED: { label: "시작 전", tone: "bg-secondary text-muted-foreground" },
 } as const;
@@ -59,7 +62,7 @@ export function AnswerTable({
   const answers = data?.answers ?? [];
   const { run, busy, error } = useRun();
 
-  if (query.isPending) return <p className="text-muted-foreground">불러오는 중…</p>;
+  if (query.isPending) return <LoadingState />;
   if (query.isError) return <ErrorText error={errorMessage(query.error)} />;
 
   const started = answers.some((answer) => answer.result !== "NOT_STARTED");
@@ -72,7 +75,7 @@ export function AnswerTable({
             {heading ?? `${data?.studentNumber} ${data?.studentName}`}
           </h3>
           <span className="text-sm text-muted-foreground">
-            {data?.lessonNumber}차시 · {data?.lessonTitle}
+            <LessonName number={data?.lessonNumber} title={data?.lessonTitle} />
           </span>
         </div>
         <p className="flex items-baseline gap-1">
@@ -85,7 +88,7 @@ export function AnswerTable({
 
       {!started ? (
         <p className="rounded-md bg-secondary px-4 py-6 text-center text-muted-foreground">
-          이 차시에 답을 제출하지 않았습니다.
+          이 차시에 답을 내지 않았어요.
         </p>
       ) : (
         <>
@@ -124,7 +127,7 @@ export function AnswerTable({
                             width={320}
                             height={180}
                             unoptimized
-                            className="h-auto w-40 rounded-sm border border-border"
+                            className="h-auto w-40 rounded-md border border-border"
                           />
                         ) : null}
                       </span>
@@ -173,8 +176,7 @@ export function AnswerTable({
           </TableBox>
           <ErrorText error={error} />
           <p className="text-sm text-muted-foreground">
-            주관식은 표현이 달라도 맞는 답이면 정답으로 인정할 수 있습니다. 인정하면 점수와 반
-            평균에 바로 반영됩니다.
+            표현이 달라도 맞는 답이면 정답으로 인정해 주세요. 점수와 반 평균에 바로 반영돼요.
           </p>
         </>
       )}

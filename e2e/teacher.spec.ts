@@ -59,7 +59,7 @@ test("학생 계정으로는 교사 화면에 들어갈 수 없다", async ({ pa
   await page.getByRole("button", { name: "로그인" }).click();
 
   await expect(
-    page.getByText("교사 계정이 아닙니다. 학생이라면 학생 로그인을 이용하세요."),
+    page.getByText("교사 계정이 아니에요. 학생이라면 학생 로그인을 이용해 주세요."),
   ).toBeVisible();
   await expect(page).toHaveURL(/\/teacher\/login$/);
 });
@@ -93,10 +93,10 @@ test("반 카드를 누르면 반 상세의 수업 진행으로 간다", async (
   await page.getByRole("link", { name: /5반/ }).click();
 
   await expect(page).toHaveURL("/teacher/classrooms/2");
-  await expect(page.getByRole("heading", { name: "3학년 5반 · 과학" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "3학년 5반 과학" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "수업 진행" })).toHaveAttribute("aria-selected", "true");
   // 2차시는 문제가 없어 열 수 없다. 문제를 넣으러 보낸다.
-  await expect(page.getByRole("link", { name: "문제 넣으러 가기 →" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "문제 넣으러 가기" })).toBeVisible();
 });
 
 test("열기 예약은 시간대를 붙여 보낸다", async ({ page }) => {
@@ -146,7 +146,7 @@ test("주관식은 같은 답을 한 번에 정답으로 인정한다", async ({
   await signInAsTeacher(page);
   await page.goto("/teacher/classrooms/2?lesson=1");
 
-  await expect(page.getByRole("heading", { name: "1차시 · 광합성" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "1차시 광합성" })).toBeVisible();
   await page.getByRole("button", { name: /광합성에 필요한 기체는/ }).click();
   await page.getByRole("button", { name: "정답으로 인정 (1명)" }).click();
 
@@ -195,7 +195,7 @@ test("수업 중 화면은 정답률과 이름을 숨긴 채 열리고, 닫으�
   await expect(page).toHaveURL("/teacher/classrooms/2/live?lesson=1");
 
   await expect(page.getByRole("button", { name: "정답률 보기" })).toBeVisible();
-  await expect(page.getByText(/학생 이름은 숨겨져 있습니다/)).toBeVisible();
+  await expect(page.getByText(/학생 이름은 숨겨져 있어요/)).toBeVisible();
   await expect(page.getByRole("region", { name: "문제별 현황" })).not.toContainText("%");
 
   await page.getByRole("button", { name: "정답률 보기" }).click();
@@ -204,7 +204,7 @@ test("수업 중 화면은 정답률과 이름을 숨긴 채 열리고, 닫으�
   await page.getByRole("button", { name: "차시로 돌아가기" }).click();
   // 차시 목록이나 반 첫 화면이 아니라 열기 전에 보던 차시 상세(반 비교)로 돌아온다.
   await expect(page).toHaveURL("/teacher/classrooms/2?lesson=1&view=compare");
-  await expect(page.getByRole("heading", { name: /반 비교/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /반별 비교/ })).toBeVisible();
 });
 
 test("학생 화면 미리보기는 닫아도 보던 차시 상세에 머문다", async ({ page }) => {
@@ -215,7 +215,7 @@ test("학생 화면 미리보기는 닫아도 보던 차시 상세에 머문다"
 
   await page.getByRole("button", { name: "학생 화면 미리보기" }).click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog).toContainText("제출되지 않습니다");
+  await expect(dialog).toContainText("답은 저장되지 않아요");
   await expect(dialog).toContainText("광합성이 일어나는 곳은?");
 
   await dialog.getByRole("button", { name: "닫기" }).click();
@@ -229,7 +229,7 @@ test("성적 탭의 학생별 보기는 그 차시의 학생별 보기로 간다
   await signInAsTeacher(page);
   await page.goto("/teacher/classrooms/2?tab=scores");
 
-  const row = page.getByRole("row", { name: /1차시 · 광합성/ });
+  const row = page.getByRole("row", { name: /1차시 광합성/ });
   await expect(row).toContainText("1 / 1명");
   await row.getByRole("button", { name: "학생별 보기" }).click();
 
@@ -264,7 +264,7 @@ test("성적 내보내기는 서버가 정한 파일 이름으로 내려받는�
   expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
 });
 
-test("합류 코드는 남은 시간과 함께 보인다", async ({ page }) => {
+test("수업 코드는 남은 시간과 함께 보인다", async ({ page }) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
   await mockSupabaseAuth(page, "teacher");
@@ -281,7 +281,7 @@ test("합류 코드는 남은 시간과 함께 보인다", async ({ page }) => {
 
   await expect(page.getByText("KJW76K")).toBeVisible();
   await expect(page.getByText(/남음$/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "코드 끄기" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "코드 닫기" })).toBeVisible();
 });
 
 test("만료된 코드는 다시 발급하라고 안내한다", async ({ page }) => {
@@ -319,11 +319,11 @@ test("학생 탭에서 살펴볼 학생과 임시 비밀번호를 본다", async
   await page.getByRole("tab", { name: "학생" }).click();
   await expect(page).toHaveURL("/teacher/classrooms/2?tab=students");
   const row = page.getByRole("row", { name: /김하늘/ });
-  await expect(row).toContainText("미응답");
+  await expect(row).toContainText("응답 안 함");
 
   await row.getByRole("button", { name: "비밀번호 초기화" }).click();
   await expect(page.getByText("7ux427z2")).toBeVisible();
-  await expect(page.getByText(/다시 볼 수 없습니다/)).toBeVisible();
+  await expect(page.getByText(/다시 볼 수 없어요/)).toBeVisible();
 });
 
 test("학생 상세에서 차시 줄을 누르면 그 풀이로 내려 주고 표가 출렁이지 않는다", async ({ page }) => {
@@ -406,8 +406,8 @@ test("연 적 있는 차시에는 문제를 더할 수 없다", async ({ page })
   await page.getByRole("link", { name: "차시·문제 준비" }).click();
 
   // 1차시는 FINISHED다. 더하는 것만 막는다.
-  await expect(page.getByText(/열었던 차시라 새 문제는 넣을 수 없습니다/)).toBeVisible();
-  await expect(page.getByText(/학생에게 열었던 차시입니다/)).toBeVisible();
+  await expect(page.getByText(/이미 연 차시라 새 문제를 넣을 수 없어요/)).toBeVisible();
+  await expect(page.getByText(/이미 학생에게 연 차시예요/)).toBeVisible();
 
   // 지우기와 수정은 막지 않는다. 조건이 다르고 판단은 서버가 한다.
   await expect(page.getByRole("button", { name: "1번 문제 삭제" })).toBeEnabled();
@@ -436,7 +436,7 @@ test("고른 문제만 다른 차시로 복사한다", async ({ page }) => {
   await page.getByLabel("1번 문제 복사에 포함").check();
   await page.getByRole("button", { name: "1문제 복사하기" }).click();
 
-  await expect(page.getByText("3학년 과학 3차시에 1문제를 복사했습니다.")).toBeVisible();
+  await expect(page.getByText("3학년 과학 3차시에 1문제를 복사했어요.")).toBeVisible();
   expect(posts[0].postDataJSON()).toEqual({
     targetCourseId: 2,
     targetLessonNumber: null,

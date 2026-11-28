@@ -51,7 +51,7 @@ export default function ChangePasswordPage() {
     <AuthShell
       badge="학생"
       title="새 비밀번호를 정해 주세요"
-      description="선생님이 임시 비밀번호로 바꿔 두었어요."
+      description="안전을 위해 새 비밀번호를 정해 주세요."
     >
       <form className="grid gap-5" onSubmit={onSubmit} noValidate>
         <AppField label="새 비밀번호" htmlFor="password">

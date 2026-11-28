@@ -10,7 +10,7 @@ import { KeyRound } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
-import { Card } from "@/components/ui/card";
+import { Panel } from "@/components/surface";
 import { getFindMyClassroomsQueryKey, joinClassroom } from "@/api/generated";
 import { ApiError } from "@/lib/api-fetcher";
 
@@ -40,7 +40,7 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
       setError(
         caught instanceof ApiError
           ? caught.message
-          : "연결하지 못했어요. 코드를 다시 확인해 주세요.",
+          : "참여하지 못했어요. 코드를 다시 확인해 주세요.",
       );
     } finally {
       setSubmitting(false);
@@ -48,15 +48,15 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
   };
 
   return (
-    <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-      <span className="inline-grid size-12 place-items-center rounded-xl bg-primary-soft text-primary">
+    <Panel>
+      <span className="inline-grid size-12 place-items-center rounded-lg bg-primary-soft text-primary">
         <KeyRound className="size-6" aria-hidden />
       </span>
 
       <div className="grid gap-0.5">
-        <h2 className="text-lg font-bold">수업 코드 입력</h2>
+        <h2 className="text-lg font-bold">수업 참여하기</h2>
         <p className="text-muted-foreground">
-          선생님께 받은 6자리 코드를 입력하면 그 수업에 연결돼요.
+          선생님이 알려 준 6자리 수업 코드를 입력해 주세요.
         </p>
       </div>
 
@@ -77,7 +77,7 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
           type="submit"
           disabled={code.length !== JOIN_CODE_LENGTH || submitting}
         >
-          {submitting ? "연결하는 중…" : "연결하기"}
+          {submitting ? "참여하는 중…" : "참여하기"}
         </AppButton>
       </form>
 
@@ -87,9 +87,6 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
         </p>
       ) : null}
 
-      <p className="text-sm text-muted-foreground">
-        코드는 5분 동안만 쓸 수 있어요. 시간이 지났으면 선생님께 다시 받아 주세요.
-      </p>
-    </Card>
+    </Panel>
   );
 }

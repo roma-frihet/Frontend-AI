@@ -20,7 +20,7 @@ export function ScoreTable({ scores }: { scores: StudentReportResponseScore[] })
             <td className="py-2.5">{score.lessonNumber}차시</td>
             <td className="py-2.5 text-right font-bold tabular-nums">
               {score.correctCount == null
-                ? "미응시"
+                ? "응답 안 함"
                 : `${score.correctCount} / ${score.questionCount}`}
             </td>
             <td className="py-2.5 text-right tabular-nums text-accent-deep">

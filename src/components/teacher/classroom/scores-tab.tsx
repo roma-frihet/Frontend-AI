@@ -12,8 +12,10 @@ import { Download } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { AppSelect } from "@/components/app-select";
 import { statusIn } from "@/components/teacher/classroom/lessons-tab";
-import { Panel, TableBox, td, th } from "@/components/teacher/panel";
-import { ErrorText } from "@/components/teacher/use-run";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { ErrorText } from "@/components/states";
+import { Callout, Panel } from "@/components/surface";
+import { lessonLabel, LessonName } from "@/components/lesson-name";
 import { exportScores, getFindQuestionStatsQueryOptions } from "@/api/generated";
 import type {
   ClassroomResponseResult,
@@ -63,7 +65,7 @@ export function ScoresTab({
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-muted-foreground">이 반에서 연 차시의 결과입니다.</span>
+        <span className="text-muted-foreground">이 반에서 연 차시의 결과예요.</span>
         <AppButton
           variant="outline"
           aria-expanded={exportOpen}
@@ -87,7 +89,7 @@ export function ScoresTab({
       {opened.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
-            아직 이 반에 연 차시가 없습니다. 수업 진행에서 차시를 열면 여기에 결과가 모입니다.
+            아직 이 반에서 연 차시가 없어요. 수업 진행에서 차시를 열면 여기에 결과가 모여요.
           </p>
         </Panel>
       ) : (
@@ -114,7 +116,7 @@ export function ScoresTab({
               return (
                 <tr key={lesson.lessonNumber}>
                   <td className={td}>
-                    {lesson.lessonNumber}차시 · {lesson.title}
+                    <LessonName number={lesson.lessonNumber} title={lesson.title} />
                   </td>
                   <td className={`${td} tabular-nums`}>
                     {mine ? `${mine.responseCount ?? 0} / ${mine.studentCount ?? 0}명` : "–"}
@@ -220,7 +222,7 @@ function ExportPanel({
       setError(
         caught instanceof ApiError
           ? caught.message
-          : "내려받지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
+          : "내려받지 못했어요. 잠시 뒤 다시 시도해 주세요.",
       );
     } finally {
       setBusy(false);
@@ -285,7 +287,7 @@ function ExportPanel({
           <AppSelect
             items={lessons.map((item) => ({
               value: String(item.lessonNumber),
-              label: `${item.lessonNumber}차시 · ${item.title}`,
+              label: lessonLabel(item.lessonNumber, item.title),
             }))}
             value={lesson}
             onValueChange={setLesson}
@@ -299,12 +301,12 @@ function ExportPanel({
         <AppButton disabled={!ready || busy} onClick={() => void download()}>
           {busy ? "만드는 중…" : "내려받기"}
         </AppButton>
-        <span className="text-sm text-muted-foreground">CSV 파일이라 엑셀에서 바로 열립니다.</span>
+        <span className="text-sm text-muted-foreground">엑셀에서 바로 열 수 있어요.</span>
       </div>
       {done.length ? (
-        <p role="status" className="rounded-md bg-success-soft px-4 py-2.5 text-sm font-bold">
-          {done.join(", ")} 파일을 만들었습니다.
-        </p>
+        <Callout tone="success" role="status" className="text-sm font-bold">
+          {done.join(", ")} 파일을 만들었어요.
+        </Callout>
       ) : null}
       <ErrorText error={error} />
     </Panel>

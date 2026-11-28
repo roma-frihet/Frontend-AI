@@ -33,7 +33,7 @@ export function Brand({
         alt=""
         width={28}
         height={28}
-        className="rounded-sm"
+        className="rounded-md"
         priority
       />
       {SERVICE_NAME}

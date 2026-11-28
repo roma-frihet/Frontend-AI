@@ -39,6 +39,7 @@ DESIGN.md               # 디자인 판단 기준
 - 없으면 `npx shadcn@latest add <name>`으로 추가한다.
 - `components/ui`는 직접 크게 수정하지 말고, `src/components/`에서 **감싸서(wrapping)** 사용한다.
 - 현재 shadcn 스타일(base-nova)에는 `form` 컴포넌트가 없고 `field`가 대신 쓰인다.
+- 카드·안내 상자·글자 버튼·로딩/빈/오류 상태는 `DESIGN.md`의 "공통 컴포넌트"를 쓴다. 화면에서 곡률·그림자·여백을 직접 조합하지 않는다.
 
 ## API 규칙
 

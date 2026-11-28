@@ -9,8 +9,10 @@ import { useState } from "react";
 
 import { AppButton } from "@/components/app-button";
 import { AppSelect } from "@/components/app-select";
-import { Panel } from "@/components/teacher/panel";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText } from "@/components/states";
+import { Callout, Panel } from "@/components/surface";
+import { lessonLabel } from "@/components/lesson-name";
 import { copyQuestions, useFindLessons } from "@/api/generated";
 import type { TeacherResponseCourse } from "@/api/generated/model";
 
@@ -49,7 +51,7 @@ export function CopyPanel({
       .filter((lesson) => !(targetId === courseId && lesson.lessonNumber === lessonNumber))
       .map((lesson) => ({
         value: String(lesson.lessonNumber),
-        label: `${lesson.lessonNumber}차시 · ${lesson.title}에 추가`,
+        label: `${lessonLabel(lesson.lessonNumber, lesson.title)}에 추가`,
       })),
   ];
 
@@ -61,7 +63,7 @@ export function CopyPanel({
         questionIds: picked.length ? picked : null,
       });
       setDone(
-        `${label(targetCourse)} ${data.targetLessonNumber}차시에 ${data.copiedCount}문제를 복사했습니다.`,
+        `${label(targetCourse)} ${data.targetLessonNumber}차시에 ${data.copiedCount}문제를 복사했어요.`,
       );
     });
 
@@ -98,7 +100,7 @@ export function CopyPanel({
         </label>
       </div>
       <span className="text-sm">
-        아래 문제 목록에서 복사할 문제를 고르세요. 고르지 않으면 차시 전체를 복사합니다. 지금{" "}
+        아래 목록에서 복사할 문제를 골라 주세요. 고르지 않으면 차시 전체를 복사해요. 지금{" "}
         <strong>{picked.length}문제</strong> 선택됨
       </span>
       <div className="flex flex-wrap gap-2">
@@ -113,13 +115,13 @@ export function CopyPanel({
         </AppButton>
       </div>
       {done ? (
-        <p role="status" className="rounded-md bg-success-soft px-4 py-2.5 text-sm font-bold">
+        <Callout tone="success" role="status" className="text-sm font-bold">
           {done}
-        </p>
+        </Callout>
       ) : null}
       <ErrorText error={error} />
       <span className="text-sm text-muted-foreground">
-        복사한 문제는 원본과 따로 수정됩니다. 학생 풀이 기록은 복사되지 않습니다.
+        복사한 문제는 원본과 따로 고칠 수 있어요.
       </span>
     </Panel>
   );

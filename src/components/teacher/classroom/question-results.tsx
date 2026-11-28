@@ -11,8 +11,9 @@ import { ChevronDown } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { LOW_RATE, percent } from "@/components/teacher/lesson-status";
-import { Chip, Panel } from "@/components/teacher/panel";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
 import { overrideResultsByAnswer } from "@/api/generated";
 import type {
   QuestionStatsResponseClassroom,
@@ -42,9 +43,9 @@ export function QuestionResults({
   return (
     <Panel>
       <div className="grid gap-0.5">
-        <h3 className="text-lg font-bold">문제별 정답률 · 전체 {questions.length}문제</h3>
+        <h3 className="text-lg font-bold">문제별 정답률</h3>
         <span className="text-sm text-muted-foreground">
-          응답한 {responders}명 기준 · 문제를 누르면 응답 분포가 열립니다
+          문제 {questions.length}개, 응답한 {responders}명 기준이에요. 문제를 누르면 응답 분포를 볼 수 있어요.
         </span>
       </div>
       <ErrorText error={error} />
@@ -166,7 +167,7 @@ function Distribution({
         </span>
       ) : null}
       {rows.length === 0 && noAnswer === 0 ? (
-        <p className="text-sm text-muted-foreground">아직 답한 학생이 없습니다.</p>
+        <p className="text-sm text-muted-foreground">아직 답한 학생이 없어요.</p>
       ) : null}
       {rows.map((row) => (
         <DistributionRow
@@ -198,12 +199,12 @@ function Distribution({
         </DistributionRow>
       ))}
       {noAnswer > 0 ? (
-        <DistributionRow label="답하지 않음" count={noAnswer} total={responders} right={false} />
+        <DistributionRow label="응답 안 함" count={noAnswer} total={responders} right={false} />
       ) : null}
       {isShort ? (
         <p className="text-sm text-muted-foreground">
-          맞는 답인데 표현이 다르면 정답으로 인정해 주세요. 같은 답을 쓴 학생 모두에게 바로
-          반영됩니다.
+          표현이 달라도 맞는 답이면 정답으로 인정해 주세요. 같은 답을 쓴 학생 모두에게 바로
+          반영돼요.
         </p>
       ) : null}
     </div>

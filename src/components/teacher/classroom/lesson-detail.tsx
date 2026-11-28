@@ -27,9 +27,12 @@ import {
   percent,
   type LessonStatus,
 } from "@/components/teacher/lesson-status";
-import { Chip, Panel } from "@/components/teacher/panel";
 import { StudentPreview } from "@/components/teacher/student-preview";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadingState } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
+import { TextButton, TextLink, ToggleChip } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import {
   closeLesson,
   openLesson,
@@ -40,7 +43,6 @@ import type {
   ClassroomResponseResult,
   LessonResponseResult,
 } from "@/api/generated/model";
-import { cn } from "cn";
 
 const VIEWS: { value: LessonView; label: string }[] = [
   { value: "questions", label: "문제별" },
@@ -96,26 +98,22 @@ export function LessonDetail({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex w-fit items-center gap-1 text-sm font-bold text-primary-deep hover:underline"
-      >
+      <TextButton size="sm" onClick={onBack}>
         <ChevronLeft className="size-4" aria-hidden />
         차시 목록
-      </button>
+      </TextButton>
 
       <Panel>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="grid gap-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h2 className="text-xl font-extrabold">
-                {number}차시 · {lesson.title}
+                <LessonName number={number} title={lesson.title} />
               </h2>
               <Chip tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</Chip>
             </div>
             <span className="text-sm text-muted-foreground">
-              {classroom.classNo}반 기준 · 문제 {lesson.questionCount ?? 0}개
+              문제 {lesson.questionCount ?? 0}개, {classroom.classNo}반 결과
             </span>
           </div>
 
@@ -160,12 +158,12 @@ export function LessonDetail({
                 학생 화면 미리보기
               </AppButton>
             ) : null}
-            <Link
+            <TextLink
               href={`/teacher/prepare?course=${courseId}&lesson=${number}`}
-              className="inline-flex h-11 items-center px-2 font-bold text-primary-deep hover:underline"
+              className="h-11 px-2"
             >
-              문제 수정 →
-            </Link>
+              문제 수정
+            </TextLink>
           </div>
         </div>
         <ErrorText error={error} />
@@ -174,7 +172,7 @@ export function LessonDetail({
       {!opened ? (
         <NotOpened courseId={courseId} lessonNumber={number} />
       ) : stats.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : (
         <>
           <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-4">
@@ -184,7 +182,7 @@ export function LessonDetail({
               hint={
                 studentCount - responders > 0
                   ? `아직 ${studentCount - responders}명`
-                  : "모두 응답했습니다"
+                  : "모두 응답했어요"
               }
             />
             <Stat
@@ -210,20 +208,13 @@ export function LessonDetail({
 
           <div role="group" aria-label="결과 보기 방식" className="flex flex-wrap gap-2">
             {VIEWS.map((item) => (
-              <button
+              <ToggleChip
                 key={item.value}
-                type="button"
-                aria-pressed={view === item.value}
+                pressed={view === item.value}
                 onClick={() => onView(item.value)}
-                className={cn(
-                  "min-h-10 rounded-full border px-4 text-sm font-bold transition-colors",
-                  view === item.value
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-muted-foreground hover:border-muted-foreground",
-                )}
               >
                 {item.label}
-              </button>
+              </ToggleChip>
             ))}
           </div>
 
@@ -270,11 +261,11 @@ export function LessonDetail({
 
 function Stat({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
-    <li className="grid gap-1 rounded-lg border border-border bg-card p-4 shadow-card">
+    <Panel as="li" size="sm" className="gap-1">
       <span className="text-sm text-muted-foreground">{label}</span>
       <strong className="text-2xl font-extrabold tabular-nums">{value}</strong>
       <span className="text-sm text-muted-foreground">{hint}</span>
-    </li>
+    </Panel>
   );
 }
 
@@ -285,19 +276,18 @@ function NotOpened({ courseId, lessonNumber }: { courseId: number; lessonNumber:
   return (
     <Panel>
       <p className="text-muted-foreground">
-        아직 열지 않은 차시입니다. 열면 제출 현황과 정답률을 여기에서 볼 수 있습니다.
+        아직 열지 않은 차시예요. 열면 제출 현황과 정답률을 여기에서 볼 수 있어요.
       </p>
       {questions.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : list.length === 0 ? (
         <p>
-          문제가 없어 열 수 없습니다.{" "}
-          <Link
+          문제가 없어서 열 수 없어요.{" "}
+          <TextLink
             href={`/teacher/prepare?course=${courseId}&lesson=${lessonNumber}`}
-            className="font-bold text-primary-deep hover:underline"
           >
-            문제 넣으러 가기 →
-          </Link>
+            문제 넣으러 가기
+          </TextLink>
         </p>
       ) : (
         <ol className="m-0 grid list-none gap-2 p-0">

@@ -4,7 +4,8 @@
 // 아직 답하지 않은 학생을 먼저 찾아야 하므로 위로 올린다.
 
 import { AnswerTable } from "@/components/teacher/classroom/answer-table";
-import { Panel } from "@/components/teacher/panel";
+import { Panel } from "@/components/surface";
+import { LoadingState } from "@/components/states";
 import { useFindClassroomStudents, useFindScores } from "@/api/generated";
 import { cn } from "cn";
 
@@ -47,13 +48,13 @@ export function LessonStudents({
 
   const current = selected ?? list[0]?.student.membershipId ?? null;
 
-  if (students.isPending) return <p className="text-muted-foreground">불러오는 중…</p>;
+  if (students.isPending) return <LoadingState />;
 
   if (list.length === 0) {
     return (
       <Panel>
         <p className="text-muted-foreground">
-          아직 이 반에 학생이 없습니다. 합류 코드를 발급해 알려 주세요.
+          아직 이 반에 학생이 없어요. 수업 코드를 발급해 학생에게 알려 주세요.
         </p>
       </Panel>
     );
@@ -63,7 +64,7 @@ export function LessonStudents({
     <div className="grid gap-gap lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:items-start">
       <Panel className="gap-1.5 p-3 sm:p-3">
         <span className="px-2 pt-1 text-sm text-muted-foreground">
-          미응답 학생이 위에 옵니다
+          응답하지 않은 학생이 위에 있어요
         </span>
         <ul className="m-0 grid max-h-120 list-none gap-1 overflow-y-auto p-0">
           {list.map(({ student, score }) => {
@@ -90,7 +91,7 @@ export function LessonStudents({
                       missing ? "font-bold text-destructive" : "text-muted-foreground",
                     )}
                   >
-                    {missing ? "미응답" : `${score?.correctCount} / ${score?.questionCount}`}
+                    {missing ? "응답 안 함" : `${score?.correctCount} / ${score?.questionCount}`}
                   </span>
                 </button>
               </li>

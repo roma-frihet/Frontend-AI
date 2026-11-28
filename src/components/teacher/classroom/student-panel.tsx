@@ -16,8 +16,12 @@ import {
   STATUS_TONE,
   type LessonStatus,
 } from "@/components/teacher/lesson-status";
-import { Chip, Panel, TableBox, td, th } from "@/components/teacher/panel";
-import { ErrorText, errorMessage, useRun } from "@/components/teacher/use-run";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { useRun } from "@/components/teacher/use-run";
+import { errorMessage, ErrorText, LoadingState } from "@/components/states";
+import { Callout, Chip, Panel } from "@/components/surface";
+import { TextButton } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import {
   removeClassroomStudent,
   resetStudentPassword,
@@ -31,14 +35,13 @@ import { cn } from "cn";
 
 export function TemporaryPassword({ name, value }: { name: string; value: string }) {
   return (
-    <Panel className="gap-2 border-warning bg-warning-soft">
+    <Callout tone="warning" className="gap-2 px-5 py-4">
       <h3 className="font-bold">{name} 학생의 임시 비밀번호</h3>
       <p className="text-3xl font-extrabold tracking-wide tabular-nums">{value}</p>
       <p className="text-sm text-muted-foreground">
-        이 화면을 벗어나면 다시 볼 수 없습니다. 학생에게 알려 주세요. 학생은 다음 로그인에서
-        새 비밀번호를 정합니다.
+        지금 학생에게 알려 주세요. 이 화면을 벗어나면 다시 볼 수 없어요.
       </p>
-    </Panel>
+    </Callout>
   );
 }
 
@@ -80,17 +83,13 @@ export function StudentPanel({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex w-fit items-center gap-1 text-sm font-bold text-primary-deep hover:underline"
-      >
+      <TextButton size="sm" onClick={onBack}>
         <ChevronLeft className="size-4" aria-hidden />
         학생 목록
-      </button>
+      </TextButton>
 
       {detail.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : detail.isError ? (
         <ErrorText error={errorMessage(detail.error)} />
       ) : (
@@ -102,8 +101,8 @@ export function StudentPanel({
                   {data?.studentNumber} {data?.studentName}
                 </h2>
                 <span className="text-sm text-muted-foreground tabular-nums">
-                  {classroom.classNo}반 · 전체 {data?.totalCorrectCount ?? 0} /{" "}
-                  {data?.totalQuestionCount ?? 0}문제
+                  {classroom.classNo}반, 지금까지 {data?.totalCorrectCount ?? 0} /{" "}
+                  {data?.totalQuestionCount ?? 0}문제 맞혔어요
                 </span>
               </div>
               <span className="flex flex-wrap gap-2">
@@ -152,12 +151,12 @@ export function StudentPanel({
             <div className="grid gap-0.5">
               <h3 className="text-lg font-bold">차시별 점수</h3>
               <span className="text-sm text-muted-foreground">
-                차시를 누르면 아래에 문제별 풀이가 나옵니다
+                차시를 누르면 아래에 문제별 풀이가 나와요
               </span>
             </div>
             {scores.length === 0 ? (
               <p className="text-muted-foreground">
-                아직 연 차시가 없습니다. 차시를 열면 여기에 점수가 쌓입니다.
+                아직 연 차시가 없어요. 차시를 열면 여기에 점수가 쌓여요.
               </p>
             ) : (
               <TableBox label="차시별 점수">
@@ -197,13 +196,12 @@ export function StudentPanel({
                             }}
                             className={cn("text-left", on ? "font-bold text-primary-deep" : "hover:underline")}
                           >
-                            {score.lessonNumber}차시
-                            {lesson?.title ? ` · ${lesson.title}` : ""}
+                            <LessonName number={score.lessonNumber} title={lesson?.title} />
                           </button>
                         </td>
                         <td className={`${td} font-bold tabular-nums`}>
                           {score.correctCount == null
-                            ? "미응시"
+                            ? "응답 안 함"
                             : `${score.correctCount} / ${score.questionCount}`}
                         </td>
                         <td className={`${td} text-accent-deep tabular-nums`}>

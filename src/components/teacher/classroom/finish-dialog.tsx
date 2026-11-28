@@ -36,7 +36,7 @@ export function FinishDialog({
         <DialogHeader>
           <DialogTitle>{label}를 마감할까요?</DialogTitle>
           <DialogDescription>
-            마감하면 학생이 정답과 해설을 볼 수 있습니다. 다시 열 수는 없습니다.
+            마감하면 학생이 정답과 해설을 볼 수 있어요. 마감한 뒤에는 다시 열 수 없어요.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

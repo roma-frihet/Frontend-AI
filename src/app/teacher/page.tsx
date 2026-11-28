@@ -15,10 +15,14 @@ import { ArrowRight, Plus, Trash2 } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { ConfirmDelete, losses, withParticle } from "@/components/teacher/confirm-delete";
 import { CreateClassroomDialog } from "@/components/teacher/create-classroom-dialog";
-import { Chip, Panel } from "@/components/teacher/panel";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadingState } from "@/components/states";
+import { Callout, Chip, Panel, panelClass } from "@/components/surface";
+import { IconButton } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import { deleteCourse, useFindClassroomSummaries, useFindMyPage } from "@/api/generated";
+import { cn } from "cn";
 import type {
   ReportResponseClassroomSummary,
   TeacherResponseCourse,
@@ -50,12 +54,12 @@ export default function TeacherHomePage() {
       }
     >
       {pending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : courses.length === 0 ? (
         <Panel>
           <h2 className="text-lg font-bold">첫 반을 만들어 주세요</h2>
           <p className="text-muted-foreground">
-            학년·과목과 반 번호를 고르면 바로 학생을 모을 수 있습니다.
+            학년·과목과 반 번호를 고르면 바로 학생을 모을 수 있어요.
           </p>
           <AppButton className="justify-self-start" onClick={() => setCreating(true)}>
             <Plus className="size-4" aria-hidden />
@@ -65,12 +69,13 @@ export default function TeacherHomePage() {
       ) : (
         <>
           {live.length > 0 ? (
-            <section
+            <Callout
+              tone="success"
+              role="region"
               aria-labelledby="live-title"
-              className="grid gap-3 rounded-lg bg-success-soft p-5"
+              className="gap-3 p-5"
             >
               <div className="flex items-center gap-2">
-                <span aria-hidden className="size-2.5 rounded-full bg-success" />
                 <h2 id="live-title" className="font-bold">
                   지금 진행 중
                 </h2>
@@ -87,7 +92,7 @@ export default function TeacherHomePage() {
                         {room.grade}학년 {room.classNo}반
                       </strong>
                       <span className="min-w-0 flex-1 text-muted-foreground">
-                        {room.openLesson?.lessonNumber}차시 · {room.openLesson?.title}
+                        <LessonName number={room.openLesson?.lessonNumber} title={room.openLesson?.title} />
                       </span>
                       <span className="font-bold text-success tabular-nums">
                         응답 {room.openLesson?.responseCount ?? 0} / {room.studentCount ?? 0}
@@ -100,7 +105,7 @@ export default function TeacherHomePage() {
                   </li>
                 ))}
               </ul>
-            </section>
+            </Callout>
           ) : null}
 
           {courses.map((course) => (
@@ -174,21 +179,21 @@ function CourseSection({
         <span className="text-sm text-muted-foreground">
           차시 {course.lessonCount ?? 0}개
         </span>
-        <button
-          type="button"
+        <IconButton
+          tone="danger"
           aria-label={`${course.grade}학년 ${course.subjectName} 삭제`}
           disabled={busy}
           onClick={onDelete}
-          className="ml-auto inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-50"
+          className="ml-auto"
         >
           <Trash2 className="size-4" aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       {sorted.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
-            아직 반이 없습니다. 반을 만들면 학생을 모으고 차시를 열 수 있습니다.
+            아직 반이 없어요. 반을 만들면 학생을 모으고 차시를 열 수 있어요.
           </p>
           <AppButton variant="outline" className="justify-self-start" onClick={onCreate}>
             <Plus className="size-4" aria-hidden />
@@ -213,14 +218,14 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
   const status = open
     ? `${open.lessonNumber}차시 진행 중`
     : room.lastFinishedLessonNumber
-      ? `열린 차시 없음 · ${room.lastFinishedLessonNumber}차시까지 마감`
+      ? `${room.lastFinishedLessonNumber}차시까지 마감`
       : "열린 차시 없음";
   const watch = room.watchStudentCount ?? 0;
 
   return (
     <Link
       href={`/teacher/classrooms/${room.classroomId}`}
-      className="grid h-full gap-3.5 rounded-lg border border-border bg-card p-5 shadow-card transition-colors hover:border-primary"
+      className={cn(panelClass({ interactive: true }), "h-full gap-3.5")}
     >
       <span className="flex items-center justify-between gap-2">
         <strong className="text-2xl font-extrabold">{room.classNo}반</strong>
@@ -234,7 +239,7 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
       <span className="grid grid-cols-2 gap-2 border-t border-border pt-3">
         <span className="grid gap-0.5">
           <span className="text-sm text-muted-foreground">
-            최근 평균{room.latestLessonNumber ? ` · ${room.latestLessonNumber}차시` : ""}
+            {room.latestLessonNumber ? `${room.latestLessonNumber}차시 평균` : "최근 평균"}
           </span>
           <span className="font-bold tabular-nums">
             {room.latestAverageCorrect == null
@@ -245,9 +250,6 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
         <span className="grid gap-0.5">
           <span className="text-sm text-muted-foreground">살펴볼 학생</span>
           <span className="inline-flex items-center gap-1.5 font-bold">
-            {watch > 0 ? (
-              <span aria-hidden className="size-2 rounded-full bg-warning" />
-            ) : null}
             {watch > 0 ? `${watch}명` : "없음"}
           </span>
         </span>

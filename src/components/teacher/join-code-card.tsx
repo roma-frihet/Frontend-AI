@@ -41,7 +41,7 @@ export function JoinCodeCard({
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-2.5">
-      <span className="text-sm font-bold text-muted-foreground">합류 코드</span>
+      <span className="text-sm font-bold text-muted-foreground">수업 코드</span>
       {live ? (
         <>
           <strong className="text-2xl font-extrabold tracking-widest text-primary-deep tabular-nums">
@@ -56,7 +56,7 @@ export function JoinCodeCard({
             disabled={busy}
             onClick={() => onRun(() => closeJoinCode(id))}
           >
-            코드 끄기
+            코드 닫기
           </AppButton>
         </>
       ) : (

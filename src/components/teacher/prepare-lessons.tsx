@@ -17,12 +17,15 @@ import { ConfirmDelete, losses, withParticle } from "@/components/teacher/confir
 import { CopyPanel } from "@/components/teacher/copy-panel";
 import { classroomHref } from "@/components/teacher/classroom/use-classroom-query";
 import { STATUS_LABEL, STATUS_TONE, type LessonStatus } from "@/components/teacher/lesson-status";
-import { Chip, Panel } from "@/components/teacher/panel";
 import { QuestionForm } from "@/components/teacher/question-form";
 import { StudentPreview } from "@/components/teacher/student-preview";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, LoadError, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
 import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
+import { ErrorText, LoadError, LoadingState } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
+import { IconButton, TextLink, ToggleChip } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import {
   createLesson,
   createQuestion,
@@ -95,11 +98,11 @@ export function PrepareLessons() {
       <TeacherShell title="차시·문제 준비">
         <Panel>
           <p className="text-muted-foreground">
-            반을 먼저 만들어 주세요. 반을 만들면 차시와 문제를 준비할 수 있습니다.
+            반을 먼저 만들어 주세요. 반을 만들면 차시와 문제를 준비할 수 있어요.
           </p>
-          <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
+          <TextLink href="/teacher">
             학급 관리로 가기
-          </Link>
+          </TextLink>
         </Panel>
       </TeacherShell>
     );
@@ -108,30 +111,23 @@ export function PrepareLessons() {
   return (
     <TeacherShell
       title="차시·문제 준비"
-      description="수업 전에 차시와 문제를 만들어 두세요. 한 번 만들면 같은 학년·과목의 모든 반에서 쓸 수 있습니다."
+      description="수업 전에 차시와 문제를 만들어 두세요. 한 번 만들면 같은 학년·과목의 모든 반에서 쓸 수 있어요."
     >
       <div role="group" aria-label="수업 선택" className="flex flex-wrap gap-2">
         {courses.map((item) => {
           const on = String(item.id) === courseId;
           return (
-            <button
+            <ToggleChip
               key={item.id}
-              type="button"
-              aria-pressed={on}
+              pressed={on}
               onClick={() => {
                 setLinkedCourse(null);
                 setCourseId(String(item.id));
                 pickLesson(null);
               }}
-              className={cn(
-                "min-h-10 rounded-full border px-4 text-sm font-bold transition-colors",
-                on
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:border-muted-foreground",
-              )}
             >
               {item.grade}학년 {item.subjectName}
-            </button>
+            </ToggleChip>
           );
         })}
       </div>
@@ -148,7 +144,7 @@ export function PrepareLessons() {
               <LoadError error={lessons.error} onRetry={() => void lessons.refetch()} />
             </div>
           ) : lessons.isPending ? (
-            <p className="text-muted-foreground">불러오는 중…</p>
+            <LoadingState />
           ) : lessonList.length === 0 ? (
             <p className="text-muted-foreground">첫 차시를 추가해 주세요.</p>
           ) : (
@@ -211,7 +207,7 @@ export function PrepareLessons() {
         {lessonNumber == null || !lesson ? (
           <Panel>
             <p className="text-muted-foreground">
-              차시를 추가하면 문제를 만들 수 있습니다.
+              차시를 추가하면 문제를 만들 수 있어요.
             </p>
           </Panel>
         ) : (
@@ -220,7 +216,7 @@ export function PrepareLessons() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 {renaming == null ? (
                   <h2 className="text-xl font-extrabold">
-                    {lessonNumber}차시 · {lesson.title}
+                    <LessonName number={lessonNumber} title={lesson.title} />
                   </h2>
                 ) : (
                   <form
@@ -295,7 +291,7 @@ export function PrepareLessons() {
               <div className="flex flex-wrap items-center gap-2 rounded-md bg-secondary px-3.5 py-3">
                 <span className="mr-1 text-sm text-muted-foreground">반별 상태</span>
                 {(lesson.classrooms ?? []).length === 0 ? (
-                  <span className="text-sm text-muted-foreground">아직 반이 없습니다</span>
+                  <span className="text-sm text-muted-foreground">아직 반이 없어요</span>
                 ) : null}
                 {(lesson.classrooms ?? []).map((room) => {
                   const status = (room.status ?? "PLANNED") as LessonStatus;
@@ -336,16 +332,16 @@ export function PrepareLessons() {
                 <h3 className="text-lg font-bold">문제 {questionList.length}개</h3>
                 {everOpened ? (
                   <span className="text-sm text-muted-foreground">
-                    열었던 차시라 새 문제는 넣을 수 없습니다
+                    이미 연 차시라 새 문제를 넣을 수 없어요
                   </span>
                 ) : null}
               </div>
 
               {questions.isPending ? (
-                <p className="border-t border-border px-5 py-6 text-muted-foreground">불러오는 중…</p>
+                <LoadingState className="border-t border-border px-5 py-6 text-muted-foreground" />
               ) : questionList.length === 0 ? (
                 <p className="border-t border-border px-5 py-7 text-center text-muted-foreground">
-                  아직 문제가 없습니다. 문제를 하나 이상 넣어야 수업에서 열 수 있습니다.
+                  아직 문제가 없어요. 문제를 하나 이상 넣어야 수업에서 열 수 있어요.
                 </p>
               ) : (
                 <ul className="m-0 grid list-none p-0">
@@ -395,24 +391,22 @@ export function PrepareLessons() {
                                 {question.timeLimitSec}초
                               </span>
                               <span className="flex gap-1">
-                                <button
-                                  type="button"
+                                <IconButton
+                                  tone="neutral"
                                   aria-label={`${index + 1}번 문제 수정`}
                                   disabled={busy}
                                   onClick={() => setEditingId(id)}
-                                  className="inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-primary-soft hover:text-primary-deep disabled:opacity-40"
                                 >
                                   <Pencil className="size-4" aria-hidden />
-                                </button>
-                                <button
-                                  type="button"
+                                </IconButton>
+                                <IconButton
+                                  tone="danger"
                                   aria-label={`${index + 1}번 문제 삭제`}
                                   disabled={busy}
                                   onClick={() => setDeletingQuestion(question)}
-                                  className="inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-40"
                                 >
                                   <Trash2 className="size-4" aria-hidden />
-                                </button>
+                                </IconButton>
                               </span>
                             </div>
                             {question.options?.length ? (
@@ -446,7 +440,7 @@ export function PrepareLessons() {
               <QuestionForm
                 busy={busy}
                 disabled={everOpened}
-                disabledReason="학생에게 열었던 차시입니다. 새 문제는 다음 차시에 넣어 주세요."
+                disabledReason="이미 학생에게 연 차시예요. 새 문제는 다음 차시에 넣어 주세요."
                 onSubmit={(question: QuestionRequestSave) =>
                   void run(() => createQuestion(course, lessonNumber, question))
                 }

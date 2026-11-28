@@ -4,7 +4,9 @@
 // 한 반만 유난히 낮은 문제는 그 반에서 다시 짚어 볼 문제다.
 
 import { LOW_RATE, percent } from "@/components/teacher/lesson-status";
-import { Panel, TableBox, td, th } from "@/components/teacher/panel";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { Panel } from "@/components/surface";
+import { LoadingState } from "@/components/states";
 import { useFindQuestionStats } from "@/api/generated";
 import { cn } from "cn";
 
@@ -38,18 +40,18 @@ export function ClassCompare({
     <Panel>
       <div className="grid gap-0.5">
         <h3 className="text-lg font-bold">
-          반 비교 · {courseLabel} {lessonNumber}차시
+          {courseLabel} {lessonNumber}차시 반별 비교
         </h3>
         <span className="text-sm text-muted-foreground">
-          굵은 칸이 지금 보고 있는 반, 노란 칸은 정답률 50% 미만입니다
+          굵은 칸은 지금 보고 있는 반, 노란 칸은 정답률 50% 미만이에요
         </span>
       </div>
 
       {query.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : rooms.length < 2 ? (
         <p className="text-muted-foreground">
-          같은 학년·과목의 반이 둘 이상이면 반끼리 비교할 수 있습니다.
+          같은 학년·과목의 반이 둘 이상이면 반끼리 비교할 수 있어요.
         </p>
       ) : (
         <TableBox label="반별 문제 정답률">
@@ -63,7 +65,7 @@ export function ClassCompare({
                   className={cn(th, "text-right", room.classroomId === classroomId && "text-primary-deep")}
                 >
                   {room.classNo}반
-                  {room.status === "PLANNED" ? " (열기 전)" : ` · ${room.responseCount ?? 0}명`}
+                  {room.status === "PLANNED" ? " (열기 전)" : ` (${room.responseCount ?? 0}명)`}
                 </th>
               ))}
             </tr>

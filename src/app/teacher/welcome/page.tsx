@@ -11,8 +11,10 @@ import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SchoolPicker } from "@/components/auth/school-picker";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
 import { useSignOut } from "@/components/teacher/use-sign-out";
+import { ErrorText } from "@/components/states";
+import { TextButton } from "@/components/text-action";
 import { getFindMyPageQueryKey, saveTeacherProfile, useFindMyPage } from "@/api/generated";
 import { toId } from "@/lib/id";
 
@@ -47,7 +49,7 @@ export default function TeacherWelcomePage() {
     <AuthShell
       badge="교사"
       title="처음 오셨군요"
-      description="근무하는 학교와 이름을 알려 주세요. 바로 반을 만들 수 있습니다."
+      description="근무하는 학교와 이름을 알려 주세요. 바로 반을 만들 수 있어요."
     >
       <form
         className="grid gap-5"
@@ -81,14 +83,9 @@ export default function TeacherWelcomePage() {
 
       <p className="text-center text-sm text-muted-foreground">
         다른 계정으로 들어가야 하나요?{" "}
-        <button
-          type="button"
-          disabled={signingOut}
-          onClick={() => void signOut()}
-          className="font-medium text-primary-deep hover:underline"
-        >
+        <TextButton size="sm" disabled={signingOut} onClick={() => void signOut()}>
           로그아웃
-        </button>
+        </TextButton>
       </p>
     </AuthShell>
   );

@@ -11,6 +11,8 @@ import Image from "next/image";
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { LoadingState } from "@/components/states";
+import { LessonName } from "@/components/lesson-name";
 import { useFindQuestions } from "@/api/generated";
 import { cn } from "cn";
 
@@ -31,7 +33,7 @@ export function StudentPreview({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-h-dvh gap-0 overflow-y-auto rounded-2xl p-0"
+        className="max-h-dvh gap-0 overflow-y-auto rounded-lg p-0"
       >
         {open ? (
           <PreviewBody
@@ -69,28 +71,31 @@ function PreviewBody({
   return (
     <div className="flex min-h-120 flex-col bg-background">
       <div className="flex items-center justify-between gap-2 bg-foreground px-4 py-3 text-sm font-bold text-background">
-        <DialogTitle className="text-sm font-bold">교사 미리보기 · 제출되지 않습니다</DialogTitle>
+        <div className="flex flex-wrap items-baseline gap-x-3">
+          <DialogTitle className="text-sm font-bold">학생 화면 미리보기</DialogTitle>
+          <span className="text-sm font-medium opacity-70">답은 저장되지 않아요</span>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="min-h-9 rounded-sm border border-muted-foreground px-3 text-sm font-bold"
+          className="min-h-9 rounded-md border border-muted-foreground px-3 text-sm font-bold"
         >
           닫기
         </button>
       </div>
 
       {query.isPending ? (
-        <p className="p-5 text-muted-foreground">불러오는 중…</p>
+        <LoadingState className="p-5 text-muted-foreground" />
       ) : !question ? (
         <p className="p-5 text-muted-foreground">
-          아직 문제가 없습니다. 문제를 넣으면 학생 화면을 미리 볼 수 있습니다.
+          아직 문제가 없어요. 문제를 넣으면 학생 화면을 미리 볼 수 있어요.
         </p>
       ) : (
         <>
           <div className="grid gap-2.5 border-b border-border bg-card px-5 py-4">
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm text-muted-foreground">
-                {lessonNumber}차시{lessonTitle ? ` · ${lessonTitle}` : ""}
+                <LessonName number={lessonNumber} title={lessonTitle} />
               </span>
               <span className="rounded-full bg-warning-soft px-2.5 py-0.5 text-sm font-bold tabular-nums">
                 제한 시간 {question.timeLimitSec}초
@@ -110,7 +115,7 @@ function PreviewBody({
           </div>
 
           <div className="grid flex-1 content-start gap-4 p-5">
-            <span className="w-fit rounded-sm bg-secondary px-2 py-0.5 text-sm font-bold text-muted-foreground">
+            <span className="w-fit rounded-full bg-secondary px-2.5 py-0.5 text-sm font-bold text-muted-foreground">
               {question.type === "SHORT_ANSWER" ? "주관식" : "객관식"}
             </span>
             <p className="text-lg leading-relaxed font-extrabold whitespace-pre-wrap">
@@ -166,7 +171,7 @@ function PreviewBody({
                           width={160}
                           height={90}
                           unoptimized
-                          className="h-auto w-24 rounded-sm"
+                          className="h-auto w-24 rounded-md"
                         />
                       ) : null}
                     </button>

@@ -10,15 +10,17 @@ import { Search } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
-import { Chip, Panel, TableBox, td, th } from "@/components/teacher/panel";
+import { TableBox, td, th } from "@/components/teacher/panel";
 import { TemporaryPassword } from "@/components/teacher/classroom/student-panel";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadingState } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
 import { resetStudentPassword, useFindClassroomStudents } from "@/api/generated";
 import type { ClassroomResponseResult } from "@/api/generated/model";
 
 export const STATUS_TAG = {
   SCORE_DROPPED: { label: "정답률 하락", tone: "bg-warning-soft text-foreground" },
-  NOT_RESPONDED: { label: "미응답", tone: "bg-destructive-soft text-destructive" },
+  NOT_RESPONDED: { label: "응답 안 함", tone: "bg-destructive-soft text-destructive" },
 } as const;
 
 export function StudentsTab({
@@ -65,13 +67,13 @@ export function StudentsTab({
       <ErrorText error={error} />
 
       {students.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : list.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
             {keyword
-              ? "찾는 학생이 없습니다. 이름이나 학번을 다시 확인해 주세요."
-              : "아직 연결된 학생이 없습니다. 위에서 합류 코드를 발급해 알려 주세요."}
+              ? "찾는 학생이 없어요. 이름이나 학번을 다시 확인해 주세요."
+              : "아직 참여한 학생이 없어요. 위에서 수업 코드를 발급해 학생에게 알려 주세요."}
           </p>
         </Panel>
       ) : (
@@ -98,7 +100,7 @@ export function StudentsTab({
                   <td className={`${td} font-bold`}>{student.studentName}</td>
                   <td className={`${td} tabular-nums`}>
                     {student.latestCorrectCount == null
-                      ? "미응시"
+                      ? "응답 안 함"
                       : `${student.latestCorrectCount} / ${latest?.questionCount ?? "–"}`}
                   </td>
                   <td className={`${td} tabular-nums`}>
