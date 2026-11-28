@@ -1,9 +1,11 @@
 "use client";
 
-// 반 만들기. 반은 수업(학년 + 과목)에 속하므로 수업을 먼저 고른다.
-// 아직 없는 학년·과목이면 그 자리에서 수업을 함께 만든다.
+// 반 만들기. 선생님은 학년·과목·반 번호만 고른다.
 //
-// 반 번호는 1~20. 이미 있는 반 번호는 고를 수 없다.
+// 서버에서는 반이 수업(학년 + 과목)에 속하지만, 그 구분은 화면에 드러내지 않는다.
+// 고른 학년·과목의 수업이 이미 있으면 거기에 반을 붙이고, 없으면 수업부터 만든다.
+//
+// 반 번호는 1~20. 같은 학년·과목에 이미 있는 반 번호는 고를 수 없다.
 
 import { useState } from "react";
 
@@ -25,7 +27,6 @@ import type { TeacherResponseCourse } from "@/api/generated/model";
 
 const MAX_GRADE = 3;
 const MAX_CLASS_NO = 20;
-const NEW_COURSE = "new";
 
 export function CreateClassroomDialog({
   open,
@@ -41,24 +42,23 @@ export function CreateClassroomDialog({
   const subjects = useFindSubjects({ schoolLevel: "MIDDLE" }, { query: { enabled: open } });
   const { run, busy, error, setError } = useRun();
 
-  const [courseId, setCourseId] = useState("");
   const [grade, setGrade] = useState("");
   const [subjectId, setSubjectId] = useState("");
   const [classNo, setClassNo] = useState("");
 
-  const picked = courseId || (courses.length ? String(courses[0].id) : NEW_COURSE);
-  const course = courses.find((item) => String(item.id) === picked);
-  const isNew = picked === NEW_COURSE;
+  // 고른 학년·과목의 수업이 이미 있는지. 있으면 그 수업의 반 번호는 고를 수 없다.
+  const course = courses.find(
+    (item) => String(item.grade) === grade && String(item.subjectId) === subjectId,
+  );
 
   const taken = new Set((course?.classrooms ?? []).map((room) => room.classNo));
   const classItems = Array.from({ length: MAX_CLASS_NO }, (_, i) => i + 1)
     .filter((n) => !taken.has(n))
     .map((n) => ({ value: String(n), label: `${n}반` }));
 
-  const ready = Boolean(classNo) && (!isNew || (grade && subjectId));
+  const ready = Boolean(grade && subjectId && classNo);
 
   const reset = () => {
-    setCourseId("");
     setGrade("");
     setSubjectId("");
     setClassNo("");
@@ -68,7 +68,7 @@ export function CreateClassroomDialog({
   const submit = () =>
     run(async () => {
       let targetId = course?.id ?? null;
-      if (isNew) {
+      if (!course) {
         const { data } = await createCourse({
           schoolId,
           grade: Number(grade),
@@ -95,9 +95,7 @@ export function CreateClassroomDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>반 만들기</DialogTitle>
-          <DialogDescription>
-            같은 학년·과목의 반은 차시와 문제를 함께 씁니다.
-          </DialogDescription>
+          <DialogDescription>학년과 과목, 반 번호를 골라 주세요.</DialogDescription>
         </DialogHeader>
 
         <form
@@ -108,53 +106,42 @@ export function CreateClassroomDialog({
             if (ready) void submit();
           }}
         >
-          <AppField label="수업">
-            <AppSelect
-              items={[
-                ...courses.map((item) => ({
-                  value: String(item.id),
-                  label: `${item.grade}학년 ${item.subjectName}`,
-                })),
-                { value: NEW_COURSE, label: "새 학년·과목 추가" },
-              ]}
-              value={picked}
-              onValueChange={(value) => {
-                setCourseId(value);
-                setClassNo("");
-              }}
-              placeholder="수업 선택"
-            />
-          </AppField>
+          <div className="grid grid-cols-2 gap-3">
+            <AppField label="학년" htmlFor="new-classroom-grade">
+              <AppSelect
+                id="new-classroom-grade"
+                items={Array.from({ length: MAX_GRADE }, (_, i) => ({
+                  value: String(i + 1),
+                  label: `${i + 1}학년`,
+                }))}
+                value={grade}
+                onValueChange={(value) => {
+                  setGrade(value);
+                  setClassNo("");
+                }}
+                placeholder="학년"
+              />
+            </AppField>
+            <AppField label="과목" htmlFor="new-classroom-subject">
+              <AppSelect
+                id="new-classroom-subject"
+                items={(subjects.data?.data ?? []).map((subject) => ({
+                  value: String(subject.id),
+                  label: subject.name ?? "",
+                }))}
+                value={subjectId}
+                onValueChange={(value) => {
+                  setSubjectId(value);
+                  setClassNo("");
+                }}
+                placeholder={subjects.isPending ? "불러오는 중…" : "과목"}
+              />
+            </AppField>
+          </div>
 
-          {isNew ? (
-            <div className="grid grid-cols-2 gap-3">
-              <AppField label="학년">
-                <AppSelect
-                  items={Array.from({ length: MAX_GRADE }, (_, i) => ({
-                    value: String(i + 1),
-                    label: `${i + 1}학년`,
-                  }))}
-                  value={grade}
-                  onValueChange={setGrade}
-                  placeholder="학년"
-                />
-              </AppField>
-              <AppField label="과목">
-                <AppSelect
-                  items={(subjects.data?.data ?? []).map((subject) => ({
-                    value: String(subject.id),
-                    label: subject.name ?? "",
-                  }))}
-                  value={subjectId}
-                  onValueChange={setSubjectId}
-                  placeholder="과목"
-                />
-              </AppField>
-            </div>
-          ) : null}
-
-          <AppField label="반">
+          <AppField label="반" htmlFor="new-classroom-no">
             <AppSelect
+              id="new-classroom-no"
               items={classItems}
               value={classNo}
               onValueChange={setClassNo}

@@ -136,7 +136,7 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
             </Panel>
           ) : !isId(courseId) ? (
             <p role="alert" className="text-sm font-medium text-destructive">
-              이 반의 수업 정보를 찾지 못해 차시를 불러올 수 없습니다.
+              차시를 불러오지 못했습니다. 새로고침해 주세요.
             </p>
           ) : lessons.isPending ? (
             <p className="text-muted-foreground">불러오는 중…</p>
@@ -154,7 +154,6 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
           ) : (
             <LessonsTab
               classroom={classroom}
-              courseLabel={course}
               lessons={lessonList}
               onView={(lessonNumber) => go({ tab: "lessons", lesson: lessonNumber })}
             />

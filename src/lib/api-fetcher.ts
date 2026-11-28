@@ -28,12 +28,23 @@ export class ApiError extends Error {
   readonly problem: ApiProblem | null;
 
   constructor(status: number, problem: ApiProblem | null) {
-    super(problem?.detail ?? `요청에 실패했습니다. (HTTP ${status})`);
+    super(readableDetail(problem) ?? `요청에 실패했습니다. (HTTP ${status})`);
     this.name = "ApiError";
     this.status = status;
     this.code = problem?.code ?? "UNKNOWN";
     this.problem = problem;
   }
+}
+
+// 입력값 검증 실패는 서버가 "schoolId: 널이어서는 안됩니다"처럼 필드 이름을 붙여 보낸다.
+// 필드 이름은 사용자에게 의미가 없으므로 그런 문장은 일반 안내로 바꾼다.
+const FIELD_PREFIX = /^[A-Za-z][\w.[\]]*: /;
+
+function readableDetail(problem: ApiProblem | null) {
+  if (!problem?.detail) return null;
+  return FIELD_PREFIX.test(problem.detail)
+    ? "입력한 내용을 다시 확인해 주세요."
+    : problem.detail;
 }
 
 const isProblem = (value: unknown): value is ApiProblem =>

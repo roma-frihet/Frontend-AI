@@ -172,7 +172,7 @@ function CourseSection({
           {course.grade}학년 {course.subjectName}
         </h2>
         <span className="text-sm text-muted-foreground">
-          차시 {course.lessonCount ?? 0}개 공유
+          차시 {course.lessonCount ?? 0}개
         </span>
         <button
           type="button"
