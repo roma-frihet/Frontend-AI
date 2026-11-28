@@ -10,7 +10,8 @@ import { ChevronLeft } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { ResultBadge } from "@/components/student/result-badge";
-import { Card } from "@/components/ui/card";
+import { LoadingState } from "@/components/states";
+import { Panel, panelClass } from "@/components/surface";
 import { useFindMyLessonResult, useFindMyLessons } from "@/api/generated";
 import { cn } from "cn";
 
@@ -33,16 +34,16 @@ export function PastLessonsTab({ classroomId }: { classroomId: number }) {
   }
 
   if (lessons.isPending) {
-    return <p className="text-muted-foreground">불러오는 중…</p>;
+    return <LoadingState />;
   }
 
   if (finished.length === 0) {
     return (
-      <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
+      <Panel>
         <p className="text-muted-foreground">
           수업이 끝나면 정답과 해설을 여기에서 볼 수 있어요.
         </p>
-      </Card>
+      </Panel>
     );
   }
 
@@ -53,7 +54,7 @@ export function PastLessonsTab({ classroomId }: { classroomId: number }) {
           <button
             type="button"
             onClick={() => setOpenLessonNumber(lesson.lessonNumber ?? null)}
-            className="flex w-full items-center justify-between gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left shadow-card transition-colors hover:border-muted-foreground"
+            className={cn(panelClass({ interactive: true }), "flex w-full items-center justify-between")}
           >
             <span className="grid gap-0.5">
               <span className="font-bold">{lesson.lessonNumber}차시</span>
@@ -97,12 +98,12 @@ function LessonResult({
       </div>
 
       {result.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : (
         <ul className="m-0 grid list-none gap-gap p-0">
           {data?.questions?.map((question, index) => (
             <li key={question.questionId}>
-              <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+              <Panel>
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-bold whitespace-pre-wrap">
                     {index + 1}. {question.content}
@@ -156,7 +157,7 @@ function LessonResult({
                 {question.explanation ? (
                   <ReviewRow label="해설" value={question.explanation} />
                 ) : null}
-              </Card>
+              </Panel>
             </li>
           ))}
         </ul>

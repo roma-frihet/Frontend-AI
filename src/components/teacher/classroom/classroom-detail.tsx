@@ -5,7 +5,6 @@
 // 차시와 문제는 같은 학년·과목의 반들이 함께 쓴다. 여기서는 이 반에 열고 닫는 것만 한다.
 
 import { use, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Trash2 } from "lucide-react";
 
@@ -17,9 +16,8 @@ import {
 } from "@/components/app-tabs";
 import { ConfirmDelete, losses } from "@/components/teacher/confirm-delete";
 import { JoinCodeCard } from "@/components/teacher/join-code-card";
-import { Panel } from "@/components/teacher/panel";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, LoadError, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
 import { LessonDetail } from "@/components/teacher/classroom/lesson-detail";
 import { LessonsTab } from "@/components/teacher/classroom/lessons-tab";
 import { ScoresTab } from "@/components/teacher/classroom/scores-tab";
@@ -30,6 +28,9 @@ import {
   type ClassroomTab,
 } from "@/components/teacher/classroom/use-classroom-query";
 import { useRefreshOnChange } from "@/components/teacher/use-refresh";
+import { ErrorText, LoadError, LoadingState } from "@/components/states";
+import { Panel } from "@/components/surface";
+import { IconButton, TextLink } from "@/components/text-action";
 import { deleteClassroom, useFindClassrooms, useFindLessons } from "@/api/generated";
 import { isId } from "@/lib/id";
 
@@ -65,7 +66,7 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
   if (classrooms.isPending) {
     return (
       <TeacherShell title="반">
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       </TeacherShell>
     );
   }
@@ -77,9 +78,9 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
           <p className="text-muted-foreground">
             지워졌거나 다른 선생님의 반이에요. 학급 관리에서 반을 다시 골라 주세요.
           </p>
-          <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
+          <TextLink href="/teacher">
             학급 관리로 가기
-          </Link>
+          </TextLink>
         </Panel>
       </TeacherShell>
     );
@@ -96,25 +97,23 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
       actions={
         <>
           <JoinCodeCard classroom={classroom} busy={busy} onRun={(task) => void run(task)} />
-          <button
-            type="button"
+          <IconButton
+            tone="danger"
+            size="lg"
             aria-label={`${name} 삭제`}
             disabled={busy}
             onClick={() => setDeleting(true)}
-            className="inline-grid size-11 place-items-center self-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-50"
+            className="self-center"
           >
             <Trash2 className="size-4.5" aria-hidden />
-          </button>
+          </IconButton>
         </>
       }
     >
-      <Link
-        href="/teacher"
-        className="-mt-3 -mb-2 inline-flex w-fit items-center gap-1 text-sm font-bold text-primary-deep hover:underline"
-      >
+      <TextLink href="/teacher" size="sm" className="-mt-3 -mb-2">
         <ChevronLeft className="size-4" aria-hidden />
         학급 관리
-      </Link>
+      </TextLink>
 
       <ErrorText error={error} />
 
@@ -139,7 +138,7 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
               차시를 불러오지 못했어요. 새로고침해 주세요.
             </p>
           ) : lessons.isPending ? (
-            <p className="text-muted-foreground">불러오는 중…</p>
+            <LoadingState />
           ) : lesson ? (
             <LessonDetail
               classroom={classroom}

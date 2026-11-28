@@ -4,7 +4,9 @@
 // 한 반만 유난히 낮은 문제는 그 반에서 다시 짚어 볼 문제다.
 
 import { LOW_RATE, percent } from "@/components/teacher/lesson-status";
-import { Panel, TableBox, td, th } from "@/components/teacher/panel";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { Panel } from "@/components/surface";
+import { LoadingState } from "@/components/states";
 import { useFindQuestionStats } from "@/api/generated";
 import { cn } from "cn";
 
@@ -46,7 +48,7 @@ export function ClassCompare({
       </div>
 
       {query.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : rooms.length < 2 ? (
         <p className="text-muted-foreground">
           같은 학년·과목의 반이 둘 이상이면 반끼리 비교할 수 있어요.

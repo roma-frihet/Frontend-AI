@@ -2,7 +2,7 @@
 
 import { Check, Clock, X } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
+import { Panel } from "@/components/surface";
 import { cn } from "cn";
 import type { AttemptResponseLast } from "@/api/generated/model";
 
@@ -12,9 +12,8 @@ export function AnswerResult({ last }: { last: AttemptResponseLast }) {
   const none = last.result === "NONE";
 
   return (
-    <Card
+    <Panel
       className={cn(
-        "grid gap-4 rounded-lg border p-6 shadow-card ring-0",
         right
           ? "border-success bg-success-soft"
           : none
@@ -60,6 +59,6 @@ export function AnswerResult({ last }: { last: AttemptResponseLast }) {
           <p className="whitespace-pre-wrap">{last.explanation}</p>
         </div>
       ) : null}
-    </Card>
+    </Panel>
   );
 }

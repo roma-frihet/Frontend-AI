@@ -8,12 +8,10 @@
 // 예약 시각은 시간대를 붙여 보낸다. 서버 시계가 UTC라 없으면 9시간 어긋난다.
 
 import { useState } from "react";
-import Link from "next/link";
 import { CalendarClock } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
-import { Chip, Panel } from "@/components/teacher/panel";
 import { FinishDialog } from "@/components/teacher/classroom/finish-dialog";
 import {
   STATUS_LABEL,
@@ -23,7 +21,10 @@ import {
   toOffsetDateTime,
   type LessonStatus,
 } from "@/components/teacher/lesson-status";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { EmptyState, ErrorText } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
+import { TextLink } from "@/components/text-action";
 import {
   cancelLessonSchedule,
   closeLesson,
@@ -58,23 +59,17 @@ export function LessonsTab({
 
       {lessons.length === 0 ? (
         <Panel>
-          <p className="text-muted-foreground">
+          <EmptyState action={{ href: "/teacher/prepare", label: "차시·문제 준비로 가기" }}>
             아직 차시가 없어요. 수업에서 쓸 차시와 문제를 먼저 만들어 주세요.
-          </p>
-          <Link
-            href="/teacher/prepare"
-            className="w-fit font-bold text-primary-deep hover:underline"
-          >
-            차시·문제 준비로 가기
-          </Link>
+          </EmptyState>
         </Panel>
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
             새 차시나 문제는{" "}
-            <Link href="/teacher/prepare" className="font-bold text-primary-deep hover:underline">
+            <TextLink href="/teacher/prepare">
               차시·문제 준비
-            </Link>
+            </TextLink>
             에서 만들 수 있어요.
           </p>
           <ul className="m-0 grid list-none gap-2.5 p-0">
@@ -152,7 +147,7 @@ function LessonRow({
     .join(" · ");
 
   return (
-    <li className="grid gap-3 rounded-lg border border-border bg-card p-4 shadow-card">
+    <Panel as="li" size="sm" className="gap-3">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <strong className="min-w-14 text-primary-deep">{number}차시</strong>
         <span className="grid min-w-0 flex-1 basis-48 gap-0.5">
@@ -183,12 +178,9 @@ function LessonRow({
             차시 보기
           </AppButton>
           {status === "FINISHED" ? null : !hasQuestion ? (
-            <Link
-              href={prepareHref}
-              className="inline-flex h-9 items-center px-1 text-sm font-bold text-primary-deep hover:underline"
-            >
-              문제 넣으러 가기 →
-            </Link>
+            <TextLink href={prepareHref} size="sm" className="h-9 px-1">
+              문제 넣으러 가기
+            </TextLink>
           ) : (
             <>
               {scheduled ? (
@@ -253,7 +245,7 @@ function LessonRow({
           }
         />
       ) : null}
-    </li>
+    </Panel>
   );
 }
 

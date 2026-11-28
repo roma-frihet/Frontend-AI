@@ -4,7 +4,8 @@
 // 아직 답하지 않은 학생을 먼저 찾아야 하므로 위로 올린다.
 
 import { AnswerTable } from "@/components/teacher/classroom/answer-table";
-import { Panel } from "@/components/teacher/panel";
+import { Panel } from "@/components/surface";
+import { LoadingState } from "@/components/states";
 import { useFindClassroomStudents, useFindScores } from "@/api/generated";
 import { cn } from "cn";
 
@@ -47,7 +48,7 @@ export function LessonStudents({
 
   const current = selected ?? list[0]?.student.membershipId ?? null;
 
-  if (students.isPending) return <p className="text-muted-foreground">불러오는 중…</p>;
+  if (students.isPending) return <LoadingState />;
 
   if (list.length === 0) {
     return (

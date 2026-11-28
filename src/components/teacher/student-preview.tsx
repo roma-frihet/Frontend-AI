@@ -11,6 +11,7 @@ import Image from "next/image";
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { LoadingState } from "@/components/states";
 import { useFindQuestions } from "@/api/generated";
 import { cn } from "cn";
 
@@ -31,7 +32,7 @@ export function StudentPreview({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-h-dvh gap-0 overflow-y-auto rounded-2xl p-0"
+        className="max-h-dvh gap-0 overflow-y-auto rounded-lg p-0"
       >
         {open ? (
           <PreviewBody
@@ -73,14 +74,14 @@ function PreviewBody({
         <button
           type="button"
           onClick={onClose}
-          className="min-h-9 rounded-sm border border-muted-foreground px-3 text-sm font-bold"
+          className="min-h-9 rounded-md border border-muted-foreground px-3 text-sm font-bold"
         >
           닫기
         </button>
       </div>
 
       {query.isPending ? (
-        <p className="p-5 text-muted-foreground">불러오는 중…</p>
+        <LoadingState className="p-5 text-muted-foreground" />
       ) : !question ? (
         <p className="p-5 text-muted-foreground">
           아직 문제가 없어요. 문제를 넣으면 학생 화면을 미리 볼 수 있어요.
@@ -110,7 +111,7 @@ function PreviewBody({
           </div>
 
           <div className="grid flex-1 content-start gap-4 p-5">
-            <span className="w-fit rounded-sm bg-secondary px-2 py-0.5 text-sm font-bold text-muted-foreground">
+            <span className="w-fit rounded-full bg-secondary px-2.5 py-0.5 text-sm font-bold text-muted-foreground">
               {question.type === "SHORT_ANSWER" ? "주관식" : "객관식"}
             </span>
             <p className="text-lg leading-relaxed font-extrabold whitespace-pre-wrap">
@@ -166,7 +167,7 @@ function PreviewBody({
                           width={160}
                           height={90}
                           unoptimized
-                          className="h-auto w-24 rounded-sm"
+                          className="h-auto w-24 rounded-md"
                         />
                       ) : null}
                     </button>

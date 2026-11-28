@@ -9,8 +9,9 @@ import { useState } from "react";
 
 import { AppButton } from "@/components/app-button";
 import { AppSelect } from "@/components/app-select";
-import { Panel } from "@/components/teacher/panel";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText } from "@/components/states";
+import { Callout, Panel } from "@/components/surface";
 import { copyQuestions, useFindLessons } from "@/api/generated";
 import type { TeacherResponseCourse } from "@/api/generated/model";
 
@@ -113,9 +114,9 @@ export function CopyPanel({
         </AppButton>
       </div>
       {done ? (
-        <p role="status" className="rounded-md bg-success-soft px-4 py-2.5 text-sm font-bold">
+        <Callout tone="success" role="status" className="text-sm font-bold">
           {done}
-        </p>
+        </Callout>
       ) : null}
       <ErrorText error={error} />
       <span className="text-sm text-muted-foreground">

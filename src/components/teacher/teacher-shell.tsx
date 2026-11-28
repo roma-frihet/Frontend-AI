@@ -11,6 +11,7 @@ import { FileText, LayoutGrid, LogOut, UserRound } from "lucide-react";
 
 import { Brand } from "@/components/brand";
 import { useSignOut } from "@/components/teacher/use-sign-out";
+import { TextButton } from "@/components/text-action";
 import { useFindMyPage } from "@/api/generated";
 import { cn } from "cn";
 
@@ -89,15 +90,16 @@ export function TeacherShell({
           <p className="text-sm text-muted-foreground">학교</p>
           <p className="font-bold">{profile?.schoolName ?? "–"}</p>
           <p className="text-sm text-muted-foreground">{profile?.name ?? "선생님"}</p>
-          <button
-            type="button"
+          <TextButton
+            tone="muted"
+            size="sm"
             disabled={signingOut}
             onClick={() => void signOut()}
-            className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            className="mt-2"
           >
             <LogOut className="size-4" aria-hidden />
             로그아웃
-          </button>
+          </TextButton>
         </div>
       </aside>
 

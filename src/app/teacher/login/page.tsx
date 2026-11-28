@@ -6,12 +6,12 @@
 // 서버도 같은 값으로 /api/v1/teacher/** 접근을 막는다.
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { TextLink } from "@/components/text-action";
 import { getSupabaseClient, isTeacherSession } from "@/lib/supabase/client";
 
 export default function TeacherLoginPage() {
@@ -90,9 +90,9 @@ export default function TeacherLoginPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         학생인가요?{" "}
-        <Link href="/login" className="font-medium text-primary-deep hover:underline">
+        <TextLink href="/login">
           학생 로그인
-        </Link>
+        </TextLink>
       </p>
     </AuthShell>
   );

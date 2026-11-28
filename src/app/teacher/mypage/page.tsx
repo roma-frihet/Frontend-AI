@@ -10,9 +10,10 @@ import { LogOut, Pencil, UserRound } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
 import { useSignOut } from "@/components/teacher/use-sign-out";
-import { Card } from "@/components/ui/card";
+import { ErrorText } from "@/components/states";
+import { Panel } from "@/components/surface";
 import { saveTeacherProfile, useFindMyPage } from "@/api/generated";
 
 export default function TeacherMyPage() {
@@ -27,7 +28,7 @@ export default function TeacherMyPage() {
   return (
     <TeacherShell title="마이페이지">
       <div className="grid max-w-lg gap-gap">
-        <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+        <Panel>
           <div className="flex items-center gap-2.5">
             <UserRound className="size-5 text-accent-deep" aria-hidden />
             <h2 className="text-lg font-bold">내 정보</h2>
@@ -92,7 +93,7 @@ export default function TeacherMyPage() {
               </div>
             </>
           )}
-        </Card>
+        </Panel>
 
         <ErrorText error={error} />
       </div>

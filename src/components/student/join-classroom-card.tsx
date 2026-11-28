@@ -10,7 +10,7 @@ import { KeyRound } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
-import { Card } from "@/components/ui/card";
+import { Panel } from "@/components/surface";
 import { getFindMyClassroomsQueryKey, joinClassroom } from "@/api/generated";
 import { ApiError } from "@/lib/api-fetcher";
 
@@ -48,8 +48,8 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
   };
 
   return (
-    <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-      <span className="inline-grid size-12 place-items-center rounded-xl bg-primary-soft text-primary">
+    <Panel>
+      <span className="inline-grid size-12 place-items-center rounded-lg bg-primary-soft text-primary">
         <KeyRound className="size-6" aria-hidden />
       </span>
 
@@ -87,6 +87,6 @@ export function JoinClassroomCard({ onJoined }: { onJoined?: () => void }) {
         </p>
       ) : null}
 
-    </Card>
+    </Panel>
   );
 }

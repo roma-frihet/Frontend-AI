@@ -12,7 +12,8 @@ import { useState } from "react";
 import { AppButton } from "@/components/app-button";
 import { AppField } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText, LOADING_TEXT } from "@/components/states";
 import {
   Dialog,
   DialogClose,
@@ -134,7 +135,7 @@ export function CreateClassroomDialog({
                   setSubjectId(value);
                   setClassNo("");
                 }}
-                placeholder={subjects.isPending ? "불러오는 중…" : "과목"}
+                placeholder={subjects.isPending ? LOADING_TEXT : "과목"}
               />
             </AppField>
           </div>
