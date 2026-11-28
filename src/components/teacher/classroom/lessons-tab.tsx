@@ -41,12 +41,10 @@ export const statusIn = (lesson: LessonResponseResult, classroomId?: number) =>
 
 export function LessonsTab({
   classroom,
-  courseLabel,
   lessons,
   onView,
 }: {
   classroom: ClassroomResponseResult;
-  courseLabel: string;
   lessons: LessonResponseResult[];
   onView: (lessonNumber: number) => void;
 }) {
@@ -56,55 +54,59 @@ export function LessonsTab({
 
   return (
     <>
-      <p className="rounded-md bg-primary-soft px-4 py-3 text-sm">
-        차시와 문제는 {courseLabel}의 모든 반이 함께 씁니다. 여기서는{" "}
-        <strong>이 반에 열고 닫는 것</strong>만 합니다. 새 차시나 문제는{" "}
-        <Link href="/teacher/prepare" className="font-bold text-primary-deep hover:underline">
-          차시·문제 준비
-        </Link>
-        에서 만드세요.
-      </p>
-
       <ErrorText error={error} />
 
       {lessons.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
-            아직 차시가 없습니다. 차시·문제 준비에서 차시와 문제를 만들면 여기에서 열 수
-            있습니다.
+            아직 차시가 없습니다. 수업에서 쓸 차시와 문제를 먼저 만들어 주세요.
           </p>
+          <Link
+            href="/teacher/prepare"
+            className="w-fit font-bold text-primary-deep hover:underline"
+          >
+            차시·문제 준비로 가기
+          </Link>
         </Panel>
       ) : (
-        <ul className="m-0 grid list-none gap-2.5 p-0">
-          {lessons.map((lesson) => {
-            const number = lesson.lessonNumber ?? 0;
-            return (
-              <LessonRow
-                key={number}
-                classroomId={classroom.id ?? 0}
-                prepareHref={`/teacher/prepare?course=${classroom.courseId}&lesson=${number}`}
-                lesson={lesson}
-                state={statusIn(lesson, classroom.id)}
-                busy={busy}
-                scheduleOpen={scheduling === number}
-                onToggleSchedule={() => setScheduling(scheduling === number ? null : number)}
-                onView={() => onView(number)}
-                onFinish={() => setFinishing(number)}
-                onRun={(task) =>
-                  void run(task).then((ok) => {
-                    if (ok) setScheduling(null);
-                  })
-                }
-              />
-            );
-          })}
-        </ul>
+        <>
+          <p className="text-sm text-muted-foreground">
+            새 차시나 문제는{" "}
+            <Link href="/teacher/prepare" className="font-bold text-primary-deep hover:underline">
+              차시·문제 준비
+            </Link>
+            에서 만들 수 있습니다.
+          </p>
+          <ul className="m-0 grid list-none gap-2.5 p-0">
+            {lessons.map((lesson) => {
+              const number = lesson.lessonNumber ?? 0;
+              return (
+                <LessonRow
+                  key={number}
+                  classroomId={classroom.id ?? 0}
+                  prepareHref={`/teacher/prepare?course=${classroom.courseId}&lesson=${number}`}
+                  lesson={lesson}
+                  state={statusIn(lesson, classroom.id)}
+                  busy={busy}
+                  scheduleOpen={scheduling === number}
+                  onToggleSchedule={() => setScheduling(scheduling === number ? null : number)}
+                  onView={() => onView(number)}
+                  onFinish={() => setFinishing(number)}
+                  onRun={(task) =>
+                    void run(task).then((ok) => {
+                      if (ok) setScheduling(null);
+                    })
+                  }
+                />
+              );
+            })}
+          </ul>
+          <p className="text-sm text-muted-foreground">
+            닫으면 학생 화면에서 잠시 숨겨지고 다시 열 수 있습니다. 마감하면 학생이 정답과 해설을
+            보고, 다시 열 수 없습니다.
+          </p>
+        </>
       )}
-
-      <p className="text-sm text-muted-foreground">
-        닫기는 학생에게 잠시 숨기는 것이고 다시 열 수 있습니다. 마감하면 다시 열 수 없고,
-        학생이 정답과 해설을 봅니다.
-      </p>
 
       <FinishDialog
         classroomId={classroom.id ?? 0}
@@ -328,7 +330,7 @@ function ScheduleForm({
         없습니다.
         {isOpen
           ? null
-          : " 열 시각에 열리지 못한 채 마감 시각이 지나면 예약이 지워집니다. 그때는 지금 열기로 직접 열어 주세요."}
+          : " 예약한 시각에 열리지 않은 채 마감 시각이 지나면 예약이 취소됩니다. 이때는 지금 열기를 눌러 주세요."}
       </p>
     </form>
   );

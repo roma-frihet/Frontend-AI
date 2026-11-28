@@ -285,8 +285,7 @@ function NotOpened({ courseId, lessonNumber }: { courseId: number; lessonNumber:
   return (
     <Panel>
       <p className="text-muted-foreground">
-        아직 이 반에 열지 않은 차시입니다. 열면 제출 현황과 정답률이 여기에 나옵니다. 아래는
-        학생에게 나갈 문제입니다.
+        아직 열지 않은 차시입니다. 열면 제출 현황과 정답률을 여기에서 볼 수 있습니다.
       </p>
       {questions.isPending ? (
         <p className="text-muted-foreground">불러오는 중…</p>
