@@ -55,7 +55,7 @@ export default function TeacherHomePage() {
         <Panel>
           <h2 className="text-lg font-bold">첫 반을 만들어 주세요</h2>
           <p className="text-muted-foreground">
-            학년·과목과 반 번호를 고르면 바로 학생을 모을 수 있습니다.
+            학년·과목과 반 번호를 고르면 바로 학생을 모을 수 있어요.
           </p>
           <AppButton className="justify-self-start" onClick={() => setCreating(true)}>
             <Plus className="size-4" aria-hidden />
@@ -188,7 +188,7 @@ function CourseSection({
       {sorted.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
-            아직 반이 없습니다. 반을 만들면 학생을 모으고 차시를 열 수 있습니다.
+            아직 반이 없어요. 반을 만들면 학생을 모으고 차시를 열 수 있어요.
           </p>
           <AppButton variant="outline" className="justify-self-start" onClick={onCreate}>
             <Plus className="size-4" aria-hidden />

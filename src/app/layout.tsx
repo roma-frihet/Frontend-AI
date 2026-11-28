@@ -13,7 +13,7 @@ const notoSansKr = Noto_Sans_KR({
 
 export const metadata: Metadata = {
   title: "다시봄",
-  description: "수업이 끝나면 선생님이 문제를 엽니다. 풀고, 기록이 쌓입니다.",
+  description: "수업이 끝나면 복습 문제를 풀고, 내 기록을 확인해요.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

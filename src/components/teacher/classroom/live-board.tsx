@@ -134,7 +134,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
               left === 0 ? "bg-success-soft text-success" : "bg-warning-soft text-foreground",
             )}
           >
-            {left === 0 ? "모두 응답했습니다" : `아직 ${left}명`}
+            {left === 0 ? "모두 응답했어요" : `아직 ${left}명`}
           </span>
         </div>
         <span aria-hidden className="h-4 overflow-hidden rounded-full bg-secondary">
@@ -202,7 +202,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
         >
           <strong className="mr-2 text-lg">아직 답하지 않은 학생</strong>
           {waiting.length === 0 ? (
-            <span className="text-muted-foreground">모두 답했습니다.</span>
+            <span className="text-muted-foreground">모두 답했어요.</span>
           ) : (
             waiting.map((student) => (
               <span
@@ -216,7 +216,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
         </section>
       ) : (
         <p className="text-sm text-muted-foreground">
-          학생 이름은 숨겨져 있습니다. 칠판 화면에 띄울 때는 이름을 숨긴 채로 두세요.
+          학생 이름은 숨겨져 있어요. 칠판에 띄울 때는 숨긴 채로 두세요.
         </p>
       )}
     </div>

@@ -95,7 +95,7 @@ export function PrepareLessons() {
       <TeacherShell title="차시·문제 준비">
         <Panel>
           <p className="text-muted-foreground">
-            반을 먼저 만들어 주세요. 반을 만들면 차시와 문제를 준비할 수 있습니다.
+            반을 먼저 만들어 주세요. 반을 만들면 차시와 문제를 준비할 수 있어요.
           </p>
           <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
             학급 관리로 가기
@@ -108,7 +108,7 @@ export function PrepareLessons() {
   return (
     <TeacherShell
       title="차시·문제 준비"
-      description="수업 전에 차시와 문제를 만들어 두세요. 한 번 만들면 같은 학년·과목의 모든 반에서 쓸 수 있습니다."
+      description="수업 전에 차시와 문제를 만들어 두세요. 한 번 만들면 같은 학년·과목의 모든 반에서 쓸 수 있어요."
     >
       <div role="group" aria-label="수업 선택" className="flex flex-wrap gap-2">
         {courses.map((item) => {
@@ -211,7 +211,7 @@ export function PrepareLessons() {
         {lessonNumber == null || !lesson ? (
           <Panel>
             <p className="text-muted-foreground">
-              차시를 추가하면 문제를 만들 수 있습니다.
+              차시를 추가하면 문제를 만들 수 있어요.
             </p>
           </Panel>
         ) : (
@@ -295,7 +295,7 @@ export function PrepareLessons() {
               <div className="flex flex-wrap items-center gap-2 rounded-md bg-secondary px-3.5 py-3">
                 <span className="mr-1 text-sm text-muted-foreground">반별 상태</span>
                 {(lesson.classrooms ?? []).length === 0 ? (
-                  <span className="text-sm text-muted-foreground">아직 반이 없습니다</span>
+                  <span className="text-sm text-muted-foreground">아직 반이 없어요</span>
                 ) : null}
                 {(lesson.classrooms ?? []).map((room) => {
                   const status = (room.status ?? "PLANNED") as LessonStatus;
@@ -336,7 +336,7 @@ export function PrepareLessons() {
                 <h3 className="text-lg font-bold">문제 {questionList.length}개</h3>
                 {everOpened ? (
                   <span className="text-sm text-muted-foreground">
-                    열었던 차시라 새 문제는 넣을 수 없습니다
+                    이미 연 차시라 새 문제를 넣을 수 없어요
                   </span>
                 ) : null}
               </div>
@@ -345,7 +345,7 @@ export function PrepareLessons() {
                 <p className="border-t border-border px-5 py-6 text-muted-foreground">불러오는 중…</p>
               ) : questionList.length === 0 ? (
                 <p className="border-t border-border px-5 py-7 text-center text-muted-foreground">
-                  아직 문제가 없습니다. 문제를 하나 이상 넣어야 수업에서 열 수 있습니다.
+                  아직 문제가 없어요. 문제를 하나 이상 넣어야 수업에서 열 수 있어요.
                 </p>
               ) : (
                 <ul className="m-0 grid list-none p-0">
@@ -446,7 +446,7 @@ export function PrepareLessons() {
               <QuestionForm
                 busy={busy}
                 disabled={everOpened}
-                disabledReason="학생에게 열었던 차시입니다. 새 문제는 다음 차시에 넣어 주세요."
+                disabledReason="이미 학생에게 연 차시예요. 새 문제는 다음 차시에 넣어 주세요."
                 onSubmit={(question: QuestionRequestSave) =>
                   void run(() => createQuestion(course, lessonNumber, question))
                 }

@@ -114,7 +114,7 @@ export function QuestionForm({
   if (disabled) {
     return (
       <p className="text-muted-foreground">
-        {disabledReason ?? "지금은 문제를 추가할 수 없습니다."}
+        {disabledReason ?? "지금은 문제를 추가할 수 없어요."}
       </p>
     );
   }
@@ -240,7 +240,7 @@ export function QuestionForm({
           />
           {answers.length > 1 ? (
             <p className="text-sm text-muted-foreground">
-              {answers.length}개 답을 모두 정답으로 인정합니다.
+              {answers.length}개 답을 모두 정답으로 인정해요.
             </p>
           ) : null}
         </AppField>
@@ -249,7 +249,7 @@ export function QuestionForm({
       <AppField label="해설 (선택)" htmlFor="explanation">
         <AppInput
           id="explanation"
-          placeholder="마감한 뒤에만 학생에게 보입니다"
+          placeholder="수업을 마감하면 학생에게 보여요"
           value={explanation}
           onChange={(event) => setExplanation(event.target.value)}
         />

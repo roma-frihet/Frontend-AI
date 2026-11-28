@@ -72,10 +72,10 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
 
   if (!classroom) {
     return (
-      <TeacherShell title="반을 찾을 수 없습니다">
+      <TeacherShell title="반을 찾을 수 없어요">
         <Panel>
           <p className="text-muted-foreground">
-            지워졌거나 다른 선생님의 반입니다. 학급 관리에서 반을 다시 골라 주세요.
+            지워졌거나 다른 선생님의 반이에요. 학급 관리에서 반을 다시 골라 주세요.
           </p>
           <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
             학급 관리로 가기
@@ -136,7 +136,7 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
             </Panel>
           ) : !isId(courseId) ? (
             <p role="alert" className="text-sm font-medium text-destructive">
-              차시를 불러오지 못했습니다. 새로고침해 주세요.
+              차시를 불러오지 못했어요. 새로고침해 주세요.
             </p>
           ) : lessons.isPending ? (
             <p className="text-muted-foreground">불러오는 중…</p>

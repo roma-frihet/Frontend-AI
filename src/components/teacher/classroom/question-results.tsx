@@ -166,7 +166,7 @@ function Distribution({
         </span>
       ) : null}
       {rows.length === 0 && noAnswer === 0 ? (
-        <p className="text-sm text-muted-foreground">아직 답한 학생이 없습니다.</p>
+        <p className="text-sm text-muted-foreground">아직 답한 학생이 없어요.</p>
       ) : null}
       {rows.map((row) => (
         <DistributionRow
@@ -198,12 +198,12 @@ function Distribution({
         </DistributionRow>
       ))}
       {noAnswer > 0 ? (
-        <DistributionRow label="답하지 않음" count={noAnswer} total={responders} right={false} />
+        <DistributionRow label="응답 안 함" count={noAnswer} total={responders} right={false} />
       ) : null}
       {isShort ? (
         <p className="text-sm text-muted-foreground">
-          맞는 답인데 표현이 다르면 정답으로 인정해 주세요. 같은 답을 쓴 학생 모두에게 바로
-          반영됩니다.
+          표현이 달라도 맞는 답이면 정답으로 인정해 주세요. 같은 답을 쓴 학생 모두에게 바로
+          반영돼요.
         </p>
       ) : null}
     </div>

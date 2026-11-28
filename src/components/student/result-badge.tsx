@@ -8,7 +8,7 @@ type Result = "RIGHT" | "WRONG" | "NONE";
 const LABEL: Record<Result, string> = {
   RIGHT: "정답",
   WRONG: "오답",
-  NONE: "미응답",
+  NONE: "응답 안 함",
 };
 
 const TONE: Record<Result, string> = {

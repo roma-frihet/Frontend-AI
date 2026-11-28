@@ -69,7 +69,7 @@ function PreviewBody({
   return (
     <div className="flex min-h-120 flex-col bg-background">
       <div className="flex items-center justify-between gap-2 bg-foreground px-4 py-3 text-sm font-bold text-background">
-        <DialogTitle className="text-sm font-bold">교사 미리보기 · 제출되지 않습니다</DialogTitle>
+        <DialogTitle className="text-sm font-bold">학생 화면 미리보기 · 답은 저장되지 않아요</DialogTitle>
         <button
           type="button"
           onClick={onClose}
@@ -83,7 +83,7 @@ function PreviewBody({
         <p className="p-5 text-muted-foreground">불러오는 중…</p>
       ) : !question ? (
         <p className="p-5 text-muted-foreground">
-          아직 문제가 없습니다. 문제를 넣으면 학생 화면을 미리 볼 수 있습니다.
+          아직 문제가 없어요. 문제를 넣으면 학생 화면을 미리 볼 수 있어요.
         </p>
       ) : (
         <>

@@ -39,7 +39,7 @@ test("수업 삭제는 무엇이 사라지는지 숫자로 보여 준다", async
   ).toBeVisible();
   // 반 1개(TEACHER_MYPAGE), 학생 1명(TEACHER_SUMMARIES), 차시 2개
   await expect(
-    page.getByText("반 1개, 학생 1명, 차시 2개가 함께 사라집니다."),
+    page.getByText("반 1개, 학생 1명, 차시 2개가 함께 사라져요. 되돌릴 수 없어요."),
   ).toBeVisible();
 });
 
@@ -97,7 +97,7 @@ test("차시 삭제는 딸린 문제 수를 알려 준다", async ({ page }) => 
   await expect(
     page.getByRole("heading", { name: "1차시 광합성을 지울까요?" }),
   ).toBeVisible();
-  await expect(page.getByText("문제 1개가 함께 사라집니다.")).toBeVisible();
+  await expect(page.getByText("문제 1개가 함께 사라져요. 되돌릴 수 없어요.")).toBeVisible();
 });
 
 test("반 삭제는 학생 수를 알려 주고 학급 관리로 돌아간다", async ({ page }) => {
@@ -108,7 +108,7 @@ test("반 삭제는 학생 수를 알려 주고 학급 관리로 돌아간다", 
 
   await page.goto("/teacher/classrooms/2");
   await page.getByRole("button", { name: "3학년 5반 삭제" }).click();
-  await expect(page.getByText("학생 1명이 함께 사라집니다.")).toBeVisible();
+  await expect(page.getByText("학생 1명이 함께 사라져요. 되돌릴 수 없어요.")).toBeVisible();
   await page.getByRole("dialog").getByRole("button", { name: "삭제" }).click();
 
   await expect

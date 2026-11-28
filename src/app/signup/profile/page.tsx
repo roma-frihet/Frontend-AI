@@ -88,8 +88,8 @@ export default function StudentProfilePage() {
   return (
     <AuthShell
       badge="학생"
-      title="이름만 알려 주세요"
-      description="이름만 저장하면 바로 시작할 수 있어요."
+      title="이름을 알려 주세요"
+      description="선생님이 알아볼 수 있게 실명으로 적어 주세요."
     >
       {loading ? (
         <p className="text-muted-foreground">불러오는 중…</p>
@@ -113,7 +113,7 @@ export default function StudentProfilePage() {
             <AppInput
               id="name"
               autoComplete="name"
-              placeholder="실명을 입력하세요"
+              placeholder="예: 김하늘"
               maxLength={50}
               value={name}
               onChange={(event) => setName(event.target.value)}

@@ -76,7 +76,7 @@ export function SolveLesson({
       setError(
         caught instanceof ApiError
           ? caught.message
-          : "지금은 보낼 수 없어요. 잠시 뒤 다시 해 주세요.",
+          : "제출하지 못했어요. 잠시 뒤 다시 시도해 주세요.",
       );
     } finally {
       setBusy(false);
@@ -111,7 +111,7 @@ export function SolveLesson({
     return (
       <Shell>
         <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
-          <p>지금은 풀 수 없는 차시예요. 선생님이 열어 주면 다시 들어와 주세요.</p>
+          <p>지금은 풀 수 없어요. 선생님이 문제를 열면 다시 들어와 주세요.</p>
           <AppButton onClick={() => router.replace("/")}>홈으로</AppButton>
         </Card>
       </Shell>
@@ -143,8 +143,8 @@ export function SolveLesson({
             </h2>
             <p className="text-muted-foreground">
               {state.nextTimeLimitSec
-                ? `제한 시간은 ${state.nextTimeLimitSec}초예요. 시작을 누르면 시간이 흘러요.`
-                : "시작을 누르면 시간이 흘러요."}
+                ? `준비되면 시작을 눌러 주세요. 제한 시간은 ${state.nextTimeLimitSec}초예요.`
+                : "준비되면 시작을 눌러 주세요."}
             </p>
           </div>
           <AppButton
