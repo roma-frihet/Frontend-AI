@@ -7,9 +7,10 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { FileText, LayoutGrid, UserRound } from "lucide-react";
+import { FileText, LayoutGrid, LogOut, UserRound } from "lucide-react";
 
 import { Brand } from "@/components/brand";
+import { useSignOut } from "@/components/teacher/use-sign-out";
 import { useFindMyPage } from "@/api/generated";
 import { cn } from "cn";
 
@@ -48,6 +49,7 @@ export function TeacherShell({
   const pathname = usePathname();
   const mypage = useFindMyPage();
   const profile = mypage.data?.data.profile;
+  const { signOut, signingOut } = useSignOut();
 
   return (
     <div className="grid flex-1 grid-cols-[minmax(0,1fr)] lg:grid-cols-[248px_minmax(0,1fr)]">
@@ -87,6 +89,15 @@ export function TeacherShell({
           <p className="text-sm text-muted-foreground">학교</p>
           <p className="font-bold">{profile?.schoolName ?? "–"}</p>
           <p className="text-sm text-muted-foreground">{profile?.name ?? "선생님"}</p>
+          <button
+            type="button"
+            disabled={signingOut}
+            onClick={() => void signOut()}
+            className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+          >
+            <LogOut className="size-4" aria-hidden />
+            로그아웃
+          </button>
         </div>
       </aside>
 

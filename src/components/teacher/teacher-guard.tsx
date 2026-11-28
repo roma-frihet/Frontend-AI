@@ -4,15 +4,19 @@
 // 막지만, 화면도 미리 걸러 주는 편이 낫다.
 //
 // 로그인 화면은 이 구역 안에 있으므로 가드에서 빼야 한다. 빼지 않으면 서로 돌려보낸다.
+//
+// 학교·이름(교사 프로필)이 없으면 아무것도 만들 수 없으므로 첫 진입 화면으로 먼저 보낸다.
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useRefreshOnChange, useRefreshOnFocus } from "@/components/teacher/use-refresh";
 import { TeacherCourseProvider } from "@/components/teacher/use-teacher-course";
+import { useFindMyPage } from "@/api/generated";
 import { useSession } from "@/lib/use-session";
 
 const LOGIN_PATH = "/teacher/login";
+const WELCOME_PATH = "/teacher/welcome";
 
 export function TeacherGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -28,9 +32,15 @@ export function TeacherGuard({ children }: { children: React.ReactNode }) {
     session.status === "signed-out" ||
     (session.status === "signed-in" && !session.isTeacher);
 
+  const signedInTeacher = session.status === "signed-in" && session.isTeacher;
+  const mypage = useFindMyPage({ query: { enabled: signedInTeacher && !isLoginPage } });
+  const needsProfile = mypage.isSuccess && !mypage.data.data.profile;
+
   useEffect(() => {
-    if (!isLoginPage && blocked) router.replace(LOGIN_PATH);
-  }, [isLoginPage, blocked, router]);
+    if (isLoginPage) return;
+    if (blocked) router.replace(LOGIN_PATH);
+    else if (needsProfile && pathname !== WELCOME_PATH) router.replace(WELCOME_PATH);
+  }, [isLoginPage, blocked, needsProfile, pathname, router]);
 
   if (isLoginPage) return <>{children}</>;
 
