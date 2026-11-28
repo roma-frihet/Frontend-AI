@@ -10,9 +10,11 @@ import { Search } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppInput } from "@/components/app-field";
-import { Chip, Panel, TableBox, td, th } from "@/components/teacher/panel";
+import { TableBox, td, th } from "@/components/teacher/panel";
 import { TemporaryPassword } from "@/components/teacher/classroom/student-panel";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadingState } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
 import { resetStudentPassword, useFindClassroomStudents } from "@/api/generated";
 import type { ClassroomResponseResult } from "@/api/generated/model";
 
@@ -65,7 +67,7 @@ export function StudentsTab({
       <ErrorText error={error} />
 
       {students.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : list.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">

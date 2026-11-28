@@ -7,13 +7,14 @@
 // 임시 비밀번호로 들어온 경우(mustChangePassword)는 비밀번호 변경 화면으로 보낸다.
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { AppSelect } from "@/components/app-select";
+import { LOADING_TEXT } from "@/components/states";
+import { TextLink } from "@/components/text-action";
 import { findMyStudentProfile, useFindSchools } from "@/api/generated";
 import { ApiError } from "@/lib/api-fetcher";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -117,7 +118,7 @@ export default function StudentLoginPage() {
             items={schoolItems}
             value={schoolId}
             onValueChange={setSchoolId}
-            placeholder={schools.isPending ? "불러오는 중…" : "학교를 고르세요"}
+            placeholder={schools.isPending ? LOADING_TEXT : "학교를 고르세요"}
             disabled={schools.isPending}
           />
         </AppField>
@@ -179,9 +180,9 @@ export default function StudentLoginPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         계정이 없나요?{" "}
-        <Link href="/signup" className="font-medium text-primary-deep hover:underline">
+        <TextLink href="/signup">
           회원가입
-        </Link>
+        </TextLink>
       </p>
     </AuthShell>
   );

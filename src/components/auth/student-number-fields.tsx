@@ -5,6 +5,7 @@
 
 import { AppField, AppInput } from "@/components/app-field";
 import { AppSelect } from "@/components/app-select";
+import { Callout } from "@/components/surface";
 import {
   STUDENT_CLASS_NUMBER_MAX,
   STUDENT_GRADE_MAX,
@@ -88,7 +89,7 @@ export function StudentNumberFields({
       </AppField>
 
       {filled ? (
-        <div className="flex flex-wrap items-baseline gap-2.5 rounded-md bg-primary-soft px-4 py-3.5">
+        <Callout className="flex flex-wrap items-baseline gap-2.5">
           <span className="text-sm text-muted-foreground">학번</span>
           <b className="text-xl tracking-wide text-primary-deep tabular-nums">
             {formatStudentNumber({
@@ -100,7 +101,7 @@ export function StudentNumberFields({
           <span className="text-sm text-muted-foreground">
             {`${value.grade}학년 ${value.classNumber}반 ${value.seatNumber}번`}
           </span>
-        </div>
+        </Callout>
       ) : null}
 
       <p className="text-sm text-muted-foreground">

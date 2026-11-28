@@ -9,8 +9,10 @@
 import Image from "next/image";
 
 import { AppButton } from "@/components/app-button";
-import { Chip, TableBox, td, th } from "@/components/teacher/panel";
-import { ErrorText, errorMessage, useRun } from "@/components/teacher/use-run";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { useRun } from "@/components/teacher/use-run";
+import { errorMessage, ErrorText, LoadingState } from "@/components/states";
+import { Chip } from "@/components/surface";
 import { overrideAttemptResult, useFindStudentLessonAnswers } from "@/api/generated";
 import type { StudentAnswerResponseAnswer } from "@/api/generated/model";
 
@@ -59,7 +61,7 @@ export function AnswerTable({
   const answers = data?.answers ?? [];
   const { run, busy, error } = useRun();
 
-  if (query.isPending) return <p className="text-muted-foreground">불러오는 중…</p>;
+  if (query.isPending) return <LoadingState />;
   if (query.isError) return <ErrorText error={errorMessage(query.error)} />;
 
   const started = answers.some((answer) => answer.result !== "NOT_STARTED");
@@ -124,7 +126,7 @@ export function AnswerTable({
                             width={320}
                             height={180}
                             unoptimized
-                            className="h-auto w-40 rounded-sm border border-border"
+                            className="h-auto w-40 rounded-md border border-border"
                           />
                         ) : null}
                       </span>

@@ -14,8 +14,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AppButton } from "@/components/app-button";
 import { classroomHref } from "@/components/teacher/classroom/use-classroom-query";
 import { LOW_RATE, STATUS_LABEL, percent, type LessonStatus } from "@/components/teacher/lesson-status";
-import { Chip } from "@/components/teacher/panel";
-import { errorMessage } from "@/components/teacher/use-run";
+import { errorMessage } from "@/components/states";
+import { Callout, Chip, Panel, panelClass } from "@/components/surface";
 import {
   useFindClassroomStudents,
   useFindClassrooms,
@@ -115,10 +115,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
         </p>
       ) : null}
 
-      <section
-        aria-label="제출 현황"
-        className="grid gap-3.5 rounded-2xl border border-border bg-card p-6 shadow-card sm:px-7"
-      >
+      <Panel as="section" aria-label="제출 현황" className="gap-3.5">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <p className="flex items-baseline gap-3">
             <span className="text-xl font-bold text-muted-foreground">응답</span>
@@ -143,7 +140,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
             style={{ width: `${percent(responded, total) ?? 0}%` }}
           />
         </span>
-      </section>
+      </Panel>
 
       <section
         aria-label="문제별 현황"
@@ -159,7 +156,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
             <div
               key={question.questionId}
               className={cn(
-                "grid gap-2.5 rounded-xl border-2 bg-card p-4 shadow-card",
+                panelClass({ size: "sm" }), "gap-2.5 border-2",
                 low ? "border-warning" : "border-border",
               )}
             >
@@ -196,9 +193,11 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
       </section>
 
       {showNames ? (
-        <section
+        <Callout
+          tone="warning"
+          role="region"
           aria-label="아직 답하지 않은 학생"
-          className="flex flex-wrap items-center gap-2.5 rounded-xl border border-warning bg-warning-soft px-5 py-4"
+          className="flex flex-wrap items-center gap-2.5 px-5 py-4"
         >
           <strong className="mr-2 text-lg">아직 답하지 않은 학생</strong>
           {waiting.length === 0 ? (
@@ -213,7 +212,7 @@ export function LiveBoard({ params }: { params: Promise<{ classroomId: string }>
               </span>
             ))
           )}
-        </section>
+        </Callout>
       ) : (
         <p className="text-sm text-muted-foreground">
           학생 이름은 숨겨져 있어요. 칠판에 띄울 때는 숨긴 채로 두세요.

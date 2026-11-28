@@ -90,8 +90,31 @@
 ## 간격 / radius
 
 - 카드 사이 기본 간격은 `--gap` (1.25rem).
-- radius는 `--radius`(1rem)를 기준으로 `rounded-lg`(카드) / `rounded-sm`(버튼·입력)을 쓴다.
+- radius는 `--radius`(1rem)를 기준으로 세 가지만 쓴다: `rounded-lg`(카드) / `rounded-md`(버튼·입력·안내 상자·이미지) / `rounded-full`(칩·알약 버튼).
+  `rounded-sm`, `rounded-xl` 이상은 쓰지 않는다(lint가 막는다).
 - 페이지 최대 너비는 `--container` (1240px).
+
+## 공통 컴포넌트
+
+곡률·테두리·그림자·여백·상태 문구를 화면마다 직접 조합하지 않는다. 아래 컴포넌트를 쓰면 저절로 맞춰진다.
+없는 모양이 필요하면 화면에 클래스를 박지 말고 여기에 컴포넌트(또는 변형)를 먼저 추가한다.
+
+| 쓰임 | 컴포넌트 | 위치 |
+|---|---|---|
+| 카드 | `Panel` (`size`: sm·md·lg, `as`: div·section·li·article) | `@/components/surface` |
+| 누를 수 있는 카드(Link·button) | `panelClass({ interactive: true })` | `@/components/surface` |
+| 옅은 색 안내 상자(요약·완료·주의) | `Callout` (`tone`: primary·success·warning·danger·neutral) | `@/components/surface` |
+| 상태 칩 | `Chip` | `@/components/surface` |
+| 큰 버튼 | `AppButton` | `@/components/app-button` |
+| 글자 버튼 / 글자 링크 | `TextButton` / `TextLink` (`tone`: primary·muted, `size`: sm·base) | `@/components/text-action` |
+| 아이콘만 있는 버튼 | `IconButton` (`tone`: neutral·danger, `aria-label` 필수) | `@/components/text-action` |
+| 여러 개 중 하나 고르기 | `ToggleChip` | `@/components/text-action` |
+| 불러오는 중 | `LoadingState`, 선택 칸 placeholder는 `LOADING_TEXT` | `@/components/states` |
+| 비었음 | `EmptyState` (`action`으로 갈 곳 링크) | `@/components/states` |
+| 오류 / 불러오기 실패 | `ErrorText` / `LoadError` | `@/components/states` |
+| 입력 칸 · 선택 칸 · 탭 | `AppField`·`AppInput` / `AppSelect` / `AppTabs` | `@/components/app-*` |
+
+`eslint.config.mjs`가 화면 코드에서 `shadow-card`, `rounded-sm`·`rounded-xl` 이상, "불러오는 중" 문구를 직접 쓰면 오류를 낸다.
 
 ## 레이아웃 원칙
 

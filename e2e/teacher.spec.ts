@@ -96,7 +96,7 @@ test("반 카드를 누르면 반 상세의 수업 진행으로 간다", async (
   await expect(page.getByRole("heading", { name: "3학년 5반 · 과학" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "수업 진행" })).toHaveAttribute("aria-selected", "true");
   // 2차시는 문제가 없어 열 수 없다. 문제를 넣으러 보낸다.
-  await expect(page.getByRole("link", { name: "문제 넣으러 가기 →" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "문제 넣으러 가기" })).toBeVisible();
 });
 
 test("열기 예약은 시간대를 붙여 보낸다", async ({ page }) => {

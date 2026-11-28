@@ -16,8 +16,11 @@ import {
   STATUS_TONE,
   type LessonStatus,
 } from "@/components/teacher/lesson-status";
-import { Chip, Panel, TableBox, td, th } from "@/components/teacher/panel";
-import { ErrorText, errorMessage, useRun } from "@/components/teacher/use-run";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { useRun } from "@/components/teacher/use-run";
+import { errorMessage, ErrorText, LoadingState } from "@/components/states";
+import { Callout, Chip, Panel } from "@/components/surface";
+import { TextButton } from "@/components/text-action";
 import {
   removeClassroomStudent,
   resetStudentPassword,
@@ -31,13 +34,13 @@ import { cn } from "cn";
 
 export function TemporaryPassword({ name, value }: { name: string; value: string }) {
   return (
-    <Panel className="gap-2 border-warning bg-warning-soft">
+    <Callout tone="warning" className="gap-2 px-5 py-4">
       <h3 className="font-bold">{name} 학생의 임시 비밀번호</h3>
       <p className="text-3xl font-extrabold tracking-wide tabular-nums">{value}</p>
       <p className="text-sm text-muted-foreground">
         지금 학생에게 알려 주세요. 이 화면을 벗어나면 다시 볼 수 없어요.
       </p>
-    </Panel>
+    </Callout>
   );
 }
 
@@ -79,17 +82,13 @@ export function StudentPanel({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex w-fit items-center gap-1 text-sm font-bold text-primary-deep hover:underline"
-      >
+      <TextButton size="sm" onClick={onBack}>
         <ChevronLeft className="size-4" aria-hidden />
         학생 목록
-      </button>
+      </TextButton>
 
       {detail.isPending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : detail.isError ? (
         <ErrorText error={errorMessage(detail.error)} />
       ) : (
@@ -151,7 +150,7 @@ export function StudentPanel({
             <div className="grid gap-0.5">
               <h3 className="text-lg font-bold">차시별 점수</h3>
               <span className="text-sm text-muted-foreground">
-                차시를 누르면 아래에 문제별 풀이가 나옵니다
+                차시를 누르면 아래에 문제별 풀이가 나와요
               </span>
             </div>
             {scores.length === 0 ? (

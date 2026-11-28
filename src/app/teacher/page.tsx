@@ -15,10 +15,13 @@ import { ArrowRight, Plus, Trash2 } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { ConfirmDelete, losses, withParticle } from "@/components/teacher/confirm-delete";
 import { CreateClassroomDialog } from "@/components/teacher/create-classroom-dialog";
-import { Chip, Panel } from "@/components/teacher/panel";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadingState } from "@/components/states";
+import { Chip, Panel, panelClass } from "@/components/surface";
+import { IconButton } from "@/components/text-action";
 import { deleteCourse, useFindClassroomSummaries, useFindMyPage } from "@/api/generated";
+import { cn } from "cn";
 import type {
   ReportResponseClassroomSummary,
   TeacherResponseCourse,
@@ -50,7 +53,7 @@ export default function TeacherHomePage() {
       }
     >
       {pending ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : courses.length === 0 ? (
         <Panel>
           <h2 className="text-lg font-bold">첫 반을 만들어 주세요</h2>
@@ -174,15 +177,15 @@ function CourseSection({
         <span className="text-sm text-muted-foreground">
           차시 {course.lessonCount ?? 0}개
         </span>
-        <button
-          type="button"
+        <IconButton
+          tone="danger"
           aria-label={`${course.grade}학년 ${course.subjectName} 삭제`}
           disabled={busy}
           onClick={onDelete}
-          className="ml-auto inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-50"
+          className="ml-auto"
         >
           <Trash2 className="size-4" aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       {sorted.length === 0 ? (
@@ -220,7 +223,7 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
   return (
     <Link
       href={`/teacher/classrooms/${room.classroomId}`}
-      className="grid h-full gap-3.5 rounded-lg border border-border bg-card p-5 shadow-card transition-colors hover:border-primary"
+      className={cn(panelClass({ interactive: true }), "h-full gap-3.5")}
     >
       <span className="flex items-center justify-between gap-2">
         <strong className="text-2xl font-extrabold">{room.classNo}반</strong>

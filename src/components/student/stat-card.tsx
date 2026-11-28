@@ -1,6 +1,6 @@
 // 목업의 .card.stat — 아이콘 제목 + 큰 숫자 + 진행 막대.
 
-import { Card } from "@/components/ui/card";
+import { Panel } from "@/components/surface";
 import { cn } from "cn";
 
 export function StatCard({
@@ -21,7 +21,7 @@ export function StatCard({
   tone?: "primary" | "compare";
 }) {
   return (
-    <Card className="grid content-start gap-3 rounded-lg border border-border p-5 shadow-card ring-0">
+    <Panel className="content-start gap-3">
       <div
         className={cn(
           "flex items-center gap-2.5 font-bold",
@@ -52,6 +52,6 @@ export function StatCard({
           />
         </div>
       ) : null}
-    </Card>
+    </Panel>
   );
 }

@@ -32,7 +32,8 @@ import { ScoreChart } from "@/components/student/score-chart";
 import { ScoreTable } from "@/components/student/score-table";
 import { StatCard } from "@/components/student/stat-card";
 import { WrongQuestionsTab } from "@/components/student/wrong-questions-tab";
-import { Card } from "@/components/ui/card";
+import { LoadingState } from "@/components/states";
+import { Panel } from "@/components/surface";
 import { useFindMyClassrooms, useFindMyReport } from "@/api/generated";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
@@ -93,7 +94,7 @@ export default function StudentHomePage() {
 
       <main className="mx-auto grid w-full max-w-(--container-page) gap-gap px-4 py-6">
         {classrooms.isPending ? (
-          <p className="text-muted-foreground">불러오는 중…</p>
+          <LoadingState />
         ) : memberships.length === 0 ? (
           <JoinClassroomCard />
         ) : (
@@ -147,7 +148,7 @@ export default function StudentHomePage() {
 
               <AppTabsContent value="report" className="grid gap-gap">
                 {report.isPending ? (
-                  <p className="text-muted-foreground">불러오는 중…</p>
+                  <LoadingState />
                 ) : (
                   <div className="grid gap-gap md:grid-cols-3">
                     <StatCard
@@ -188,7 +189,7 @@ export default function StudentHomePage() {
                       }
                     />
 
-                    <Card className="grid content-between gap-3 rounded-lg border border-border p-5 shadow-card ring-0">
+                    <Panel className="content-between gap-3">
                       <div className="flex items-center gap-2.5 font-bold">
                         <KeyRound
                           className="size-5.5 text-primary"
@@ -223,13 +224,13 @@ export default function StudentHomePage() {
                           보여요.
                         </p>
                       )}
-                    </Card>
+                    </Panel>
                   </div>
                 )}
 
                 {/* 목업의 grid-main — 왼쪽은 추이, 오른쪽은 최근 기록 */}
                 <div className="grid gap-gap lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:items-start">
-                  <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                  <Panel>
                     <div className="grid gap-1">
                       <div className="flex flex-wrap items-center gap-2.5">
                         <TrendingUp className="size-5 text-primary" aria-hidden />
@@ -246,10 +247,10 @@ export default function StudentHomePage() {
                         두 번 이상 풀면 그래프로 볼 수 있어요.
                       </p>
                     )}
-                  </Card>
+                  </Panel>
 
                   <div className="grid gap-gap">
-                    <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                    <Panel>
                       <div className="flex flex-wrap items-center gap-2.5">
                         <CalendarDays
                           className="size-5 text-accent-deep"
@@ -280,9 +281,9 @@ export default function StudentHomePage() {
                           푼 차시가 여기에 쌓여요.
                         </p>
                       )}
-                    </Card>
+                    </Panel>
 
-                    <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                    <Panel>
                       <div className="flex flex-wrap items-center gap-2.5">
                         <FileText className="size-5 text-destructive" aria-hidden />
                         <h2 className="text-lg font-bold">최근 틀린 문제</h2>
@@ -306,13 +307,13 @@ export default function StudentHomePage() {
                           수업이 끝나면 틀린 문제를 여기에서 다시 볼 수 있어요.
                         </p>
                       )}
-                    </Card>
+                    </Panel>
                   </div>
                 </div>
               </AppTabsContent>
 
               <AppTabsContent value="scores">
-                <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+                <Panel>
                   <h2 className="text-lg font-bold">차시별 기록</h2>
                   {data?.scores?.length ? (
                     <ScoreTable scores={data.scores} />
@@ -321,7 +322,7 @@ export default function StudentHomePage() {
                       문제를 풀면 차시마다 기록이 여기에 쌓여요.
                     </p>
                   )}
-                </Card>
+                </Panel>
               </AppTabsContent>
 
               <AppTabsContent value="past">

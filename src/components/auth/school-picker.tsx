@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 
 import { AppInput } from "@/components/app-field";
+import { LoadingState } from "@/components/states";
 import { useFindSchools } from "@/api/generated";
 import { cn } from "cn";
 
@@ -39,7 +40,7 @@ export function SchoolPicker({
       </div>
 
       {schools.isPending ? (
-        <p className="text-sm text-muted-foreground">불러오는 중…</p>
+        <LoadingState className="text-sm text-muted-foreground" />
       ) : results.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           찾는 학교가 없어요. 이름을 다시 확인해 주세요.

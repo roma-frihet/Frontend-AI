@@ -6,7 +6,8 @@
 // 마감 전에 정답을 공개하지 않는다는 규칙과 같은 이유다.
 
 import { ResultBadge } from "@/components/student/result-badge";
-import { Card } from "@/components/ui/card";
+import { LoadingState } from "@/components/states";
+import { Panel } from "@/components/surface";
 import { useFindMyWrongQuestions } from "@/api/generated";
 
 export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
@@ -14,16 +15,16 @@ export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
   const questions = wrong.data?.data ?? [];
 
   if (wrong.isPending) {
-    return <p className="text-muted-foreground">불러오는 중…</p>;
+    return <LoadingState />;
   }
 
   if (questions.length === 0) {
     return (
-      <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
+      <Panel>
         <p className="text-muted-foreground">
           아직 틀린 문제가 없어요. 수업이 끝나면 틀린 문제가 여기에 모여요.
         </p>
-      </Card>
+      </Panel>
     );
   }
 
@@ -31,7 +32,7 @@ export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
     <ul className="m-0 grid list-none gap-gap p-0">
       {questions.map((question) => (
         <li key={`${question.lessonNumber}-${question.questionIndex}`}>
-          <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+          <Panel>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-bold text-muted-foreground">
                 {question.lessonNumber}차시 · {question.lessonTitle}
@@ -56,7 +57,7 @@ export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
                 <p className="whitespace-pre-wrap">{question.explanation}</p>
               </div>
             ) : null}
-          </Card>
+          </Panel>
         </li>
       ))}
     </ul>

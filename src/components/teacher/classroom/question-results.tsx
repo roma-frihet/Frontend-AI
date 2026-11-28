@@ -11,8 +11,9 @@ import { ChevronDown } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { LOW_RATE, percent } from "@/components/teacher/lesson-status";
-import { Chip, Panel } from "@/components/teacher/panel";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
+import { ErrorText } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
 import { overrideResultsByAnswer } from "@/api/generated";
 import type {
   QuestionStatsResponseClassroom,
@@ -44,7 +45,7 @@ export function QuestionResults({
       <div className="grid gap-0.5">
         <h3 className="text-lg font-bold">문제별 정답률 · 전체 {questions.length}문제</h3>
         <span className="text-sm text-muted-foreground">
-          응답한 {responders}명 기준 · 문제를 누르면 응답 분포가 열립니다
+          응답한 {responders}명 기준 · 문제를 누르면 응답 분포가 보여요
         </span>
       </div>
       <ErrorText error={error} />

@@ -7,7 +7,6 @@
 // 그때는 /signup/profile에서 정보만 다시 받는다.
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { AppButton } from "@/components/app-button";
@@ -15,6 +14,8 @@ import { AppField, AppInput } from "@/components/app-field";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SchoolPicker } from "@/components/auth/school-picker";
 import { Stepper } from "@/components/auth/stepper";
+import { TextLink } from "@/components/text-action";
+import { Callout } from "@/components/surface";
 import {
   StudentNumberFields,
   isStudentNumberFilled,
@@ -157,12 +158,12 @@ export default function StudentSignupPage() {
 
         {step === 3 ? (
           <>
-            <div className="grid gap-1 rounded-md bg-primary-soft px-4 py-3.5">
+            <Callout>
               <span className="text-sm text-muted-foreground">로그인 정보</span>
               <b className="text-primary-deep">
                 {`${schoolName} ${profile.grade}학년 ${profile.classNumber}반 ${profile.seatNumber}번 ${profile.name}`}
               </b>
-            </div>
+            </Callout>
             <AppField label="비밀번호" htmlFor="password">
               <AppInput
                 id="password"
@@ -213,9 +214,9 @@ export default function StudentSignupPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         이미 계정이 있나요?{" "}
-        <Link href="/login" className="font-medium text-primary-deep hover:underline">
+        <TextLink href="/login">
           로그인
-        </Link>
+        </TextLink>
       </p>
     </AuthShell>
   );

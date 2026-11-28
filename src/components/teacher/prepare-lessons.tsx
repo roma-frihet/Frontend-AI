@@ -17,12 +17,14 @@ import { ConfirmDelete, losses, withParticle } from "@/components/teacher/confir
 import { CopyPanel } from "@/components/teacher/copy-panel";
 import { classroomHref } from "@/components/teacher/classroom/use-classroom-query";
 import { STATUS_LABEL, STATUS_TONE, type LessonStatus } from "@/components/teacher/lesson-status";
-import { Chip, Panel } from "@/components/teacher/panel";
 import { QuestionForm } from "@/components/teacher/question-form";
 import { StudentPreview } from "@/components/teacher/student-preview";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, LoadError, useRun } from "@/components/teacher/use-run";
+import { useRun } from "@/components/teacher/use-run";
 import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
+import { ErrorText, LoadError, LoadingState } from "@/components/states";
+import { Chip, Panel } from "@/components/surface";
+import { IconButton, TextLink, ToggleChip } from "@/components/text-action";
 import {
   createLesson,
   createQuestion,
@@ -97,9 +99,9 @@ export function PrepareLessons() {
           <p className="text-muted-foreground">
             반을 먼저 만들어 주세요. 반을 만들면 차시와 문제를 준비할 수 있어요.
           </p>
-          <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
+          <TextLink href="/teacher">
             학급 관리로 가기
-          </Link>
+          </TextLink>
         </Panel>
       </TeacherShell>
     );
@@ -114,24 +116,17 @@ export function PrepareLessons() {
         {courses.map((item) => {
           const on = String(item.id) === courseId;
           return (
-            <button
+            <ToggleChip
               key={item.id}
-              type="button"
-              aria-pressed={on}
+              pressed={on}
               onClick={() => {
                 setLinkedCourse(null);
                 setCourseId(String(item.id));
                 pickLesson(null);
               }}
-              className={cn(
-                "min-h-10 rounded-full border px-4 text-sm font-bold transition-colors",
-                on
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:border-muted-foreground",
-              )}
             >
               {item.grade}학년 {item.subjectName}
-            </button>
+            </ToggleChip>
           );
         })}
       </div>
@@ -148,7 +143,7 @@ export function PrepareLessons() {
               <LoadError error={lessons.error} onRetry={() => void lessons.refetch()} />
             </div>
           ) : lessons.isPending ? (
-            <p className="text-muted-foreground">불러오는 중…</p>
+            <LoadingState />
           ) : lessonList.length === 0 ? (
             <p className="text-muted-foreground">첫 차시를 추가해 주세요.</p>
           ) : (
@@ -342,7 +337,7 @@ export function PrepareLessons() {
               </div>
 
               {questions.isPending ? (
-                <p className="border-t border-border px-5 py-6 text-muted-foreground">불러오는 중…</p>
+                <LoadingState className="border-t border-border px-5 py-6 text-muted-foreground" />
               ) : questionList.length === 0 ? (
                 <p className="border-t border-border px-5 py-7 text-center text-muted-foreground">
                   아직 문제가 없어요. 문제를 하나 이상 넣어야 수업에서 열 수 있어요.
@@ -395,24 +390,22 @@ export function PrepareLessons() {
                                 {question.timeLimitSec}초
                               </span>
                               <span className="flex gap-1">
-                                <button
-                                  type="button"
+                                <IconButton
+                                  tone="neutral"
                                   aria-label={`${index + 1}번 문제 수정`}
                                   disabled={busy}
                                   onClick={() => setEditingId(id)}
-                                  className="inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-primary-soft hover:text-primary-deep disabled:opacity-40"
                                 >
                                   <Pencil className="size-4" aria-hidden />
-                                </button>
-                                <button
-                                  type="button"
+                                </IconButton>
+                                <IconButton
+                                  tone="danger"
                                   aria-label={`${index + 1}번 문제 삭제`}
                                   disabled={busy}
                                   onClick={() => setDeletingQuestion(question)}
-                                  className="inline-grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive disabled:opacity-40"
                                 >
                                   <Trash2 className="size-4" aria-hidden />
-                                </button>
+                                </IconButton>
                               </span>
                             </div>
                             {question.options?.length ? (

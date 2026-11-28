@@ -12,8 +12,9 @@ import { Download } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { AppSelect } from "@/components/app-select";
 import { statusIn } from "@/components/teacher/classroom/lessons-tab";
-import { Panel, TableBox, td, th } from "@/components/teacher/panel";
-import { ErrorText } from "@/components/teacher/use-run";
+import { TableBox, td, th } from "@/components/teacher/panel";
+import { ErrorText } from "@/components/states";
+import { Callout, Panel } from "@/components/surface";
 import { exportScores, getFindQuestionStatsQueryOptions } from "@/api/generated";
 import type {
   ClassroomResponseResult,
@@ -302,9 +303,9 @@ function ExportPanel({
         <span className="text-sm text-muted-foreground">엑셀에서 바로 열 수 있어요.</span>
       </div>
       {done.length ? (
-        <p role="status" className="rounded-md bg-success-soft px-4 py-2.5 text-sm font-bold">
+        <Callout tone="success" role="status" className="text-sm font-bold">
           {done.join(", ")} 파일을 만들었어요.
-        </p>
+        </Callout>
       ) : null}
       <ErrorText error={error} />
     </Panel>

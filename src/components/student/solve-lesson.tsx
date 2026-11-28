@@ -21,7 +21,8 @@ import { AppInput } from "@/components/app-field";
 import { Brand } from "@/components/brand";
 import { AnswerResult } from "@/components/student/answer-result";
 import { QuestionTimer } from "@/components/student/question-timer";
-import { Card } from "@/components/ui/card";
+import { LoadingState } from "@/components/states";
+import { Panel } from "@/components/surface";
 import {
   saveAttemptDraft,
   startAttemptQuestion,
@@ -104,16 +105,16 @@ export function SolveLesson({
   }, [attempt]);
 
   if (attempt.isPending) {
-    return <Shell>{<p className="text-muted-foreground">불러오는 중…</p>}</Shell>;
+    return <Shell><LoadingState /></Shell>;
   }
 
   if (attempt.isError || !state) {
     return (
       <Shell>
-        <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+        <Panel>
           <p>지금은 풀 수 없어요. 선생님이 문제를 열면 다시 들어와 주세요.</p>
           <AppButton onClick={() => router.replace("/")}>홈으로</AppButton>
-        </Card>
+        </Panel>
       </Shell>
     );
   }
@@ -136,7 +137,7 @@ export function SolveLesson({
       ) : null}
 
       {state.phase === "READY" ? (
-        <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+        <Panel>
           <div className="grid gap-1">
             <h2 className="text-lg font-bold">
               {(state.nextIndex ?? 0) + 1}번 문제
@@ -156,11 +157,11 @@ export function SolveLesson({
           >
             {busy ? "여는 중…" : "시작"}
           </AppButton>
-        </Card>
+        </Panel>
       ) : null}
 
       {state.phase === "IN_QUESTION" && question && current ? (
-        <Card className="grid gap-5 rounded-lg border border-border p-6 shadow-card ring-0">
+        <Panel className="gap-5">
           <QuestionTimer
             key={current.questionIndex}
             remainingMillis={current.remainingMillis ?? 0}
@@ -234,11 +235,11 @@ export function SolveLesson({
           >
             {busy ? "내는 중…" : "제출"}
           </AppButton>
-        </Card>
+        </Panel>
       ) : null}
 
       {state.phase === "DONE" ? (
-        <Card className="grid gap-4 rounded-lg border border-border p-6 shadow-card ring-0">
+        <Panel>
           <h2 className="text-lg font-bold">이 차시를 다 풀었어요</h2>
           <p className="flex items-baseline gap-1.5">
             <b className="text-3xl font-extrabold tabular-nums text-primary-deep">
@@ -249,7 +250,7 @@ export function SolveLesson({
           <AppButton block onClick={() => router.replace("/")}>
             홈으로
           </AppButton>
-        </Card>
+        </Panel>
       ) : null}
 
       {error ? (

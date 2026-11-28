@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { LoadingState } from "@/components/states";
+import { Callout } from "@/components/surface";
 import { createStudentProfile, useFindSchools } from "@/api/generated";
 import { ApiError } from "@/lib/api-fetcher";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -92,10 +94,10 @@ export default function StudentProfilePage() {
       description="선생님이 알아볼 수 있게 실명으로 적어 주세요."
     >
       {loading ? (
-        <p className="text-muted-foreground">불러오는 중…</p>
+        <LoadingState />
       ) : (
         <form className="grid gap-5" onSubmit={onSubmit} noValidate>
-          <div className="flex flex-wrap items-baseline gap-2.5 rounded-md bg-primary-soft px-4 py-3.5">
+          <Callout className="flex flex-wrap items-baseline gap-2.5">
             <span className="text-sm text-muted-foreground">
               {schoolName ?? "내 학교"}
             </span>
@@ -107,7 +109,7 @@ export default function StudentProfilePage() {
                 ? `${account.grade}학년 ${account.classNumber}반 ${account.seatNumber}번`
                 : null}
             </span>
-          </div>
+          </Callout>
 
           <AppField label="이름" htmlFor="name">
             <AppInput
