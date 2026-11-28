@@ -49,7 +49,7 @@ export function ClassCompare({
         <p className="text-muted-foreground">불러오는 중…</p>
       ) : rooms.length < 2 ? (
         <p className="text-muted-foreground">
-          같은 학년·과목의 다른 반이 생기면 여기에서 나란히 비교할 수 있습니다.
+          같은 학년·과목의 반이 둘 이상이면 반끼리 비교할 수 있습니다.
         </p>
       ) : (
         <TableBox label="반별 문제 정답률">

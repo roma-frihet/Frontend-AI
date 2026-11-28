@@ -95,8 +95,7 @@ export function PrepareLessons() {
       <TeacherShell title="차시·문제 준비">
         <Panel>
           <p className="text-muted-foreground">
-            먼저 학급 관리에서 반을 만들어 주세요. 반을 만들면 그 학년·과목의 차시를 준비할 수
-            있습니다.
+            반을 먼저 만들어 주세요. 반을 만들면 차시와 문제를 준비할 수 있습니다.
           </p>
           <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
             학급 관리로 가기
@@ -109,7 +108,7 @@ export function PrepareLessons() {
   return (
     <TeacherShell
       title="차시·문제 준비"
-      description="수업 전에 차시와 문제를 만들어 두세요. 같은 학년·과목의 모든 반이 함께 씁니다. 반에 여는 것은 학급 관리에서 합니다."
+      description="수업 전에 차시와 문제를 만들어 두세요. 한 번 만들면 같은 학년·과목의 모든 반에서 쓸 수 있습니다."
     >
       <div role="group" aria-label="수업 선택" className="flex flex-wrap gap-2">
         {courses.map((item) => {
@@ -151,7 +150,7 @@ export function PrepareLessons() {
           ) : lessons.isPending ? (
             <p className="text-muted-foreground">불러오는 중…</p>
           ) : lessonList.length === 0 ? (
-            <p className="text-muted-foreground">아래에서 첫 차시를 만들어 주세요.</p>
+            <p className="text-muted-foreground">첫 차시를 추가해 주세요.</p>
           ) : (
             <ul className="m-0 grid list-none gap-1 p-0">
               {lessonList.map((item) => {
@@ -212,7 +211,7 @@ export function PrepareLessons() {
         {lessonNumber == null || !lesson ? (
           <Panel>
             <p className="text-muted-foreground">
-              왼쪽에서 차시를 추가하면 여기에서 문제를 만들 수 있습니다.
+              차시를 추가하면 문제를 만들 수 있습니다.
             </p>
           </Panel>
         ) : (
@@ -346,7 +345,7 @@ export function PrepareLessons() {
                 <p className="border-t border-border px-5 py-6 text-muted-foreground">불러오는 중…</p>
               ) : questionList.length === 0 ? (
                 <p className="border-t border-border px-5 py-7 text-center text-muted-foreground">
-                  아직 문제가 없습니다. 문제를 넣어야 반에 열 수 있습니다.
+                  아직 문제가 없습니다. 문제를 하나 이상 넣어야 수업에서 열 수 있습니다.
                 </p>
               ) : (
                 <ul className="m-0 grid list-none p-0">
