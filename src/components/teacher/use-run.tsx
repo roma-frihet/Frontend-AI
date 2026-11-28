@@ -35,7 +35,7 @@ export function useRun() {
       setError(
         caught instanceof ApiError
           ? caught.message
-          : "처리하지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
+          : "처리하지 못했어요. 잠시 뒤 다시 시도해 주세요.",
       );
       return false;
     } finally {
@@ -74,4 +74,4 @@ export function LoadError({ error, onRetry }: { error: unknown; onRetry: () => v
 
 /** 불러오기 실패를 사람이 읽는 문장으로. 서버 detail이 있으면 그것을 쓴다. */
 export const errorMessage = (error: unknown) =>
-  error instanceof ApiError ? error.message : "불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.";
+  error instanceof ApiError ? error.message : "불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.";

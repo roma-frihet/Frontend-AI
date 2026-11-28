@@ -109,7 +109,6 @@ export default function StudentLoginPage() {
     <AuthShell
       badge="학생"
       title="로그인"
-      description="학교와 학번, 비밀번호로 로그인해요."
     >
       <form className="grid gap-5" onSubmit={onSubmit} noValidate>
         <AppField label="학교" htmlFor="school">
@@ -174,12 +173,12 @@ export default function StudentLoginPage() {
         </AppButton>
 
         <p className="text-center text-sm text-muted-foreground">
-          비밀번호를 잊었다면 선생님께 말씀해 주세요.
+          비밀번호를 잊어버렸나요? 선생님께 말씀해 주세요.
         </p>
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        처음 왔나요?{" "}
+        계정이 없나요?{" "}
         <Link href="/signup" className="font-medium text-primary-deep hover:underline">
           회원가입
         </Link>

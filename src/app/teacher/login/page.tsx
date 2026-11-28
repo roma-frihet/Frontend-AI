@@ -35,14 +35,14 @@ export default function TeacherLoginPage() {
       });
 
       if (signInError) {
-        setError("이메일이나 비밀번호가 맞지 않습니다.");
+        setError("이메일이나 비밀번호가 맞지 않아요.");
         return;
       }
 
       // 학생 계정으로 교사 화면에 들어오면 서버가 전부 막는다. 여기서 먼저 막아 준다.
       if (!isTeacherSession(data.session)) {
         await supabase.auth.signOut();
-        setError("교사 계정이 아닙니다. 학생이라면 학생 로그인을 이용하세요.");
+        setError("교사 계정이 아니에요. 학생이라면 학생 로그인을 이용해 주세요.");
         return;
       }
 
@@ -56,7 +56,6 @@ export default function TeacherLoginPage() {
     <AuthShell
       badge="교사"
       title="로그인"
-      description="이메일과 비밀번호로 로그인합니다."
     >
       <form className="grid gap-5" onSubmit={onSubmit} noValidate>
         <AppField label="이메일" htmlFor="email">

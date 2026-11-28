@@ -30,7 +30,7 @@ const PROFILE = {
   },
 };
 
-test("아직 반이 없으면 수업 코드 입력이 먼저 나온다", async ({ page }) => {
+test("아직 반이 없으면 수업 참여가 먼저 나온다", async ({ page }) => {
   await mockSupabaseAuth(page);
   await mockApi(page, {
     "/api/v1/schools": SCHOOLS,
@@ -40,11 +40,11 @@ test("아직 반이 없으면 수업 코드 입력이 먼저 나온다", async (
 
   await signIn(page);
 
-  await expect(page.getByRole("heading", { name: "수업 코드 입력" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "연결하기" })).toBeDisabled();
+  await expect(page.getByRole("heading", { name: "수업 참여하기" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "참여하기", exact: true })).toBeDisabled();
 });
 
-test("코드는 6자리를 다 채워야 연결할 수 있다", async ({ page }) => {
+test("코드는 6자리를 다 채워야 참여할 수 있다", async ({ page }) => {
   await mockSupabaseAuth(page);
   await mockApi(page, {
     "/api/v1/schools": SCHOOLS,
@@ -54,7 +54,7 @@ test("코드는 6자리를 다 채워야 연결할 수 있다", async ({ page })
 
   await signIn(page);
 
-  const connect = page.getByRole("button", { name: "연결하기" });
+  const connect = page.getByRole("button", { name: "참여하기", exact: true });
   await page.getByLabel("수업 코드").fill("KJW76");
   await expect(connect).toBeDisabled();
 
@@ -122,6 +122,6 @@ test("마감된 차시가 없으면 지난 차시 탭이 비어 있다고 알려
   await page.getByRole("tab", { name: "지난 차시" }).click();
 
   await expect(
-    page.getByText(/선생님이 차시를 마감하면 정답과 해설을 여기에서 볼 수 있어요/),
+    page.getByText(/수업이 끝나면 정답과 해설을 여기에서 볼 수 있어요/),
   ).toBeVisible();
 });

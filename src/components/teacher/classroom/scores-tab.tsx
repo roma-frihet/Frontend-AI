@@ -63,7 +63,7 @@ export function ScoresTab({
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-muted-foreground">이 반에서 연 차시의 결과입니다.</span>
+        <span className="text-muted-foreground">이 반에서 연 차시의 결과예요.</span>
         <AppButton
           variant="outline"
           aria-expanded={exportOpen}
@@ -87,7 +87,7 @@ export function ScoresTab({
       {opened.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
-            아직 이 반에 연 차시가 없습니다. 수업 진행에서 차시를 열면 여기에 결과가 모입니다.
+            아직 이 반에서 연 차시가 없어요. 수업 진행에서 차시를 열면 여기에 결과가 모여요.
           </p>
         </Panel>
       ) : (
@@ -220,7 +220,7 @@ function ExportPanel({
       setError(
         caught instanceof ApiError
           ? caught.message
-          : "내려받지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
+          : "내려받지 못했어요. 잠시 뒤 다시 시도해 주세요.",
       );
     } finally {
       setBusy(false);
@@ -299,11 +299,11 @@ function ExportPanel({
         <AppButton disabled={!ready || busy} onClick={() => void download()}>
           {busy ? "만드는 중…" : "내려받기"}
         </AppButton>
-        <span className="text-sm text-muted-foreground">CSV 파일이라 엑셀에서 바로 열립니다.</span>
+        <span className="text-sm text-muted-foreground">엑셀에서 바로 열 수 있어요.</span>
       </div>
       {done.length ? (
         <p role="status" className="rounded-md bg-success-soft px-4 py-2.5 text-sm font-bold">
-          {done.join(", ")} 파일을 만들었습니다.
+          {done.join(", ")} 파일을 만들었어요.
         </p>
       ) : null}
       <ErrorText error={error} />

@@ -80,7 +80,7 @@ export function StudentNumberFields({
         <AppInput
           id="name"
           autoComplete="name"
-          placeholder="실명을 입력하세요"
+          placeholder="예: 김하늘"
           maxLength={50}
           value={value.name}
           onChange={(event) => set({ name: event.target.value })}
@@ -104,8 +104,7 @@ export function StudentNumberFields({
       ) : null}
 
       <p className="text-sm text-muted-foreground">
-        선생님 화면에는 이 학번과 이름으로 보여요. 잘못 고르면 다른 친구 자리에 들어가니 꼭
-        확인해 주세요.
+        학번이 맞는지 한 번 더 확인해 주세요.
       </p>
     </div>
   );

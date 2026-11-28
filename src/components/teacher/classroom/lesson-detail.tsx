@@ -184,7 +184,7 @@ export function LessonDetail({
               hint={
                 studentCount - responders > 0
                   ? `아직 ${studentCount - responders}명`
-                  : "모두 응답했습니다"
+                  : "모두 응답했어요"
               }
             />
             <Stat
@@ -285,13 +285,13 @@ function NotOpened({ courseId, lessonNumber }: { courseId: number; lessonNumber:
   return (
     <Panel>
       <p className="text-muted-foreground">
-        아직 열지 않은 차시입니다. 열면 제출 현황과 정답률을 여기에서 볼 수 있습니다.
+        아직 열지 않은 차시예요. 열면 제출 현황과 정답률을 여기에서 볼 수 있어요.
       </p>
       {questions.isPending ? (
         <p className="text-muted-foreground">불러오는 중…</p>
       ) : list.length === 0 ? (
         <p>
-          문제가 없어 열 수 없습니다.{" "}
+          문제가 없어서 열 수 없어요.{" "}
           <Link
             href={`/teacher/prepare?course=${courseId}&lesson=${lessonNumber}`}
             className="font-bold text-primary-deep hover:underline"

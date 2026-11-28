@@ -59,7 +59,7 @@ export function LessonsTab({
       {lessons.length === 0 ? (
         <Panel>
           <p className="text-muted-foreground">
-            아직 차시가 없습니다. 수업에서 쓸 차시와 문제를 먼저 만들어 주세요.
+            아직 차시가 없어요. 수업에서 쓸 차시와 문제를 먼저 만들어 주세요.
           </p>
           <Link
             href="/teacher/prepare"
@@ -75,7 +75,7 @@ export function LessonsTab({
             <Link href="/teacher/prepare" className="font-bold text-primary-deep hover:underline">
               차시·문제 준비
             </Link>
-            에서 만들 수 있습니다.
+            에서 만들 수 있어요.
           </p>
           <ul className="m-0 grid list-none gap-2.5 p-0">
             {lessons.map((lesson) => {
@@ -101,10 +101,6 @@ export function LessonsTab({
               );
             })}
           </ul>
-          <p className="text-sm text-muted-foreground">
-            닫으면 학생 화면에서 잠시 숨겨지고 다시 열 수 있습니다. 마감하면 학생이 정답과 해설을
-            보고, 다시 열 수 없습니다.
-          </p>
         </>
       )}
 
@@ -326,11 +322,7 @@ function ScheduleForm({
         </AppButton>
       </div>
       <p className="text-sm text-muted-foreground">
-        마감 시각이 되면 자동으로 마감되어 학생이 정답과 해설을 봅니다. 마감은 되돌릴 수
-        없습니다.
-        {isOpen
-          ? null
-          : " 예약한 시각에 열리지 않은 채 마감 시각이 지나면 예약이 취소됩니다. 이때는 지금 열기를 눌러 주세요."}
+        마감 시각이 되면 자동으로 마감되고, 학생이 정답과 해설을 볼 수 있어요.
       </p>
     </form>
   );

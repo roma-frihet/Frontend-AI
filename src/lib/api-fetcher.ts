@@ -28,7 +28,7 @@ export class ApiError extends Error {
   readonly problem: ApiProblem | null;
 
   constructor(status: number, problem: ApiProblem | null) {
-    super(readableDetail(problem) ?? `요청에 실패했습니다. (HTTP ${status})`);
+    super(readableDetail(problem) ?? `요청을 처리하지 못했어요. (HTTP ${status})`);
     this.name = "ApiError";
     this.status = status;
     this.code = problem?.code ?? "UNKNOWN";

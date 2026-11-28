@@ -17,7 +17,7 @@ import type { StudentAnswerResponseAnswer } from "@/api/generated/model";
 const RESULT = {
   RIGHT: { label: "정답", tone: "bg-success-soft text-success" },
   WRONG: { label: "오답", tone: "bg-destructive-soft text-destructive" },
-  NONE: { label: "미응답", tone: "bg-secondary text-muted-foreground" },
+  NONE: { label: "응답 안 함", tone: "bg-secondary text-muted-foreground" },
   IN_PROGRESS: { label: "푸는 중", tone: "bg-primary-soft text-primary-deep" },
   NOT_STARTED: { label: "시작 전", tone: "bg-secondary text-muted-foreground" },
 } as const;
@@ -85,7 +85,7 @@ export function AnswerTable({
 
       {!started ? (
         <p className="rounded-md bg-secondary px-4 py-6 text-center text-muted-foreground">
-          이 차시에 답을 제출하지 않았습니다.
+          이 차시에 답을 내지 않았어요.
         </p>
       ) : (
         <>
@@ -173,8 +173,7 @@ export function AnswerTable({
           </TableBox>
           <ErrorText error={error} />
           <p className="text-sm text-muted-foreground">
-            주관식은 표현이 달라도 맞는 답이면 정답으로 인정할 수 있습니다. 인정하면 점수와 반
-            평균에 바로 반영됩니다.
+            표현이 달라도 맞는 답이면 정답으로 인정해 주세요. 점수와 반 평균에 바로 반영돼요.
           </p>
         </>
       )}

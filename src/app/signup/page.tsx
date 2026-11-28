@@ -136,7 +136,7 @@ export default function StudentSignupPage() {
     <AuthShell
       badge="학생"
       title="학생 회원가입"
-      description="학교와 학번을 고르면 아이디가 자동으로 만들어져요."
+      description="학교와 학번만 있으면 가입할 수 있어요."
     >
       <Stepper steps={STEPS} current={step} />
 
@@ -158,9 +158,7 @@ export default function StudentSignupPage() {
         {step === 3 ? (
           <>
             <div className="grid gap-1 rounded-md bg-primary-soft px-4 py-3.5">
-              <span className="text-sm text-muted-foreground">
-                로그인할 때는 학교, 학번, 비밀번호를 써요
-              </span>
+              <span className="text-sm text-muted-foreground">로그인 정보</span>
               <b className="text-primary-deep">
                 {`${schoolName} ${profile.grade}학년 ${profile.classNumber}반 ${profile.seatNumber}번 ${profile.name}`}
               </b>
@@ -185,9 +183,6 @@ export default function StudentSignupPage() {
                 onChange={(event) => setPasswordAgain(event.target.value)}
               />
             </AppField>
-            <p className="text-sm text-muted-foreground">
-              가입한 뒤 선생님께 받은 수업 코드를 입력하면 그 수업에 연결돼요.
-            </p>
           </>
         ) : null}
 

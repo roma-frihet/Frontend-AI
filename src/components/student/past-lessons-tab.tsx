@@ -40,7 +40,7 @@ export function PastLessonsTab({ classroomId }: { classroomId: number }) {
     return (
       <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
         <p className="text-muted-foreground">
-          선생님이 차시를 마감하면 정답과 해설을 여기에서 볼 수 있어요.
+          수업이 끝나면 정답과 해설을 여기에서 볼 수 있어요.
         </p>
       </Card>
     );
@@ -149,7 +149,7 @@ function LessonResult({
 
                 {question.result === "NONE" ? (
                   <p className="text-sm text-muted-foreground">
-                    답을 내지 못하고 시간이 끝난 문제예요.
+                    시간 안에 답하지 못한 문제예요.
                   </p>
                 ) : null}
 

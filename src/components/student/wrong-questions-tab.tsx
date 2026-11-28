@@ -21,7 +21,7 @@ export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
     return (
       <Card className="rounded-lg border border-border p-6 shadow-card ring-0">
         <p className="text-muted-foreground">
-          아직 모인 문제가 없어요. 마감된 차시에서 틀린 문제가 여기에 쌓여요.
+          아직 틀린 문제가 없어요. 수업이 끝나면 틀린 문제가 여기에 모여요.
         </p>
       </Card>
     );

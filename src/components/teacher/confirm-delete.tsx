@@ -41,8 +41,8 @@ export function ConfirmDelete({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {losses.length > 0
-              ? `${subject(losses.join(", "))} 함께 사라집니다. 되돌릴 수 없습니다.`
-              : "되돌릴 수 없습니다."}
+              ? `${subject(losses.join(", "))} 함께 사라져요. 되돌릴 수 없어요.`
+              : "되돌릴 수 없어요."}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

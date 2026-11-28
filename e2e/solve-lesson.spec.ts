@@ -169,7 +169,7 @@ test("제출하면 정답과 해설이 바로 보인다", async ({ page }) => {
 
   await page.goto("/lessons/2/1");
 
-  await expect(page.getByText("아쉬워요")).toBeVisible();
+  await expect(page.getByText("오답이에요")).toBeVisible();
   await expect(page.getByText("엽록체", { exact: true })).toBeVisible();
   await expect(page.getByText("엽록체에서 일어납니다.")).toBeVisible();
   await expect(page.getByRole("button", { name: "시작" })).toBeVisible();
@@ -192,8 +192,8 @@ test("시간이 지나 채점되면 그렇다고 알려 준다", async ({ page }
 
   await page.goto("/lessons/2/1");
 
-  await expect(page.getByText("답을 내지 못했어요")).toBeVisible();
-  await expect(page.getByText(/시간이 지나서 저장해 둔 답으로 채점했어요/)).toBeVisible();
+  await expect(page.getByText("시간이 끝났어요")).toBeVisible();
+  await expect(page.getByText(/시간이 끝나서 마지막으로 적은 답으로 채점했어요/)).toBeVisible();
   await expect(page.getByRole("heading", { name: "이 차시를 다 풀었어요" })).toBeVisible();
   await expect(page.getByText("/ 2문제 맞혔어요")).toBeVisible();
 });

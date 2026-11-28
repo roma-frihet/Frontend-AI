@@ -47,7 +47,7 @@ export default function TeacherWelcomePage() {
     <AuthShell
       badge="교사"
       title="처음 오셨군요"
-      description="근무하는 학교와 이름을 알려 주세요. 바로 반을 만들 수 있습니다."
+      description="근무하는 학교와 이름을 알려 주세요. 바로 반을 만들 수 있어요."
     >
       <form
         className="grid gap-5"

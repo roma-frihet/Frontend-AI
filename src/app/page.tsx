@@ -86,7 +86,7 @@ export default function StudentHomePage() {
             onClick={() => setJoining((open) => !open)}
           >
             <KeyRound className="size-4" aria-hidden />
-            코드로 수업 추가
+            수업 참여하기
           </AppButton>
         </div>
       </header>
@@ -109,9 +109,6 @@ export default function StudentHomePage() {
                     ? `${data.grade}학년 ${data.subjectName} ${data.classNo}반`
                     : "학습 리포트"}
                 </h1>
-                <p className="text-muted-foreground">
-                  차시마다 내 기록이 쌓여요.
-                </p>
               </div>
 
               {memberships.length > 1 ? (
@@ -246,7 +243,7 @@ export default function StudentHomePage() {
                       <ScoreChart scores={data.scores} />
                     ) : (
                       <p className="text-muted-foreground">
-                        차시를 두 번쯤 풀면 변화가 그려져요.
+                        두 번 이상 풀면 그래프로 볼 수 있어요.
                       </p>
                     )}
                   </Card>
@@ -272,7 +269,7 @@ export default function StudentHomePage() {
                               </span>
                               <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-sm font-bold text-primary-deep tabular-nums">
                                 {score.correctCount == null
-                                  ? "미응시"
+                                  ? "응답 안 함"
                                   : `${score.correctCount} / ${score.questionCount}`}
                               </span>
                             </li>
@@ -306,7 +303,7 @@ export default function StudentHomePage() {
                         </ol>
                       ) : (
                         <p className="text-muted-foreground">
-                          마감된 차시에서 틀린 문제가 여기에 모여요.
+                          수업이 끝나면 틀린 문제를 여기에서 다시 볼 수 있어요.
                         </p>
                       )}
                     </Card>

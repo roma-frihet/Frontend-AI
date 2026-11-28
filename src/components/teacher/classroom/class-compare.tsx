@@ -41,7 +41,7 @@ export function ClassCompare({
           반 비교 · {courseLabel} {lessonNumber}차시
         </h3>
         <span className="text-sm text-muted-foreground">
-          굵은 칸이 지금 보고 있는 반, 노란 칸은 정답률 50% 미만입니다
+          굵은 칸은 지금 보고 있는 반, 노란 칸은 정답률 50% 미만이에요
         </span>
       </div>
 
@@ -49,7 +49,7 @@ export function ClassCompare({
         <p className="text-muted-foreground">불러오는 중…</p>
       ) : rooms.length < 2 ? (
         <p className="text-muted-foreground">
-          같은 학년·과목의 반이 둘 이상이면 반끼리 비교할 수 있습니다.
+          같은 학년·과목의 반이 둘 이상이면 반끼리 비교할 수 있어요.
         </p>
       ) : (
         <TableBox label="반별 문제 정답률">

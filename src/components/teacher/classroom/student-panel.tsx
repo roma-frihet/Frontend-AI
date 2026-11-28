@@ -35,8 +35,7 @@ export function TemporaryPassword({ name, value }: { name: string; value: string
       <h3 className="font-bold">{name} 학생의 임시 비밀번호</h3>
       <p className="text-3xl font-extrabold tracking-wide tabular-nums">{value}</p>
       <p className="text-sm text-muted-foreground">
-        이 화면을 벗어나면 다시 볼 수 없습니다. 학생에게 알려 주세요. 학생은 다음 로그인에서
-        새 비밀번호를 정합니다.
+        지금 학생에게 알려 주세요. 이 화면을 벗어나면 다시 볼 수 없어요.
       </p>
     </Panel>
   );
@@ -157,7 +156,7 @@ export function StudentPanel({
             </div>
             {scores.length === 0 ? (
               <p className="text-muted-foreground">
-                아직 연 차시가 없습니다. 차시를 열면 여기에 점수가 쌓입니다.
+                아직 연 차시가 없어요. 차시를 열면 여기에 점수가 쌓여요.
               </p>
             ) : (
               <TableBox label="차시별 점수">
@@ -203,7 +202,7 @@ export function StudentPanel({
                         </td>
                         <td className={`${td} font-bold tabular-nums`}>
                           {score.correctCount == null
-                            ? "미응시"
+                            ? "응답 안 함"
                             : `${score.correctCount} / ${score.questionCount}`}
                         </td>
                         <td className={`${td} text-accent-deep tabular-nums`}>

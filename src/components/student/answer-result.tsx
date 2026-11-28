@@ -31,19 +31,19 @@ export function AnswerResult({ last }: { last: AttemptResponseLast }) {
         ) : none ? (
           <>
             <Clock className="size-6 text-muted-foreground" aria-hidden />
-            <span className="text-muted-foreground">답을 내지 못했어요</span>
+            <span className="text-muted-foreground">시간이 끝났어요</span>
           </>
         ) : (
           <>
             <X className="size-6 text-destructive" aria-hidden />
-            <span className="text-destructive">아쉬워요</span>
+            <span className="text-destructive">오답이에요</span>
           </>
         )}
       </div>
 
       {last.byTimeout ? (
         <p className="text-sm text-muted-foreground">
-          시간이 지나서 저장해 둔 답으로 채점했어요.
+          시간이 끝나서 마지막으로 적은 답으로 채점했어요.
         </p>
       ) : null}
 
