@@ -12,6 +12,7 @@ import { AppSelect } from "@/components/app-select";
 import { useRun } from "@/components/teacher/use-run";
 import { ErrorText } from "@/components/states";
 import { Callout, Panel } from "@/components/surface";
+import { lessonLabel } from "@/components/lesson-name";
 import { copyQuestions, useFindLessons } from "@/api/generated";
 import type { TeacherResponseCourse } from "@/api/generated/model";
 
@@ -50,7 +51,7 @@ export function CopyPanel({
       .filter((lesson) => !(targetId === courseId && lesson.lessonNumber === lessonNumber))
       .map((lesson) => ({
         value: String(lesson.lessonNumber),
-        label: `${lesson.lessonNumber}차시 · ${lesson.title}에 추가`,
+        label: `${lessonLabel(lesson.lessonNumber, lesson.title)}에 추가`,
       })),
   ];
 

@@ -93,7 +93,7 @@ test("반 카드를 누르면 반 상세의 수업 진행으로 간다", async (
   await page.getByRole("link", { name: /5반/ }).click();
 
   await expect(page).toHaveURL("/teacher/classrooms/2");
-  await expect(page.getByRole("heading", { name: "3학년 5반 · 과학" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "3학년 5반 과학" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "수업 진행" })).toHaveAttribute("aria-selected", "true");
   // 2차시는 문제가 없어 열 수 없다. 문제를 넣으러 보낸다.
   await expect(page.getByRole("link", { name: "문제 넣으러 가기" })).toBeVisible();
@@ -146,7 +146,7 @@ test("주관식은 같은 답을 한 번에 정답으로 인정한다", async ({
   await signInAsTeacher(page);
   await page.goto("/teacher/classrooms/2?lesson=1");
 
-  await expect(page.getByRole("heading", { name: "1차시 · 광합성" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "1차시 광합성" })).toBeVisible();
   await page.getByRole("button", { name: /광합성에 필요한 기체는/ }).click();
   await page.getByRole("button", { name: "정답으로 인정 (1명)" }).click();
 
@@ -204,7 +204,7 @@ test("수업 중 화면은 정답률과 이름을 숨긴 채 열리고, 닫으�
   await page.getByRole("button", { name: "차시로 돌아가기" }).click();
   // 차시 목록이나 반 첫 화면이 아니라 열기 전에 보던 차시 상세(반 비교)로 돌아온다.
   await expect(page).toHaveURL("/teacher/classrooms/2?lesson=1&view=compare");
-  await expect(page.getByRole("heading", { name: /반 비교/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /반별 비교/ })).toBeVisible();
 });
 
 test("학생 화면 미리보기는 닫아도 보던 차시 상세에 머문다", async ({ page }) => {
@@ -229,7 +229,7 @@ test("성적 탭의 학생별 보기는 그 차시의 학생별 보기로 간다
   await signInAsTeacher(page);
   await page.goto("/teacher/classrooms/2?tab=scores");
 
-  const row = page.getByRole("row", { name: /1차시 · 광합성/ });
+  const row = page.getByRole("row", { name: /1차시 광합성/ });
   await expect(row).toContainText("1 / 1명");
   await row.getByRole("button", { name: "학생별 보기" }).click();
 

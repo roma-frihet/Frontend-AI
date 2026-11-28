@@ -92,7 +92,7 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
 
   return (
     <TeacherShell
-      title={`${name} · ${classroom.subjectName}`}
+      title={`${name} ${classroom.subjectName}`}
       description={`학생 ${classroom.studentCount ?? 0}명`}
       actions={
         <>

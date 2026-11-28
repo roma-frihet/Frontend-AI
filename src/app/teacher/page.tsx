@@ -18,8 +18,9 @@ import { CreateClassroomDialog } from "@/components/teacher/create-classroom-dia
 import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { useRun } from "@/components/teacher/use-run";
 import { ErrorText, LoadingState } from "@/components/states";
-import { Chip, Panel, panelClass } from "@/components/surface";
+import { Callout, Chip, Panel, panelClass } from "@/components/surface";
 import { IconButton } from "@/components/text-action";
+import { LessonName } from "@/components/lesson-name";
 import { deleteCourse, useFindClassroomSummaries, useFindMyPage } from "@/api/generated";
 import { cn } from "cn";
 import type {
@@ -68,12 +69,13 @@ export default function TeacherHomePage() {
       ) : (
         <>
           {live.length > 0 ? (
-            <section
+            <Callout
+              tone="success"
+              role="region"
               aria-labelledby="live-title"
-              className="grid gap-3 rounded-lg bg-success-soft p-5"
+              className="gap-3 p-5"
             >
               <div className="flex items-center gap-2">
-                <span aria-hidden className="size-2.5 rounded-full bg-success" />
                 <h2 id="live-title" className="font-bold">
                   지금 진행 중
                 </h2>
@@ -90,7 +92,7 @@ export default function TeacherHomePage() {
                         {room.grade}학년 {room.classNo}반
                       </strong>
                       <span className="min-w-0 flex-1 text-muted-foreground">
-                        {room.openLesson?.lessonNumber}차시 · {room.openLesson?.title}
+                        <LessonName number={room.openLesson?.lessonNumber} title={room.openLesson?.title} />
                       </span>
                       <span className="font-bold text-success tabular-nums">
                         응답 {room.openLesson?.responseCount ?? 0} / {room.studentCount ?? 0}
@@ -103,7 +105,7 @@ export default function TeacherHomePage() {
                   </li>
                 ))}
               </ul>
-            </section>
+            </Callout>
           ) : null}
 
           {courses.map((course) => (
@@ -216,7 +218,7 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
   const status = open
     ? `${open.lessonNumber}차시 진행 중`
     : room.lastFinishedLessonNumber
-      ? `열린 차시 없음 · ${room.lastFinishedLessonNumber}차시까지 마감`
+      ? `${room.lastFinishedLessonNumber}차시까지 마감`
       : "열린 차시 없음";
   const watch = room.watchStudentCount ?? 0;
 
@@ -237,7 +239,7 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
       <span className="grid grid-cols-2 gap-2 border-t border-border pt-3">
         <span className="grid gap-0.5">
           <span className="text-sm text-muted-foreground">
-            최근 평균{room.latestLessonNumber ? ` · ${room.latestLessonNumber}차시` : ""}
+            {room.latestLessonNumber ? `${room.latestLessonNumber}차시 평균` : "최근 평균"}
           </span>
           <span className="font-bold tabular-nums">
             {room.latestAverageCorrect == null
@@ -248,9 +250,6 @@ function ClassCard({ room }: { room: ReportResponseClassroomSummary }) {
         <span className="grid gap-0.5">
           <span className="text-sm text-muted-foreground">살펴볼 학생</span>
           <span className="inline-flex items-center gap-1.5 font-bold">
-            {watch > 0 ? (
-              <span aria-hidden className="size-2 rounded-full bg-warning" />
-            ) : null}
             {watch > 0 ? `${watch}명` : "없음"}
           </span>
         </span>

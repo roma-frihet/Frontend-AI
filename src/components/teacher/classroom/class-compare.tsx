@@ -40,7 +40,7 @@ export function ClassCompare({
     <Panel>
       <div className="grid gap-0.5">
         <h3 className="text-lg font-bold">
-          반 비교 · {courseLabel} {lessonNumber}차시
+          {courseLabel} {lessonNumber}차시 반별 비교
         </h3>
         <span className="text-sm text-muted-foreground">
           굵은 칸은 지금 보고 있는 반, 노란 칸은 정답률 50% 미만이에요
@@ -65,7 +65,7 @@ export function ClassCompare({
                   className={cn(th, "text-right", room.classroomId === classroomId && "text-primary-deep")}
                 >
                   {room.classNo}반
-                  {room.status === "PLANNED" ? " (열기 전)" : ` · ${room.responseCount ?? 0}명`}
+                  {room.status === "PLANNED" ? " (열기 전)" : ` (${room.responseCount ?? 0}명)`}
                 </th>
               ))}
             </tr>

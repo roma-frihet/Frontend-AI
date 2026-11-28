@@ -8,6 +8,7 @@
 import { ResultBadge } from "@/components/student/result-badge";
 import { LoadingState } from "@/components/states";
 import { Panel } from "@/components/surface";
+import { LessonName } from "@/components/lesson-name";
 import { useFindMyWrongQuestions } from "@/api/generated";
 
 export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
@@ -35,7 +36,7 @@ export function WrongQuestionsTab({ classroomId }: { classroomId: number }) {
           <Panel>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-bold text-muted-foreground">
-                {question.lessonNumber}차시 · {question.lessonTitle}
+                <LessonName number={question.lessonNumber} title={question.lessonTitle} />
               </span>
               <ResultBadge result={question.result} />
             </div>

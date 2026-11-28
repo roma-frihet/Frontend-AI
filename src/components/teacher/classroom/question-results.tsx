@@ -43,9 +43,9 @@ export function QuestionResults({
   return (
     <Panel>
       <div className="grid gap-0.5">
-        <h3 className="text-lg font-bold">문제별 정답률 · 전체 {questions.length}문제</h3>
+        <h3 className="text-lg font-bold">문제별 정답률</h3>
         <span className="text-sm text-muted-foreground">
-          응답한 {responders}명 기준 · 문제를 누르면 응답 분포가 보여요
+          문제 {questions.length}개, 응답한 {responders}명 기준이에요. 문제를 누르면 응답 분포를 볼 수 있어요.
         </span>
       </div>
       <ErrorText error={error} />
