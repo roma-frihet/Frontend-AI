@@ -54,6 +54,24 @@ export function ErrorText({ error }: { error: string | null }) {
   ) : null;
 }
 
+/**
+ * 불러오기에 실패했을 때 쓴다. "불러오는 중"으로 남겨 두면 교사가 원인을 알 수 없다.
+ */
+export function LoadError({ error, onRetry }: { error: unknown; onRetry: () => void }) {
+  return (
+    <div className="grid gap-1">
+      <ErrorText error={errorMessage(error)} />
+      <button
+        type="button"
+        onClick={onRetry}
+        className="w-fit text-sm font-bold text-primary-deep hover:underline"
+      >
+        다시 불러오기
+      </button>
+    </div>
+  );
+}
+
 /** 불러오기 실패를 사람이 읽는 문장으로. 서버 detail이 있으면 그것을 쓴다. */
 export const errorMessage = (error: unknown) =>
   error instanceof ApiError ? error.message : "불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.";

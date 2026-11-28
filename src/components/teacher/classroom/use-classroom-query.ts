@@ -9,6 +9,8 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { toId } from "@/lib/id";
+
 export type ClassroomTab = "lessons" | "students" | "scores";
 export type LessonView = "questions" | "students" | "compare";
 
@@ -22,7 +24,8 @@ export type ClassroomQuery = {
   student: number | null;
 };
 
-const toNumber = (value: string | null) => {
+// 차시 번호는 1부터 센다. 학생(membershipId)은 서버 ID라 음수·0도 있다(src/lib/id.ts).
+const toLessonNumber = (value: string | null) => {
   const n = Number(value);
   return value && Number.isInteger(n) && n > 0 ? n : null;
 };
@@ -36,7 +39,7 @@ export const classroomHref = (classroomId: number, query: Partial<ClassroomQuery
   } else if (query.lesson) {
     params.set("lesson", String(query.lesson));
   }
-  if (query.student) params.set("student", String(query.student));
+  if (query.student != null) params.set("student", String(query.student));
   const search = params.toString();
   return `/teacher/classrooms/${classroomId}${search ? `?${search}` : ""}`;
 };
@@ -51,9 +54,9 @@ export function useClassroomQuery() {
 
   const query: ClassroomQuery = {
     tab: tabParam && TABS.includes(tabParam) ? tabParam : "lessons",
-    lesson: toNumber(searchParams.get("lesson")),
+    lesson: toLessonNumber(searchParams.get("lesson")),
     view: viewParam && VIEWS.includes(viewParam) ? viewParam : "questions",
-    student: toNumber(searchParams.get("student")),
+    student: toId(searchParams.get("student")),
   };
 
   /** 바꾼 것만 넘긴다. 뒤로 가기로 직전 화면에 돌아갈 수 있게 기록을 남긴다. */

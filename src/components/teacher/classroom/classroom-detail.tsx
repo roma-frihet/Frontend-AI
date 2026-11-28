@@ -19,7 +19,7 @@ import { ConfirmDelete, losses } from "@/components/teacher/confirm-delete";
 import { JoinCodeCard } from "@/components/teacher/join-code-card";
 import { Panel } from "@/components/teacher/panel";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
-import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { ErrorText, LoadError, useRun } from "@/components/teacher/use-run";
 import { LessonDetail } from "@/components/teacher/classroom/lesson-detail";
 import { LessonsTab } from "@/components/teacher/classroom/lessons-tab";
 import { ScoresTab } from "@/components/teacher/classroom/scores-tab";
@@ -31,6 +31,7 @@ import {
 } from "@/components/teacher/classroom/use-classroom-query";
 import { useRefreshOnChange } from "@/components/teacher/use-refresh";
 import { deleteClassroom, useFindClassrooms, useFindLessons } from "@/api/generated";
+import { isId } from "@/lib/id";
 
 export function ClassroomDetail({ params }: { params: Promise<{ classroomId: string }> }) {
   const { classroomId: raw } = use(params);
@@ -42,13 +43,24 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
 
   const classrooms = useFindClassrooms();
   const classroom = classrooms.data?.data.find((room) => room.id === classroomId);
-  const courseId = classroom?.courseId ?? 0;
+  // courseId는 음수·0일 수도 있다(src/lib/id.ts). 양수로 거르면 차시 요청이 아예 나가지 않는다.
+  const courseId = classroom?.courseId;
 
-  const lessons = useFindLessons(courseId, { query: { enabled: courseId > 0 } });
+  const lessons = useFindLessons(courseId ?? 0, { query: { enabled: isId(courseId) } });
   const lessonList = lessons.data?.data ?? [];
 
   const { run, busy, error } = useRun();
   const [deleting, setDeleting] = useState(false);
+
+  if (classrooms.isError) {
+    return (
+      <TeacherShell title="반">
+        <Panel>
+          <LoadError error={classrooms.error} onRetry={() => void classrooms.refetch()} />
+        </Panel>
+      </TeacherShell>
+    );
+  }
 
   if (classrooms.isPending) {
     return (
@@ -118,7 +130,15 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
         </AppTabsList>
 
         <AppTabsContent value="lessons" className="grid gap-gap">
-          {lessons.isPending ? (
+          {lessons.isError ? (
+            <Panel>
+              <LoadError error={lessons.error} onRetry={() => void lessons.refetch()} />
+            </Panel>
+          ) : !isId(courseId) ? (
+            <p role="alert" className="text-sm font-medium text-destructive">
+              이 반의 수업 정보를 찾지 못해 차시를 불러올 수 없습니다.
+            </p>
+          ) : lessons.isPending ? (
             <p className="text-muted-foreground">불러오는 중…</p>
           ) : lesson ? (
             <LessonDetail
@@ -142,7 +162,7 @@ export function ClassroomDetail({ params }: { params: Promise<{ classroomId: str
         </AppTabsContent>
 
         <AppTabsContent value="students" className="grid gap-gap">
-          {query.student ? (
+          {query.student != null ? (
             <StudentPanel
               classroom={classroom}
               membershipId={query.student}
