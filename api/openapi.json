@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "http://server-prod-cphdbynbja-du.a.run.app",
       "description": "Generated server url"
     }
   ],
@@ -2552,6 +2552,11 @@
           "questionCount": {
             "type": "integer",
             "format": "int64"
+          },
+          "attemptedStudentCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "이 수업의 모든 반을 합쳐 이 차시를 푼 적이 있는 학생 수. 지우면 점수가 바뀌는 인원이다"
           },
           "classrooms": {
             "type": "array",

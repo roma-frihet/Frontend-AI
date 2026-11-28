@@ -10,5 +10,7 @@ export interface LessonResponseResult {
   lessonNumber?: number;
   title?: string;
   questionCount?: number;
+  /** 이 수업의 모든 반을 합쳐 이 차시를 푼 적이 있는 학생 수. 지우면 점수가 바뀌는 인원이다 */
+  attemptedStudentCount?: number;
   classrooms?: LessonResponseClassroomStatus[];
 }

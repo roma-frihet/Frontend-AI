@@ -21,7 +21,7 @@ import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { useRun } from "@/components/teacher/use-run";
 import { useTeacherCourse } from "@/components/teacher/use-teacher-course";
 import { ErrorText, LoadError, LoadingState } from "@/components/states";
-import { Chip, Panel } from "@/components/surface";
+import { Callout, Chip, Panel } from "@/components/surface";
 import { IconButton, TextLink, ToggleChip } from "@/components/text-action";
 import { LessonName } from "@/components/lesson-name";
 import {
@@ -82,6 +82,9 @@ export function PrepareLessons() {
   const everOpened = (lesson?.classrooms ?? []).some(
     (room) => room.status && room.status !== "PLANNED",
   );
+  // 지금 풀고 있는 학생이 있으면 서버가 지우기를 막는다(LS024). 닫거나 마감하면 지울 수 있다.
+  const openNow = (lesson?.classrooms ?? []).some((room) => room.status === "OPEN");
+  const attempted = lesson?.attemptedStudentCount ?? 0;
 
   const pickLesson = (number: number | null) => {
     setSelected(number);
@@ -277,7 +280,7 @@ export function PrepareLessons() {
                   <AppButton
                     variant="outline"
                     className="h-10 px-3.5 text-destructive hover:bg-destructive-soft"
-                    disabled={busy}
+                    disabled={busy || openNow}
                     onClick={() => setDeletingLesson(true)}
                   >
                     <Trash2 className="size-4" aria-hidden />
@@ -285,6 +288,12 @@ export function PrepareLessons() {
                   </AppButton>
                 </div>
               </div>
+
+              {openNow ? (
+                <Callout tone="warning" className="text-sm">
+                  지금 진행 중인 반이 있어요. 닫거나 마감한 뒤에 차시와 문제를 지울 수 있어요.
+                </Callout>
+              ) : null}
 
               {(lesson.classrooms ?? []).length === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -387,7 +396,7 @@ export function PrepareLessons() {
                                 <IconButton
                                   tone="danger"
                                   aria-label={`${index + 1}번 문제 삭제`}
-                                  disabled={busy}
+                                  disabled={busy || openNow}
                                   onClick={() => setDeletingQuestion(question)}
                                 >
                                   <Trash2 className="size-4" aria-hidden />
@@ -442,6 +451,11 @@ export function PrepareLessons() {
         onOpenChange={() => setDeletingQuestion(null)}
         title="이 문제를 지울까요?"
         losses={[]}
+        note={
+          attempted > 0
+            ? `이 차시를 푼 학생 ${attempted}명의 점수가 이 문제를 빼고 다시 계산돼요.`
+            : undefined
+        }
         busy={busy}
         onConfirm={() => {
           const id = deletingQuestion?.id ?? 0;
@@ -454,7 +468,10 @@ export function PrepareLessons() {
         open={deletingLesson}
         onOpenChange={() => setDeletingLesson(false)}
         title={`${lessonNumber}차시 ${withParticle(lesson?.title ?? "")} 지울까요?`}
-        losses={losses({ count: questionList.length, label: "문제", unit: "개" })}
+        losses={losses(
+          { count: questionList.length, label: "문제", unit: "개" },
+          { count: attempted, label: "학생 풀이 기록", unit: "명분" },
+        )}
         busy={busy}
         onConfirm={() => {
           const number = lessonNumber ?? 0;
