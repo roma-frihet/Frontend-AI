@@ -5,13 +5,13 @@
 // 반 만들기·합류 코드는 학급 관리로 옮겼다. 수업 중에 쓰는 것이라 반 화면에 있어야 찾는다.
 
 import { useState } from "react";
-import Link from "next/link";
-import { Pencil, UserRound } from "lucide-react";
+import { LogOut, Pencil, UserRound } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
 import { AppField, AppInput } from "@/components/app-field";
 import { TeacherShell } from "@/components/teacher/teacher-shell";
 import { ErrorText, useRun } from "@/components/teacher/use-run";
+import { useSignOut } from "@/components/teacher/use-sign-out";
 import { Card } from "@/components/ui/card";
 import { saveTeacherProfile, useFindMyPage } from "@/api/generated";
 
@@ -22,6 +22,7 @@ export default function TeacherMyPage() {
 
   const [editingProfile, setEditingProfile] = useState(false);
   const [name, setName] = useState("");
+  const { signOut, signingOut } = useSignOut();
 
   return (
     <TeacherShell title="마이페이지">
@@ -73,29 +74,27 @@ export default function TeacherMyPage() {
                 <Row label="이름" value={profile?.name} />
                 <Row label="학교" value={profile?.schoolName} />
               </dl>
-              <AppButton
-                variant="outline"
-                className="justify-self-start"
-                onClick={() => {
-                  setName(profile?.name ?? "");
-                  setEditingProfile(true);
-                }}
-              >
-                <Pencil className="size-4" aria-hidden />
-                이름 수정
-              </AppButton>
+              <div className="flex flex-wrap gap-2">
+                <AppButton
+                  variant="outline"
+                  onClick={() => {
+                    setName(profile?.name ?? "");
+                    setEditingProfile(true);
+                  }}
+                >
+                  <Pencil className="size-4" aria-hidden />
+                  이름 수정
+                </AppButton>
+                <AppButton variant="ghost" disabled={signingOut} onClick={() => void signOut()}>
+                  <LogOut className="size-4" aria-hidden />
+                  로그아웃
+                </AppButton>
+              </div>
             </>
           )}
         </Card>
 
         <ErrorText error={error} />
-        <p className="text-sm text-muted-foreground">
-          반 만들기와 합류 코드는{" "}
-          <Link href="/teacher" className="font-bold text-primary-deep hover:underline">
-            학급 관리
-          </Link>
-          로 옮겼습니다.
-        </p>
       </div>
     </TeacherShell>
   );
