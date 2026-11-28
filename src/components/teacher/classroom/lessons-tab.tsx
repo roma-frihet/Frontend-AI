@@ -11,18 +11,16 @@ import { useState } from "react";
 import { CalendarClock } from "lucide-react";
 
 import { AppButton } from "@/components/app-button";
-import { AppInput } from "@/components/app-field";
 import { FinishDialog } from "@/components/teacher/classroom/finish-dialog";
 import {
   STATUS_LABEL,
   STATUS_TONE,
   formatSchedule,
-  toLocalInput,
-  toOffsetDateTime,
   type LessonStatus,
 } from "@/components/teacher/lesson-status";
 import { useRun } from "@/components/teacher/use-run";
 import { EmptyState, ErrorText } from "@/components/states";
+import { SchedulePicker } from "@/components/teacher/classroom/schedule-picker";
 import { Chip, Panel } from "@/components/surface";
 import { TextLink } from "@/components/text-action";
 import {
@@ -233,7 +231,7 @@ function LessonRow({
       </div>
 
       {scheduleOpen ? (
-        <ScheduleForm
+        <SchedulePicker
           isOpen={status === "OPEN"}
           busy={busy}
           onCancel={onToggleSchedule}
@@ -243,76 +241,5 @@ function LessonRow({
         />
       ) : null}
     </Panel>
-  );
-}
-
-const HOUR_MS = 60 * 60 * 1000;
-
-function ScheduleForm({
-  isOpen,
-  busy,
-  onCancel,
-  onSave,
-}: {
-  /** 이미 열린 차시는 마감 시각만 정한다. */
-  isOpen: boolean;
-  busy: boolean;
-  onCancel: () => void;
-  onSave: (openAt: string | null, finishAt: string | null) => void;
-}) {
-  const [openAt, setOpenAt] = useState(() => toLocalInput(new Date(Date.now() + HOUR_MS)));
-  const [finishAt, setFinishAt] = useState("");
-
-  const invalid =
-    (!isOpen && !openAt) ||
-    (isOpen && !finishAt) ||
-    (!isOpen && Boolean(finishAt) && finishAt <= openAt);
-
-  return (
-    <form
-      className="grid gap-3 rounded-md bg-secondary p-4"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (invalid) return;
-        onSave(
-          isOpen ? null : toOffsetDateTime(openAt),
-          finishAt ? toOffsetDateTime(finishAt) : null,
-        );
-      }}
-    >
-      <strong>{isOpen ? "자동 마감" : "열기 예약"}</strong>
-      <div className="flex flex-wrap items-end gap-3">
-        {isOpen ? null : (
-          <label className="grid gap-1.5 text-sm font-bold">
-            열 시각
-            <AppInput
-              type="datetime-local"
-              value={openAt}
-              onChange={(event) => setOpenAt(event.target.value)}
-              className="w-auto bg-card"
-            />
-          </label>
-        )}
-        <label className="grid gap-1.5 text-sm font-bold">
-          자동 마감 시각{isOpen ? "" : " (선택)"}
-          <AppInput
-            type="datetime-local"
-            value={finishAt}
-            min={isOpen ? undefined : openAt}
-            onChange={(event) => setFinishAt(event.target.value)}
-            className="w-auto bg-card"
-          />
-        </label>
-        <AppButton type="submit" className="h-11" disabled={busy || invalid}>
-          저장
-        </AppButton>
-        <AppButton type="button" variant="outline" className="h-11" onClick={onCancel}>
-          취소
-        </AppButton>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        마감 시각이 되면 자동으로 마감되고, 학생이 정답과 해설을 볼 수 있어요.
-      </p>
-    </form>
   );
 }

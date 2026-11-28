@@ -121,15 +121,25 @@ test("열기 예약은 시간대를 붙여 보낸다", async ({ page }) => {
   await page.goto("/teacher/classrooms/2");
 
   await page.getByRole("button", { name: "예약" }).click();
-  await page.getByLabel("열 시각").fill("2026-11-23T09:10");
-  await page.getByLabel(/자동 마감 시각/).fill("2026-11-23T09:40");
-  await page.getByRole("button", { name: "저장" }).click();
+  await page.getByRole("group", { name: "여는 날" }).getByRole("button", { name: "내일" }).click();
+  await page.getByRole("combobox", { name: "시" }).click();
+  await page.getByRole("option", { name: "오전 9시", exact: true }).click();
+  await page.getByRole("combobox", { name: "분" }).click();
+  await page.getByRole("option", { name: "10분", exact: true }).click();
+  await page.getByRole("group", { name: "자동 마감" }).getByRole("button", { name: "열고 30분 뒤" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "내일" })).toContainText(
+    "30분 뒤인 오전 9:40에 자동으로 마감해요",
+  );
+  await page.getByRole("button", { name: "예약하기" }).click();
 
   await expect.poll(() => puts.length).toBe(1);
   const body = puts[0].postDataJSON() as { openAt: string; finishAt: string };
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const day = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
   // 시간대가 없으면 서버(UTC)에서 9시간 어긋난다.
-  expect(body.openAt).toMatch(/^2026-11-23T09:10:00[+-]\d{2}:\d{2}$/);
-  expect(body.finishAt).toMatch(/^2026-11-23T09:40:00[+-]\d{2}:\d{2}$/);
+  expect(body.openAt).toMatch(new RegExp(`^${day}T09:10:00[+-]\\d{2}:\\d{2}$`));
+  expect(body.finishAt).toMatch(new RegExp(`^${day}T09:40:00[+-]\\d{2}:\\d{2}$`));
 });
 
 test("주관식은 같은 답을 한 번에 정답으로 인정한다", async ({ page }) => {
@@ -496,4 +506,31 @@ test("좁은 화면에서는 메뉴가 쌓이고 넘치지 않는다", async ({ 
 
   const aside = await page.getByRole("complementary", { name: "교사 메뉴" }).boundingBox();
   expect(aside!.width).toBeGreaterThan(300);
+});
+
+test("열린 차시는 지금부터 몇 분 뒤에 마감할지만 고른다", async ({ page }) => {
+  await mockSupabaseAuth(page, "teacher");
+  await mockApi(
+    page,
+    teacherStubs({
+      "/api/v1/teacher/courses/2/lessons": OPEN_LESSONS,
+      "/api/v1/teacher/classrooms/2/lessons/1/schedule": {},
+    }),
+  );
+  const puts = watch(page, "PUT");
+  await signInAsTeacher(page);
+  await page.goto("/teacher/classrooms/2");
+
+  await page.getByRole("button", { name: "자동 마감" }).click();
+  await expect(page.getByRole("group", { name: "여는 날" })).toHaveCount(0);
+  const before = Date.now();
+  await page.getByRole("group", { name: "자동 마감" }).getByRole("button", { name: "지금부터 20분 뒤" }).click();
+  await page.getByRole("button", { name: "예약하기" }).click();
+
+  await expect.poll(() => puts.length).toBe(1);
+  const body = puts[0].postDataJSON() as { openAt: string | null; finishAt: string };
+  expect(body.openAt).toBeNull();
+  const minutes = (new Date(body.finishAt).getTime() - before) / 60000;
+  expect(minutes).toBeGreaterThan(18);
+  expect(minutes).toBeLessThan(22);
 });
