@@ -5,7 +5,7 @@
 // "정말 삭제하시겠습니까?"만 띄우면 아무 정보도 주지 않는다. 무엇이 몇 개 사라지는지
 // 숫자로 보여 준다. 선생님이 반 번호를 잘못 고른 것을 여기서 알아차릴 수 있어야 한다.
 //
-// 서버는 기록이 있어도 지운다. 막아 주는 것은 이 확인뿐이다.
+// 서버는 기록이 있어도 지운다(지금 열려 있는 차시만 막는다). 막아 주는 것은 이 확인뿐이다.
 
 import { AppButton } from "@/components/app-button";
 import {
@@ -23,6 +23,7 @@ export function ConfirmDelete({
   onOpenChange,
   title,
   losses,
+  note,
   busy,
   onConfirm,
 }: {
@@ -31,6 +32,8 @@ export function ConfirmDelete({
   title: string;
   /** 함께 사라지는 것들. 비어 있으면 문장을 줄인다. */
   losses: string[];
+  /** 지우면 달라지는 것 중 losses로 못 담는 것(예: 다시 계산되는 점수). */
+  note?: string;
   busy: boolean;
   onConfirm: () => void;
 }) {
@@ -40,9 +43,9 @@ export function ConfirmDelete({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            {losses.length > 0
-              ? `${subject(losses.join(", "))} 함께 사라져요. 되돌릴 수 없어요.`
-              : "되돌릴 수 없어요."}
+            {losses.length > 0 ? `${subject(losses.join(", "))} 함께 사라져요. ` : ""}
+            {note ? `${note} ` : ""}
+            되돌릴 수 없어요.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
